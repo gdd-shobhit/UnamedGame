@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     {
         healthSlider.value = myFrog.currentHealth;
         energySlider.value = myFrog.currentEnergy;
-        hudUpdate = !hudUpdate;
+        hudUpdate = false;
     }
 
 }
