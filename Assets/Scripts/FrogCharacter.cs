@@ -6,7 +6,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 {
     public int currentHealth;
     public int attackDamage;
-    public int currentEnergy;               // FROGMINA IN GAME LOL
+    public float currentEnergy;               // FROGMINA IN GAME LOL
     public float speed;
     public int maxhealth;
     public int maxEnergy;
@@ -56,7 +56,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     {
         if (currentEnergy < maxEnergy)
         {
-            currentEnergy++;
+            currentEnergy += Time.deltaTime;
             GameManager.instance.hudUpdate = true;
         }
          
@@ -64,13 +64,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
     public bool Dash()
     {
-      
         if (currentEnergy >= 20)
-        {
-            currentEnergy -= 20;
-            GameManager.instance.hudUpdate = true;
             return true;
-        }
 
         return false;
     }
