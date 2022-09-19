@@ -2,8 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-[CreateAssetMenu(menuName ="Tools/NarrativeSO")]
+[CreateAssetMenu(fileName = "NarrativeSO", menuName = "ScriptableObjects/NarrativeSO", order = 1)]
 public class NarrativeSO : ScriptableObject
 {
-    public Dictionary<string,List<string>> keyValuePairs = new Dictionary<string,List<string>>();
+    public Dictionary<int,List<string>> keyValuePairs = new Dictionary<int,List<string>>();
 }

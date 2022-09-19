@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
@@ -20,6 +21,9 @@ namespace StarterAssets
 
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
+
+        [Tooltip("Dash speed of the character in m/s")]
+        public float DashSpeed = 12f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -214,8 +218,10 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
+            //float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            
+            float targetSpeed = _input.dash && GameManager.instance.myFrog.Dash()? DashSpeed : _input.sprint ? SprintSpeed : MoveSpeed;
+            
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
             // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
@@ -277,6 +283,18 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
+
+            if (_input.dash)
+                StartCoroutine(DashCoroutine(0.4f));
+            
+        }
+
+        IEnumerator DashCoroutine(float time)
+        {
+            
+            yield return new WaitForSeconds(time);
+            print("WaitAndPrint " + Time.time);
+            _input.dash = false;
         }
 
         private void JumpAndGravity()

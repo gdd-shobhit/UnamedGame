@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using StarterAssets;
 public class FrogCharacter : MonoBehaviour, IDamageable
 {
     public int currentHealth;
     public int attackDamage;
-    public int currentStamina;               // FROGMINA IN GAME LOL
-    public int speed;
+    public int currentEnergy;               // FROGMINA IN GAME LOL
+    public float speed;
     public int maxhealth;
-    public int maxStamina;
+    public int maxEnergy;
 
     // stretch goals
     public int skillPoints;
@@ -23,9 +23,15 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     {
         currentHealth = 100;
         level = 1;
-        currentStamina = 100;
+        currentEnergy = 100;
         maxhealth = 100;
-        maxStamina = 100;
+        maxEnergy = 100;
+        speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;
+    }
+
+    private void Update()
+    {
+        RegenerateEnergy();
     }
 
     public void GetHit()
@@ -46,8 +52,26 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         skillPoints++;
     }
 
-    public void Dash()
+    public void RegenerateEnergy()
     {
+        if (currentEnergy < maxEnergy)
+        {
+            currentEnergy++;
+            GameManager.instance.hudUpdate = true;
+        }
+         
+    }
 
+    public bool Dash()
+    {
+      
+        if (currentEnergy >= 20)
+        {
+            currentEnergy -= 20;
+            GameManager.instance.hudUpdate = true;
+            return true;
+        }
+
+        return false;
     }
 }
