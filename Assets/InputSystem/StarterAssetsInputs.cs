@@ -14,6 +14,7 @@ namespace StarterAssets
 		public bool sprint;
 		public bool dash;
 		public bool pAttack;
+		public bool hAttack;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -54,6 +55,13 @@ namespace StarterAssets
         {
 			PAttackInput(value.isPressed);
         }
+
+		public void OnHAttack(InputValue value)
+		{
+			HAttackInput(value.isPressed);
+		}
+
+
 #endif
 
 
@@ -86,6 +94,11 @@ namespace StarterAssets
 		{
 			pAttack = newAttackState;
 		}
+
+		public void HAttackInput(bool newHeavyAttackState)
+        {
+			hAttack = newHeavyAttackState;
+        }
 
 		private void OnApplicationFocus(bool hasFocus)
 		{

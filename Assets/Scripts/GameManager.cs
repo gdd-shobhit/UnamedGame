@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public FrogCharacter myFrog;
     public FrogSon mySon;
     public bool hudUpdate = false;
+    public float timeMultiplyer = 1.0f;
     // Basic Singleton
     void Awake()
     {
