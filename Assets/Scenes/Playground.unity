@@ -1355,6 +1355,7 @@ MonoBehaviour:
   myFrog: {fileID: 1762682266}
   mySon: {fileID: 0}
   hudUpdate: 0
+  timeMultiplyer: 1
 --- !u!4 &1118074768
 Transform:
   m_ObjectHideFlags: 0
@@ -1522,6 +1523,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9078993845375825671, guid: f6d148d888ffbf54b9afe9936dfaec1f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
@@ -1865,6 +1871,12 @@ MonoBehaviour:
   maxEnergy: 0
   skillPoints: 0
   level: 0
+  anim: {fileID: 0}
+  cooldownTime: 1
+  nextAttackTime: 0
+  noOfAttacks: 0
+  lastAttackTime: 0
+  deltaTimeBetweenCombos: 1
   Son: {fileID: 0}
 --- !u!1 &1764214107
 GameObject:

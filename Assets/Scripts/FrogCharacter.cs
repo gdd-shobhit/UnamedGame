@@ -23,7 +23,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     public int noOfAttacks = 0;
     public float lastAttackTime = 0;
     public float deltaTimeBetweenCombos = 1f;
-    float maxComboDelay = 1;
+    float maxComboDelay = 0.55f;
     // probably switch to the frog son
     public FrogSon Son;
 
@@ -39,76 +39,113 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;  
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         RegenerateEnergy();
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack1"))
-            anim.SetBool("PAttack1", false);
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
-            anim.SetBool("PAttack2", false);
-        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack3"))
-        {
-            anim.SetBool("PAttack3", false);
-            noOfAttacks = 0;
-        }
+        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack1"))
+        //    anim.SetBool("PAttack1", false);
+        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
+        //    anim.SetBool("PAttack2", false);
+        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack3"))
+        //{
+        //    anim.SetBool("PAttack3", false);
+        //    noOfAttacks = 0;
+        //}
+        PComboDone();
 
         if (Time.time - lastAttackTime > maxComboDelay)
         {
             noOfAttacks = 0;
         }
 
-        if (Time.time > nextAttackTime)
+        if (GetComponent<StarterAssetsInputs>().pAttack)
         {
-            if (GetComponent<StarterAssetsInputs>().pAttack)
-            {
-                if(Time.time - lastAttackTime > deltaTimeBetweenCombos)
-                {
-                    noOfAttacks++;
-                    PrimaryAttack();                 
-                }
-                GetComponent<StarterAssetsInputs>().pAttack = false;
-            }
-               
+            noOfAttacks++;
+            PrimaryAttack();
+            GetComponent<StarterAssetsInputs>().pAttack = false;
+        }
+        if(GetComponent<StarterAssetsInputs>().hAttack)
+        {
+            HeavyAttack();
+            GetComponent<StarterAssetsInputs>().hAttack = false;
+        }
+    }
+
+    #region COMBAT_SYSTEM
+
+    public void HeavyAttack()
+    {
+        if (noOfAttacks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && GetComponent<StarterAssetsInputs>().hAttack
+           && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
+        {
+            anim.SetBool("PAttack2", false);
+            anim.SetBool("HAttackC", true);
+        }
+        else
+        {
+            anim.SetBool("HAttack", true);
         }
     }
 
     public void PrimaryAttack()
-    { 
+    {
         lastAttackTime = Time.time;
         if (noOfAttacks == 1)
         {
             // play PAttack1
-            Debug.Log("PAttack");
             anim.SetBool("PAttack1", true);
         }
         // mechanic for saving Pattacks for combos down below
 
         noOfAttacks = Mathf.Clamp(noOfAttacks, 0, 3);
 
+        PrimaryAttack2();
+        PrimaryAttack3();
+
+    }
+
+    public void PrimaryAttack2()
+    {
         if (noOfAttacks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack1"))
         {
             anim.SetBool("PAttack1", false);
             anim.SetBool("PAttack2", true);
         }
+    }
 
+    public void PrimaryAttack3()
+    {
+       
         if (noOfAttacks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
         {
             anim.SetBool("PAttack2", false);
             anim.SetBool("PAttack3", true);
         }
-        if (noOfAttacks > 3)
-            noOfAttacks = 0;
-        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack3"))
-        //{
-        //    anim.SetBool("PAttack3", false);
-        //    noOfAttacks = 0;
-        //}
     }
+
+    public void PComboDone()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f)
+        {
+            anim.SetBool("PAttack3", false);
+            anim.SetBool("PAttack2", false);
+            anim.SetBool("PAttack1", false);
+            anim.SetBool("HAttackC", false);
+            anim.SetBool("HAttack", false);
+            noOfAttacks = 0;
+        }
+    }
+    #endregion
+
 
     public void OnLevelUp()
     {
+        // Designers change the stats
         level++;
         skillPoints++;
+        attackDamage += 2;
+        maxEnergy += 2;
+        maxhealth += 2;
     }
 
     public void RegenerateEnergy()
