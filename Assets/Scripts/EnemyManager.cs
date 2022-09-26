@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager instance;
+    // For pooling
     public List<Enemy> enemies;
     // Basic Singleton
     void Awake()

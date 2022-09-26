@@ -289,6 +289,11 @@ namespace StarterAssets
             
         }
 
+        /// <summary>
+        /// Coroutine for dashing mechanism
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         IEnumerator DashCoroutine(float time)
         {   
             yield return new WaitForSeconds(time);
