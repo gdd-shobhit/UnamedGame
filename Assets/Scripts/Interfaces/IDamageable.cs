@@ -4,9 +4,9 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    void GetHit()
+    public void GetHit()
     {
-        Debug.Log("GotHit");
+        
     }
 
 }

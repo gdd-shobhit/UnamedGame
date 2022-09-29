@@ -289,14 +289,21 @@ namespace StarterAssets
             
         }
 
+        /// <summary>
+        /// Coroutine for dashing mechanism
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         IEnumerator DashCoroutine(float time)
-        {   
+        {
+            _animator.SetBool("Dash", true);
             yield return new WaitForSeconds(time);
             // to update once
             if(_input.dash)
                 GameManager.instance.myFrog.currentEnergy = GameManager.instance.myFrog.currentEnergy < 20 ? GameManager.instance.myFrog.currentEnergy : GameManager.instance.myFrog.currentEnergy - 20;
 
             GameManager.instance.hudUpdate = true;
+            _animator.SetBool("Dash", false);
             _input.dash = false;
         }
 
