@@ -4,13 +4,23 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
-    public int health;
+    [SerializeField]
+    int health;
     public int level;
     public int attackDamage;
     const int damage = 10;
     public Animator anim;
     public GameObject player;
+    public float lastGotHit = 0;
+    public float getHitCooldown = 0.55f;
 
+    // Test
+    float reviveCooldown = 2f;
+    public float deathTime = 0;
+    bool isDead = false;
+    bool inAir = false;
+    public ParticleSystem onHitVFX;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -24,26 +34,62 @@ public class Enemy : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
-        if(anim.GetBool("GetHit") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f)
-        {
-         
-        }
-
-        if(health > 0) 
             EnemyAI();
+        if(anim.GetBool("Hit"))
+            ResetHit();
+
+        if (player.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("AttackJump") && !inAir)
+        {
+            Debug.Log("here");
+            inAir = true;
+            GetComponent<Rigidbody>().AddForce(Vector3.up * 500);
+        }
+    }
+
+    public void GetHit()
+    {
+        health -= player.GetComponent<FrogCharacter>().attackDamage;
+    }
+
+    public void GetHit(int attackDamage)
+    {
+        if(anim.GetBool("Hit") && Time.time - lastGotHit == 0f)
+        {
+            health -= attackDamage;
+            anim.SetInteger("Health", health);
+            onHitVFX.Play();       
+        }
+  
+    }
+
+    void ResetHit()
+    {
+        if(Time.time - lastGotHit > getHitCooldown)
+            anim.SetBool("Hit", false);
     }
 
     void EnemyAI()
     {
-        transform.LookAt(player.transform.position);
+        if(health > 0)
+            transform.LookAt(player.transform.position);
+        else if(health <= 0 && !isDead)
+        {
+            deathTime = Time.time;
+            isDead = true;
+        }
+            
+        if (Time.time - deathTime > reviveCooldown && isDead)
+        {
+            health = 100;
+            anim.SetInteger("Health", 100);
+            isDead = false;
+
+        }
+
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerExit(Collider other)
     {
-
-            anim.SetBool("GetHit", false);
-            anim.SetBool("GetHit", true);
-            health -= 20;
-            anim.SetInteger("Health", health);
+        anim.SetBool("Hit", false);
     }
 }

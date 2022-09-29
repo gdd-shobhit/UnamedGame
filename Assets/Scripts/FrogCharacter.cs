@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using StarterAssets;
+using System.Linq;
 
 public class FrogCharacter : MonoBehaviour, IDamageable
 {
@@ -18,11 +19,13 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
     // Combat
     public Animator anim;
+    public bool isAttacking = false;
     public float cooldownTime = 1f;
     public float nextAttackTime = 0f;
     public int noOfAttacks = 0;
     public float lastAttackTime = 0;
     public float deltaTimeBetweenCombos = 1f;
+    public List<GameObject> weapon;
     float maxComboDelay = 0.55f;
     // probably switch to the frog son
     public FrogSon Son;
@@ -36,6 +39,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         currentEnergy = 100;
         maxhealth = 100;
         maxEnergy = 100;
+        attackDamage = 20;
         speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;  
     }
 
@@ -61,17 +65,35 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         if (GetComponent<StarterAssetsInputs>().pAttack)
         {
             noOfAttacks++;
-            PrimaryAttack();
+            PrimaryAttack();         
             GetComponent<StarterAssetsInputs>().pAttack = false;
         }
         if(GetComponent<StarterAssetsInputs>().hAttack)
         {
             HeavyAttack();
+        
             GetComponent<StarterAssetsInputs>().hAttack = false;
         }
     }
 
     #region COMBAT_SYSTEM
+
+
+    void CheckHit()
+    {
+        Collider[] hits = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[0].transform.position, 0.5f);
+        //Collider[] hits2 = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[1].transform.position, 0.5f);
+        //hits = hits.Concat(hits2).ToArray();
+        foreach (Collider hit in hits)
+        {
+            if (hit.tag == "Enemy")
+            {
+                hit.gameObject.GetComponent<Animator>().SetBool("Hit", true);
+                hit.gameObject.GetComponent<Enemy>().lastGotHit = Time.time;
+                hit.gameObject.GetComponent<Enemy>().GetHit(attackDamage);
+            }
+        }
+    }
 
     public void HeavyAttack()
     {
@@ -80,10 +102,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         {
             anim.SetBool("PAttack2", false);
             anim.SetBool("HAttackC", true);
+            CheckHit();
         }
         else
         {
             anim.SetBool("HAttack", true);
+            CheckHit();
         }
     }
 
@@ -94,6 +118,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         {
             // play PAttack1
             anim.SetBool("PAttack1", true);
+            CheckHit();
         }
         // mechanic for saving Pattacks for combos down below
 
@@ -110,6 +135,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         {
             anim.SetBool("PAttack1", false);
             anim.SetBool("PAttack2", true);
+            CheckHit();
         }
     }
 
@@ -120,6 +146,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         {
             anim.SetBool("PAttack2", false);
             anim.SetBool("PAttack3", true);
+            CheckHit();
         }
     }
 
@@ -136,7 +163,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         }
     }
     #endregion
-
 
     public void OnLevelUp()
     {
