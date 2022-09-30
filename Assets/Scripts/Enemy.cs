@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
@@ -13,6 +14,11 @@ public class Enemy : MonoBehaviour, IDamageable
     public GameObject player;
     public float lastGotHit = 0;
     public float getHitCooldown = 0.55f;
+
+    // Player Tracking
+    public float lookRadius = 10f;
+    Transform target;
+    NavMeshAgent agent;
 
     // Test
     float reviveCooldown = 2f;
@@ -29,6 +35,8 @@ public class Enemy : MonoBehaviour, IDamageable
             anim = GetComponent<Animator>();
         attackDamage = level * damage;
         player = GameManager.instance.myFrog.gameObject;
+        agent = GetComponent<NavMeshAgent>();
+        target = player.transform;
     }
 
     // Update is called once per frame
@@ -70,6 +78,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void EnemyAI()
     {
+        float distance = Vector3.Distance(target.position, transform.position);
+        if(distance <= lookRadius)
+        {
+            agent.SetDestination(target.position);
+        }
+
         if(health > 0)
             transform.LookAt(player.transform.position);
         else if(health <= 0 && !isDead)
@@ -91,5 +105,12 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnTriggerExit(Collider other)
     {
         anim.SetBool("Hit", false);
+    }
+
+    // Display's Enemy's View Distance
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, lookRadius);
     }
 }
