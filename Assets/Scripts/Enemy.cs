@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, IDamageable, IGrabbable
 {
     [SerializeField]
     int health;
@@ -20,6 +20,8 @@ public class Enemy : MonoBehaviour, IDamageable
     bool isDead = false;
     bool inAir = false;
     public ParticleSystem onHitVFX;
+
+    private Rigidbody rigidbody;
     
     // Start is called before the first frame update
     void Start()
@@ -29,6 +31,7 @@ public class Enemy : MonoBehaviour, IDamageable
             anim = GetComponent<Animator>();
         attackDamage = level * damage;
         player = GameManager.instance.myFrog.gameObject;
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -91,5 +94,10 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnTriggerExit(Collider other)
     {
         anim.SetBool("Hit", false);
+    }
+
+    public void GrabbablePull(Vector3 direction, float force)
+    {
+        rigidbody.AddForce(direction * force, ForceMode.Impulse);
     }
 }

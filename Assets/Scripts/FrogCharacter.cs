@@ -209,7 +209,14 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
         RaycastHit raycast = new RaycastHit();
         Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
-        Debug.Log(raycast.collider);
+        IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
+        if (g != null)
+        {
+            Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
+            Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
+            g.GrabbablePull(playerToEnemy.normalized, playerToEnemy.sqrMagnitude);
+        }
         yield return null;
+        
     }
 }
