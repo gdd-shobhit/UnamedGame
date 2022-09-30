@@ -1,0 +1,73 @@
+﻿title: Start
+tags:
+---
+Hello World!
+This is a test conversation for the game!
+Dagger: I wonder what lesson should I teach my Croak?
+-> Responsibility
+    <<jump ResponsibilityLesson>>
+-> Manners
+    <<jump MannersLesson>>
+-> Compassion
+    <<jump CompassionLesson>>
+===
+title: ResponsibilityLesson
+---
+Dagger: Croak do you know the what responsibility is?
+Croak: Not really no?
+Dagger: It is when it is your job and duty to deal with a situation.
+Dagger: Wheter that be with a problem you cause of a person you are looking out for.
+Croak: Huh...
+Croak: Does that mean we are responsible for each other?
+    -> Yes
+        Dagger: Yes it does.
+        <<set $relationship += 1>>
+    -> No
+        Dagger: No you are not responsible over me in the slightiest.
+        <<set $relationship -= 1>>
+    <<jump LessonEnding>>
+===
+title: MannersLesson
+---
+Dagger: Do not talk with your mouth full Croak.
+Croak: *Munch Munch* Ok *Munch Munch*
+    -> Scold
+        Dagger: Croak... what did I just say?
+        Croak: Sorry...
+        <<set $relationship += 1>>
+    -> Punish
+        Dagger: Now you are not getting any more snacks
+        Croak: Awww maaan
+        <<set $relationship -= 1>>
+    <<jump LessonEnding>>
+===
+
+title: CompassionLesson
+---
+Dagger: Croak how do you feel about the foes we have faced so far?
+Croak: Uhhh I am not really sure...
+Croak: It was very mean of them to attack us and I am kind of scared of them.
+Dagger: That is quite understandable my child.
+Dagger: However it is important to remember that they are living breathing creatures just like you and I.
+Croak: Even the heron?
+    -> Yes
+        Dagger: Sadly yes, even the heron deserves some decency...
+        <<set $relationship += 1>>
+    -> No
+        Dagger: No! That heron disrespected the life of my children. We shouldn't do the same.
+        <<set $relationship -= 1>>
+    <<jump LessonEnding>>
+===
+
+title: LessonEnding
+---
+Croak: Thank you for teaching me that!
+Dagger: No problem youngling how do you feel?
+<<if $relationship > 0>>
+    Croak: I feel a lot more enlightened.
+    Croak: Thank you father!
+<<else>>
+    Croak: I feel kind of sad...
+<<endif>>
+Croak: Maybe tommorow I can teach you another lesson.
+===
