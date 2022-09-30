@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
@@ -11,6 +12,11 @@ public class GameManager : MonoBehaviour
     public FrogSon mySon;
     public bool hudUpdate = false;
     public float timeMultiplyer = 1.0f;
+    public UnityEngine.Rendering.Universal.Vignette vignette;
+    public VolumeProfile volumeProfile;
+    bool vignetteGoDown;
+
+    public bool lowHealth = false;
     // Basic Singleton
     void Awake()
     {
@@ -22,7 +28,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-
+        vignetteGoDown = true;
+        vignette =(UnityEngine.Rendering.Universal.Vignette) volumeProfile.components[2];
     }
 
     // Update is called once per frame
@@ -30,6 +37,36 @@ public class GameManager : MonoBehaviour
     {
         if (hudUpdate)
             UpdateHUD();
+        if(lowHealth)
+            Test();
+        else
+        {
+            vignette.intensity.value = 0;
+        }
+
+    }
+
+    void Test()
+    {
+        if(vignetteGoDown)
+        {
+            vignette.intensity.value -= 0.3f * Time.deltaTime;
+            if (vignette.intensity.value < 0.3f)
+                vignetteGoDown = false;
+        }
+        else
+        {
+            if (vignette.intensity.value > 0.6f)
+                vignetteGoDown = true;
+            vignette.intensity.value += 5 * Time.deltaTime;
+        }
+          
+    }
+
+    IEnumerator LowHealth(float time)
+    {
+        yield return new WaitForSeconds(time);
+        vignetteGoDown = !vignetteGoDown;
     }
 
     /// <summary>
