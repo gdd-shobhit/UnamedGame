@@ -67,15 +67,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "LockOnEnemy",
-                    "type": "Button",
-                    "id": "730fa870-c3b5-4109-b687-a51f01a95cb8",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -340,17 +331,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "HAttack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f21a46c2-372d-4154-9aba-9925e39f7e2d",
-                    "path": "<Mouse>/middleButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "LockOnEnemy",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

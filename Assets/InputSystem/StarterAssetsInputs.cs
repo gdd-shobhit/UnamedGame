@@ -15,7 +15,6 @@ namespace StarterAssets
 		public bool dash;
 		public bool pAttack;
 		public bool hAttack;
-		public bool lockOnEnemy;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -62,14 +61,11 @@ namespace StarterAssets
 			HAttackInput(value.isPressed);
 		}
 
-        public void OnLockOnEnemy(InputValue value)
-        {
-            LockOnEnemyInput(value.isPressed);
-        }
+
 #endif
 
 
-        public void MoveInput(Vector2 newMoveDirection)
+		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -104,12 +100,7 @@ namespace StarterAssets
 			hAttack = newHeavyAttackState;
         }
 
-        public void LockOnEnemyInput(bool newLockState)
-        {
-            lockOnEnemy = newLockState;
-        }
-
-        private void OnApplicationFocus(bool hasFocus)
+		private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}
