@@ -15,6 +15,7 @@ namespace StarterAssets
 		public bool dash;
 		public bool pAttack;
 		public bool hAttack;
+		public bool tongue;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -59,6 +60,11 @@ namespace StarterAssets
 		public void OnHAttack(InputValue value)
 		{
 			HAttackInput(value.isPressed);
+		}
+
+		public void OnTongue(InputValue value)
+		{
+			TongueInput(value.isPressed);
 		}
 
 
@@ -108,6 +114,10 @@ namespace StarterAssets
 		private void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+		}
+
+		private void TongueInput(bool newTongueState){
+			tongue = newTongueState;
 		}
 	}
 	

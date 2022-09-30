@@ -29,6 +29,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     float maxComboDelay = 0.55f;
     // probably switch to the frog son
     public FrogSon Son;
+    [SerializeField] private Camera camera;
+    public float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
 
     // Start is called before the first frame update
     void Start()
@@ -73,6 +75,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             HeavyAttack();
         
             GetComponent<StarterAssetsInputs>().hAttack = false;
+        }
+        if(GetComponent<StarterAssetsInputs>().tongue){
+            StartCoroutine(TongueGrab());
+            GetComponent<StarterAssetsInputs>().tongue = false;
         }
     }
 
@@ -190,5 +196,20 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             return true;
 
         return false;
+    }
+
+    IEnumerator TongueGrab(){
+        // a little yucky but it works
+        // adding Vector3.up adjusts for the player object's anchor being on the floor, and adding the forward vector of the camera ensures we don't accidentally detect the shield or weapon objects
+            // camera forward offset could be replaced by a layermask later for a more robust implementation
+        Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
+        Vector3 tongueDirection = camera.transform.forward;
+        tongueDirection.y = 0;
+        Debug.DrawLine(tonguePosStart, tonguePosStart + tongueDirection * tongueLength, Color.red, 1.0f);
+
+        RaycastHit raycast = new RaycastHit();
+        Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
+        Debug.Log(raycast.collider);
+        yield return null;
     }
 }
