@@ -79,7 +79,7 @@ public class Enemy : MonoBehaviour, IDamageable
     void EnemyAI()
     {
         float distance = Vector3.Distance(target.position, transform.position);
-        if(distance <= lookRadius)
+        if(distance <= lookRadius && !isDead)
         {
             agent.SetDestination(target.position);
         }
