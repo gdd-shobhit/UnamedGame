@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+    //HOW TO USE:
+    //There is a Sound Manager Object in the world. It has an SFX array in which you can add sounds to.
+    //Any script in the game can just type:
+    //  SoundManager.instance.PlaySound(*sound index*) <- Here you use the index from the sfx array
+    
     public static SoundManager Instance;
+    public AudioClip[] sfx;
 
     [SerializeField] private AudioSource musicSource, effectsSource;
 
@@ -23,8 +29,8 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlaySound(AudioClip clip)
+    public void PlaySound(int clipNum)
     {
-        effectsSource.PlayOneShot(clip);
+        effectsSource.PlayOneShot(sfx[clipNum]);
     }
 }
