@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum EnemyState
+{
+    MoveTowards,
+    MoveAway,
+    Attack,
+    Idle
+}
+
 public class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField]
-    int health;
+    protected int health;
     public int level;
     public int attackDamage;
     const int damage = 10;
@@ -17,14 +25,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
     // Player Tracking
     public float lookRadius = 10f;
-    Transform target;
-    NavMeshAgent agent;
+    protected Transform target;
+    protected NavMeshAgent agent;
 
     // Test
-    float reviveCooldown = 2f;
+    protected float reviveCooldown = 2f;
     public float deathTime = 0;
-    bool isDead = false;
-    bool inAir = false;
+    protected bool isDead = false;
+    protected bool inAir = false;
     public ParticleSystem onHitVFX;
     
     // Start is called before the first frame update
@@ -76,7 +84,7 @@ public class Enemy : MonoBehaviour, IDamageable
             anim.SetBool("Hit", false);
     }
 
-    void EnemyAI()
+    protected virtual void EnemyAI()
     {
         float distance = Vector3.Distance(target.position, transform.position);
         if(distance <= lookRadius && !isDead)
