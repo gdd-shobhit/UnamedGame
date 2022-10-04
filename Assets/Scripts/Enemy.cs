@@ -20,6 +20,19 @@ public class Enemy : MonoBehaviour, IDamageable
     Transform target;
     NavMeshAgent agent;
 
+    public LayerMask whatIsGround, whatIsPlayer;
+    public Vector3 walkPoint;
+    bool walkPointSet;
+    float walkPointRange;
+
+    // Attacking
+    public float timeBetweenAttacks;
+    bool alreadyAttacked;
+
+    // States
+    float sightRange, attackRange;
+    bool playerInSightRange, playerInAttackRange;
+
     // Test
     float reviveCooldown = 2f;
     public float deathTime = 0;
@@ -37,6 +50,7 @@ public class Enemy : MonoBehaviour, IDamageable
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
         target = player.transform;
+        walkPointRange = 10;
     }
 
     // Update is called once per frame
@@ -78,15 +92,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void EnemyAI()
     {
-        float distance = Vector3.Distance(target.position, transform.position);
-        if(distance <= lookRadius && !isDead)
-        {
-            agent.SetDestination(target.position);
-        }
 
-        if(health > 0)
-            transform.LookAt(player.transform.position);
-        else if(health <= 0 && !isDead)
+        if(health <= 0 && !isDead)
         {
             deathTime = Time.time;
             isDead = true;
@@ -100,6 +107,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
         }
 
+        playerInSightRange = Physics.CheckSphere(transform.position, lookRadius, whatIsPlayer);
+        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
+        //Debug.Log(playerInSightRange);
+        float distance = Vector3.Distance(target.position, transform.position);
+        if (distance > lookRadius && !isDead) Patrolling();
+        if (distance <= lookRadius && !isDead) ChasePlayer();
+        //if (playerInAttackRange && playerInSightRange) AttackPlayer();
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -112,5 +127,72 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, lookRadius);
+    }
+
+    private void Patrolling()
+    {
+        if (!walkPointSet) SearchWalkPoint();
+
+        if (walkPointSet)
+            agent.SetDestination(walkPoint);
+
+        Vector3 distanceToWalkPoint = transform.position - walkPoint;
+        //Debug.Log(distanceToWalkPoint.magnitude);
+        // Walkpoint reached
+        if (distanceToWalkPoint.magnitude < 3f)
+        {
+            //Debug.Log("made it to point");
+            walkPointSet = false;
+        }
+
+        //Debug.Log("Patroling");
+
+    }
+
+    private void SearchWalkPoint()
+    {
+        //Debug.Log("making walkpoint");
+        float randomZ = Random.Range(-walkPointRange, walkPointRange);
+        float randomX = Random.Range(-walkPointRange, walkPointRange);
+
+        //Debug.Log("z = " + randomZ);
+        //Debug.Log("x = " + randomX);
+
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+
+        if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
+        {
+            walkPointSet = true;
+            //Debug.Log("walk point set");
+        }
+    }
+
+    private void ChasePlayer()
+    {
+        agent.SetDestination(target.position);
+
+        //Debug.Log("chasing");
+    }
+
+    private void AttackPlayer()
+    {
+        Debug.Log("attacking");
+        agent.SetDestination(transform.position);
+
+        transform.LookAt(target);
+
+        if (!alreadyAttacked)
+        {
+
+            // Attack code
+
+            alreadyAttacked = true;
+            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+        }
+    }
+
+    private void ResetAttack()
+    {
+        alreadyAttacked = false;
     }
 }

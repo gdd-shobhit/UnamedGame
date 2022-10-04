@@ -1797,6 +1797,7 @@ MonoBehaviour:
   timeMultiplyer: 1
   vignette: {fileID: 0}
   volumeProfile: {fileID: 11400000, guid: efca1033a0e3d5447b4989cffddd4dd3, type: 2}
+  lowHealth: 0
 --- !u!4 &1118074768
 Transform:
   m_ObjectHideFlags: 0
@@ -3345,6 +3346,16 @@ PrefabInstance:
       propertyPath: onHitVFX
       value: 
       objectReference: {fileID: 128302666}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
+      propertyPath: whatIsGround.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
+      propertyPath: whatIsPlayer.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 170564722547330534, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
       propertyPath: canPush
