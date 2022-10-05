@@ -92,8 +92,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
     void EnemyAI()
     {
+        anim.SetFloat("Speed", agent.speed);
 
-        if(health <= 0 && !isDead)
+        if (health <= 0 && !isDead)
         {
             deathTime = Time.time;
             isDead = true;
@@ -131,10 +132,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Patrolling()
     {
+        agent.speed = 2;
         if (!walkPointSet) SearchWalkPoint();
 
         if (walkPointSet)
+        {
             agent.SetDestination(walkPoint);
+        }
+
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
         //Debug.Log(distanceToWalkPoint.magnitude);
@@ -142,6 +147,8 @@ public class Enemy : MonoBehaviour, IDamageable
         if (distanceToWalkPoint.magnitude < 3f)
         {
             //Debug.Log("made it to point");
+            //gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+
             walkPointSet = false;
         }
 
@@ -169,9 +176,16 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void ChasePlayer()
     {
+        agent.speed = 3;
         agent.SetDestination(target.position);
 
         //Debug.Log("chasing");
+    }
+
+    private void StopAI()
+    {
+        NavMeshAgent.isStopped = true;
+        NavMeshAgent.speed = 0;
     }
 
     private void AttackPlayer()
