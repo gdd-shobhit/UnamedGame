@@ -23,15 +23,10 @@ public class Enemy : MonoBehaviour, IDamageable
     public LayerMask whatIsGround, whatIsPlayer;
     public Vector3 walkPoint;
     bool walkPointSet;
-    float walkPointRange;
 
     // Attacking
     public float timeBetweenAttacks;
     bool alreadyAttacked;
-
-    // States
-    float sightRange, attackRange;
-    bool playerInSightRange, playerInAttackRange;
 
     // Test
     float reviveCooldown = 2f;
@@ -50,7 +45,6 @@ public class Enemy : MonoBehaviour, IDamageable
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
         target = player.transform;
-        walkPointRange = 10;
     }
 
     // Update is called once per frame
@@ -107,14 +101,11 @@ public class Enemy : MonoBehaviour, IDamageable
             isDead = false;
 
         }
-
-        playerInSightRange = Physics.CheckSphere(transform.position, lookRadius, whatIsPlayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
         //Debug.Log(playerInSightRange);
         float distance = Vector3.Distance(target.position, transform.position);
         if (distance > lookRadius && !isDead) Patrolling();
         if (distance <= lookRadius && !isDead) ChasePlayer();
-        //if (playerInAttackRange && playerInSightRange) AttackPlayer();
+        if (distance <= agent.stoppingDistance + 1) AttackPlayer();
 
     }
 
@@ -159,13 +150,13 @@ public class Enemy : MonoBehaviour, IDamageable
     private void SearchWalkPoint()
     {
         //Debug.Log("making walkpoint");
-        float randomZ = Random.Range(-walkPointRange, walkPointRange);
-        float randomX = Random.Range(-walkPointRange, walkPointRange);
+        float randomZ = Random.Range(-1, 28);
+        float randomX = Random.Range(-11, 20);
 
-        //Debug.Log("z = " + randomZ);
+        Debug.Log("z = " + randomZ + "x = " + randomX);
         //Debug.Log("x = " + randomX);
 
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+        walkPoint = new Vector3(randomX, transform.position.y, randomZ);
 
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
         {
@@ -177,23 +168,21 @@ public class Enemy : MonoBehaviour, IDamageable
     private void ChasePlayer()
     {
         agent.speed = 3;
+        gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         agent.SetDestination(target.position);
 
         //Debug.Log("chasing");
     }
 
-    private void StopAI()
-    {
-        NavMeshAgent.isStopped = true;
-        NavMeshAgent.speed = 0;
-    }
-
     private void AttackPlayer()
     {
-        Debug.Log("attacking");
+        //Debug.Log("attacking");
         agent.SetDestination(transform.position);
 
         transform.LookAt(target);
+
+        agent.speed = 0;
+        gameObject.GetComponent<NavMeshAgent>().isStopped = true;
 
         if (!alreadyAttacked)
         {
