@@ -3348,6 +3348,11 @@ PrefabInstance:
       objectReference: {fileID: 128302666}
     - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
+      propertyPath: ground.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
       propertyPath: whatIsGround.m_Bits
       value: 1
       objectReference: {fileID: 0}
