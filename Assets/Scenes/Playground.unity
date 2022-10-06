@@ -2962,7 +2962,7 @@ MonoBehaviour:
   mainCam: {fileID: 1493445918}
   target: {fileID: 1352812636}
   targetLock: {fileID: 1242612519}
-  input: {fileID: 0}
+  input: {fileID: 1762682282}
 --- !u!114 &1762682282
 MonoBehaviour:
   m_ObjectHideFlags: 0
