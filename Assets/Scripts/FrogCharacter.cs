@@ -30,6 +30,9 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     // probably switch to the frog son
     public FrogSon Son;
 
+    // Narrative
+    public bool inDialog;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -40,7 +43,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         maxhealth = 100;
         maxEnergy = 100;
         attackDamage = 20;
-        speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;  
+        speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;
     }
 
     private void Update()
@@ -60,6 +63,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         if (Time.time - lastAttackTime > maxComboDelay)
         {
             noOfAttacks = 0;
+        }
+
+        // If Player is in Dialog Sequence disable combat controls until finished
+        if (inDialog)
+        {
+            return;
         }
 
         if (GetComponent<StarterAssetsInputs>().pAttack)

@@ -16,6 +16,7 @@ namespace StarterAssets
 		public bool pAttack;
 		public bool hAttack;
 		public bool lockOnEnemy;
+		public bool interact;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -32,7 +33,7 @@ namespace StarterAssets
 
 		public void OnLook(InputValue value)
 		{
-			if(cursorInputForLook)
+			if (cursorInputForLook)
 			{
 				LookInput(value.Get<Vector2>());
 			}
@@ -49,30 +50,35 @@ namespace StarterAssets
 		}
 
 		public void OnDash(InputValue value)
-        {
+		{
 			DashInput(value.isPressed);
-        }
+		}
 		public void OnPAttack(InputValue value)
-        {
+		{
 			PAttackInput(value.isPressed);
-        }
+		}
 
 		public void OnHAttack(InputValue value)
 		{
 			HAttackInput(value.isPressed);
 		}
 
-        public void OnLockOnEnemy(InputValue value)
-        {
-            LockOnEnemyInput(value.isPressed);
-        }
+		public void OnLockOnEnemy(InputValue value)
+		{
+			LockOnEnemyInput(value.isPressed);
+		}
+
+		public void OnInteract(InputValue value)
+		{
+			InteractInput(value.isPressed);
+		}
 #endif
 
 
-        public void MoveInput(Vector2 newMoveDirection)
+		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
-		} 
+		}
 
 		public void LookInput(Vector2 newLookDirection)
 		{
@@ -90,7 +96,7 @@ namespace StarterAssets
 		}
 
 		public void DashInput(bool newDashState)
-        {
+		{
 			dash = newDashState;
 		}
 
@@ -100,24 +106,28 @@ namespace StarterAssets
 		}
 
 		public void HAttackInput(bool newHeavyAttackState)
-        {
+		{
 			hAttack = newHeavyAttackState;
-        }
+		}
 
-        public void LockOnEnemyInput(bool newLockState)
-        {
-            lockOnEnemy = newLockState;
-        }
+		public void LockOnEnemyInput(bool newLockState)
+		{
+			lockOnEnemy = newLockState;
+		}
+		public void InteractInput(bool newInteraction)
+		{
+			interact = newInteraction;
+		}
 
-        private void OnApplicationFocus(bool hasFocus)
+		private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}
 
-		private void SetCursorState(bool newState)
+		public void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
 	}
-	
+
 }
