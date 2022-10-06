@@ -114,6 +114,9 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
+        // Narrative
+        public bool inDialog;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -160,6 +163,12 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
+            // If Player is in Dialog Sequence disable movement controls until finished
+            if (inDialog)
+            {
+                return;
+            }
+
             JumpAndGravity();
             GroundedCheck();
             Move();
@@ -167,6 +176,11 @@ namespace StarterAssets
 
         private void LateUpdate()
         {
+            if (inDialog)
+            {
+                return;
+            }
+
             CameraRotation();
         }
 
