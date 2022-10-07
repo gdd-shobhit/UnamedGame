@@ -77,7 +77,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             GetComponent<StarterAssetsInputs>().hAttack = false;
         }
         if(GetComponent<StarterAssetsInputs>().tongue){
-            StartCoroutine(TongueGrab());
+            TongueGrab();
             GetComponent<StarterAssetsInputs>().tongue = false;
         }
     }
@@ -198,7 +198,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         return false;
     }
 
-    IEnumerator TongueGrab(){
+    void TongueGrab(){
         // a little yucky but it works
         // adding Vector3.up adjusts for the player object's anchor being on the floor, and adding the forward vector of the camera ensures we don't accidentally detect the shield or weapon objects
             // camera forward offset could be replaced by a layermask later for a more robust implementation
@@ -209,14 +209,15 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
         RaycastHit raycast = new RaycastHit();
         Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
-        IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
-        if (g != null)
-        {
-            Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
-            Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
-            g.GrabbablePull(playerToEnemy.normalized, playerToEnemy.sqrMagnitude);
+        if(raycast.collider) {
+            IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
+            if (g != null)
+            {
+                Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
+                Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
+                StartCoroutine(g.GrabbablePull(transform, 1.0f));
+            }
         }
-        yield return null;
         
     }
 }

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IGrabbable
 {
-    void GrabbablePull(Vector3 direction, float force);
+    IEnumerator GrabbablePull(Transform t_player, float pullTime);
 }

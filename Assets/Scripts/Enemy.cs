@@ -96,8 +96,20 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         anim.SetBool("Hit", false);
     }
 
-    public void GrabbablePull(Vector3 direction, float force)
+    public IEnumerator GrabbablePull(Transform t_player, float pullTime)
     {
-        rigidbody.AddForce(direction * force, ForceMode.Impulse);
+        rigidbody.isKinematic = false;
+        //perform linear interpolation
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Vector3 destination;
+        float timer = 0;
+        while(timer < pullTime){
+            destination = t_player.position + ((transform.position - t_player.position).normalized);
+            transform.position = Vector3.Lerp(origin, destination, timer);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        rigidbody.isKinematic = true;
     }
 }
