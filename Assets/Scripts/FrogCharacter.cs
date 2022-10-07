@@ -6,6 +6,8 @@ using System.Linq;
 
 public class FrogCharacter : MonoBehaviour, IDamageable
 {
+    [SerializeField]
+    int sheathTime = 2;
     public int currentHealth;
     public int attackDamage;
     public float currentEnergy;               // FROGMINA IN GAME LOL
@@ -49,16 +51,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     private void Update()
     {
         RegenerateEnergy();
-        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack1"))
-        //    anim.SetBool("PAttack1", false);
-        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
-        //    anim.SetBool("PAttack2", false);
-        //if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack3"))
-        //{
-        //    anim.SetBool("PAttack3", false);
-        //    noOfAttacks = 0;
-        //}
         PComboDone();
+        SheathWeapon();
 
         if (Time.time - lastAttackTime > maxComboDelay)
         {
@@ -73,12 +67,25 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
         if (GetComponent<StarterAssetsInputs>().pAttack)
         {
+            if (!weapon[0].activeSelf)
+            {
+                weapon[0].SetActive(true);
+                weapon[2].SetActive(false);
+            }
+                
             noOfAttacks++;
             PrimaryAttack();         
             GetComponent<StarterAssetsInputs>().pAttack = false;
         }
         if(GetComponent<StarterAssetsInputs>().hAttack)
         {
+            // Sheath/Unsheath
+            if (!weapon[0].activeSelf)
+            {
+                weapon[0].SetActive(true);
+                weapon[2].SetActive(false);
+            }
+
             HeavyAttack();
         
             GetComponent<StarterAssetsInputs>().hAttack = false;
@@ -90,7 +97,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
     void CheckHit()
     {
-        Collider[] hits = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[0].transform.position, 0.5f);
+        Collider[] hits = Physics.OverlapSphere(weapon[0].transform.position, 0.5f);
         //Collider[] hits2 = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[1].transform.position, 0.5f);
         //hits = hits.Concat(hits2).ToArray();
         foreach (Collider hit in hits)
@@ -189,8 +196,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         {
             currentEnergy += Time.deltaTime;
             GameManager.instance.hudUpdate = true;
-        }
-         
+        }     
     }
 
     public bool Dash()
@@ -199,5 +205,17 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             return true;
 
         return false;
+    }
+
+    /// <summary>
+    /// Sheath/Unsheath depending on last time attacked
+    /// </summary>
+    public void SheathWeapon()
+    {
+        if(Time.time - lastAttackTime > sheathTime)
+        {
+            weapon[0].SetActive(false);
+            weapon[2].SetActive(true);
+        }
     }
 }
