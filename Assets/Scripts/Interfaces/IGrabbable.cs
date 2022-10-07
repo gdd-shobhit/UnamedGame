@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IGrabbable
 {
-    IEnumerator GrabbablePull(Transform t_player, float pullTime);
+    IEnumerator GrabbablePull(Transform t_player, float pullSpeed);
 }

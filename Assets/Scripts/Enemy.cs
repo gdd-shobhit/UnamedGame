@@ -96,18 +96,23 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         anim.SetBool("Hit", false);
     }
 
-    public IEnumerator GrabbablePull(Transform t_player, float pullTime)
+    public IEnumerator GrabbablePull(Transform t_player, float pullSpeed)
     {
         rigidbody.isKinematic = false;
         //perform linear interpolation
         Vector3 origin = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         Vector3 destination;
+        float pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
         float timer = 0;
         while(timer < pullTime){
+            //destination and pullTime need to be updated each frame to account for player movement during the pull
             destination = t_player.position + ((transform.position - t_player.position).normalized);
-            transform.position = Vector3.Lerp(origin, destination, timer);
+            pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
+
+            transform.position = Vector3.Lerp(origin, destination, timer/pullTime);
 
             timer += Time.deltaTime;
+            Debug.Log(timer + ": " + pullTime);
             yield return null;
         }
         rigidbody.isKinematic = true;

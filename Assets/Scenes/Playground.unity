@@ -3250,6 +3250,11 @@ PrefabInstance:
       objectReference: {fileID: 275916444}
     - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
+      propertyPath: pullSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
       propertyPath: tongueLength
       value: 10
       objectReference: {fileID: 0}

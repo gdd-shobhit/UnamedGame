@@ -30,7 +30,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     // probably switch to the frog son
     public FrogSon Son;
     [SerializeField] private Camera camera;
-    public float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
+    [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
+    [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
 
     // Start is called before the first frame update
     void Start()
@@ -215,7 +216,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             {
                 Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
                 Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
-                StartCoroutine(g.GrabbablePull(transform, 1.0f));
+                StartCoroutine(g.GrabbablePull(transform, pullSpeed));
             }
         }
         
