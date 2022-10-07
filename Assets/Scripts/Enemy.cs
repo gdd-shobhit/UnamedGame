@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
@@ -14,6 +15,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public GameObject player;
     public float lastGotHit = 0;
     public float getHitCooldown = 0.55f;
+    public Slider healthSlider;
 
     // Player Tracking
     public float lookRadius = 10f;
@@ -50,6 +52,8 @@ public class Enemy : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        HUDUpdate();
+
             EnemyAI();
         if(anim.GetBool("Hit"))
             ResetHit();
@@ -60,6 +64,11 @@ public class Enemy : MonoBehaviour, IDamageable
             inAir = true;
             GetComponent<Rigidbody>().AddForce(Vector3.up * 500);
         }
+    }
+
+    private void HUDUpdate()
+    {
+        healthSlider.value = 100 - health;
     }
 
     public void GetHit()
@@ -75,7 +84,6 @@ public class Enemy : MonoBehaviour, IDamageable
             anim.SetInteger("Health", health);
             onHitVFX.Play();       
         }
-  
     }
 
     void ResetHit()
