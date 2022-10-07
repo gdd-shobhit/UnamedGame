@@ -774,11 +774,11 @@ MonoBehaviour:
   player: {fileID: 0}
   lastGotHit: 0
   getHitCooldown: 0.55
-  lookRadius: 10
+  lookRadius: 15
   deathTime: 0
   onHitVFX: {fileID: 0}
-  idealRange: 10
-  rangeTolerance: 5
+  idealRange: 7
+  rangeTolerance: 3
 --- !u!195 &743373021
 NavMeshAgent:
   m_ObjectHideFlags: 0
