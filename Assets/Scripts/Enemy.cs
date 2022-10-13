@@ -187,6 +187,7 @@ public class Enemy : MonoBehaviour, IDamageable
         //Debug.Log("attacking");
         agent.SetDestination(transform.position);
 
+        if(!isDead)
         transform.LookAt(target);
 
         agent.speed = 0;
