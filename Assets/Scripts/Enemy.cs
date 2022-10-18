@@ -109,11 +109,12 @@ public class Enemy : MonoBehaviour, IDamageable
             isDead = false;
 
         }
-        //Debug.Log(playerInSightRange);
+        // Depending on the distance of the player and the enemy view distance
+        // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
         if (distance > lookRadius && !isDead) Patrolling();
         if (distance <= lookRadius && !isDead) ChasePlayer();
-        if (distance <= agent.stoppingDistance + 1) AttackPlayer();
+        if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
 
     }
 
@@ -131,13 +132,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Patrolling()
     {
+        // Goes to the walkpoint set
+        // Makes it look as though the enemy is aimlessly walking around
         agent.speed = 2;
         if (!walkPointSet) SearchWalkPoint();
+        agent.SetDestination(walkPoint);
 
-        if (walkPointSet)
-        {
-            agent.SetDestination(walkPoint);
-        }
 
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
@@ -157,29 +157,25 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void SearchWalkPoint()
     {
-        //Debug.Log("making walkpoint");
+        //Makes a random walk pont for the enemy to go to
         float randomZ = Random.Range(-1, 28);
         float randomX = Random.Range(-11, 20);
 
-        Debug.Log("z = " + randomZ + "x = " + randomX);
-        //Debug.Log("x = " + randomX);
-
         walkPoint = new Vector3(randomX, transform.position.y, randomZ);
-
+        
+        // Sets it so it is known that the enemy has a walkpoint
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
         {
             walkPointSet = true;
-            //Debug.Log("walk point set");
         }
     }
 
     private void ChasePlayer()
     {
+        // Sets the enemy to move towards the player
         agent.speed = 3;
         gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         agent.SetDestination(target.position);
-
-        //Debug.Log("chasing");
     }
 
     private void AttackPlayer()
