@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public float lastGotHit = 0;
     public float getHitCooldown = 0.55f;
     public Slider healthSlider;
+    public GameObject weapon;
 
     // Player Tracking
     public float lookRadius = 10f;
@@ -176,6 +177,20 @@ public class Enemy : MonoBehaviour, IDamageable
         agent.SetDestination(target.position);
     }
 
+    void CheckHit()
+    {
+        Collider[] hits = Physics.OverlapSphere(weapon.transform.position, 2f);
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.tag == "Player")
+            {
+                player.GetComponent<FrogCharacter>().maxhealth -= damage;
+                Debug.Log(player.GetComponent<FrogCharacter>().maxhealth);
+            }
+        }
+    }
+
     private void AttackPlayer()
     {
         agent.SetDestination(transform.position);
@@ -190,6 +205,8 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             // Attack code
             anim.SetBool("Attack", true);
+
+            CheckHit();
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
