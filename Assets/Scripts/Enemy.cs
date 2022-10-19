@@ -47,6 +47,7 @@ public class Enemy : MonoBehaviour, IDamageable
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
         target = player.transform;
+        timeBetweenAttacks = 2.0f;
     }
 
     // Update is called once per frame
@@ -145,13 +146,10 @@ public class Enemy : MonoBehaviour, IDamageable
         // Walkpoint reached
         if (distanceToWalkPoint.magnitude < 3f)
         {
-            //Debug.Log("made it to point");
             //gameObject.GetComponent<NavMeshAgent>().isStopped = true;
 
             walkPointSet = false;
         }
-
-        //Debug.Log("Patroling");
 
     }
 
@@ -180,7 +178,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void AttackPlayer()
     {
-        //Debug.Log("attacking");
         agent.SetDestination(transform.position);
 
         if(!isDead)
@@ -191,8 +188,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (!alreadyAttacked)
         {
-
             // Attack code
+            anim.SetBool("Attack", true);
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -202,5 +199,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private void ResetAttack()
     {
         alreadyAttacked = false;
+        anim.SetBool("Attack", false);
     }
 }
