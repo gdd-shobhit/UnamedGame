@@ -1,15 +1,13 @@
+using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using UnityEngine.Events;
 using Yarn.Unity;
-using TMPro;
-using StarterAssets;
 
-public class NarrativeHandler : MonoBehaviour
+public class NarrativeTrigger : MonoBehaviour
 {
-    public GameObject startDialogPrompt; // UI to tell the player they can start a dialog sequence
-    public GameObject dialog; // Dialog
+    public GameObject dialogPrompt; // UI to tell the player they can start a dialog sequence
     public GameObject player; // Player Character
     public GameObject hud; // Hud
     [SerializeField] private StarterAssetsInputs input; // Inputs
@@ -17,31 +15,22 @@ public class NarrativeHandler : MonoBehaviour
     private bool inTrigger; // Can the player start a dialog sequence?
     private bool inDialog; // Is the player in a dialog sequence?
 
+    public UnityEvent dialogStart; // Tells Game when Dialog Starts
+
     private void Update()
     {
-        startDialogPrompt.gameObject.SetActive(inTrigger && !inDialog); // If the player can start a dialog sequence and is not already in one show the prompt
+        dialogPrompt.gameObject.SetActive(inTrigger && !inDialog); // If the player can start a dialog sequence and is not already in one show the prompt
 
         // Starts a Dialog Sequence if the player is in a trigger for one
-        if (inTrigger && input.interact)
+        if (inTrigger && !inDialog && input.interact)
         {
-            inDialog = true;
-
-            // Disable Controls
-            player.GetComponent<ThirdPersonController>().inDialog = true;
-            player.GetComponent<FrogCharacter>().inDialog = true;
-
-            // Show & Hide UI
-            
-            hud.gameObject.SetActive(false);
-            dialog.gameObject.SetActive(true);
+            ActivateControls(false);
 
             // Unlock Cursor
             Cursor.lockState = CursorLockMode.None;
-            
 
-        }
-        else
-        {
+            dialogStart.Invoke();
+
             input.interact = false;
         }
     }
@@ -60,5 +49,19 @@ public class NarrativeHandler : MonoBehaviour
         {
             inTrigger = false;
         }
+    }
+
+    public void ActivateControls(bool activate)
+    {
+        Debug.Log($"Controls set to: {activate}");
+
+        inDialog = !activate;
+
+        // Disable Controls
+        player.GetComponent<ThirdPersonController>().inDialog = !activate;
+        player.GetComponent<FrogCharacter>().inDialog = !activate;
+
+        // Diable UI
+        hud.gameObject.SetActive(activate);
     }
 }
