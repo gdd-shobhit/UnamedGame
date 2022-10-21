@@ -35,18 +35,23 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(healthSlider.value < 20)
+            lowHealth = true;
+        else
+            lowHealth = false;
+
         if (hudUpdate)
             UpdateHUD();
         if(lowHealth)
-            Test();
+            LowHealth();
         else
-        {
             vignette.intensity.value = 0;
-        }
+        
+
 
     }
 
-    void Test()
+    void LowHealth()
     {
         if(vignetteGoDown)
         {
