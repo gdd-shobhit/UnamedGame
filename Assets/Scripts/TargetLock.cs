@@ -21,6 +21,15 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Transform targetCamHelper;
 
+    [SerializeField] private float switchSensitivity;
+    [SerializeField] private float switchCooldown;
+    [SerializeField] private float timeSinceLastSwitch;
+    [SerializeField] private bool justSwitched;
+
+    void Start()
+    {
+        
+    }
     void Update()
     {
         CheckCameraSwitch();
@@ -28,6 +37,15 @@ public class TargetLock : MonoBehaviour
         {
             MoveLockOnCamera();
             MoveLockOnSprite();
+        }
+
+        if (justSwitched)
+        {
+            if(timeSinceLastSwitch < switchCooldown) timeSinceLastSwitch += Time.deltaTime;
+            else 
+            {
+                justSwitched = false;
+            }
         }
     }
 
@@ -75,6 +93,20 @@ public class TargetLock : MonoBehaviour
     // moves the lock on camera to look at the target while behind the player's head
     private void MoveLockOnCamera()
     {
+        if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
+        {
+            //if (input.look.x < 0) {}
+            GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
+            if (tempObj != null)
+            {
+                target = tempObj;
+                input.LookInput(new Vector2(0, 0));
+                targetCam.LookAt = target.transform;
+                justSwitched = true; timeSinceLastSwitch = 0;
+            }
+        }
+
+
         targetCamHelper.LookAt(target.transform);
 
         // normalized vector for the distance between the player and the target

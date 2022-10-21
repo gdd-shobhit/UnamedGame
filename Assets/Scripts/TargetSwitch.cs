@@ -40,25 +40,7 @@ public class TargetSwitch : MonoBehaviour
     {
         if (nearbyEnemies.Count == 0) return null;
         else if (nearbyEnemies.Count == 1) return nearbyEnemies[0].gameObject;
-        else
-        {
-            GameObject closest = null;
-            float window = 0;
-            while(closest == null)
-            {
-                for (int i = 0; i < nearbyEnemies.Count; i++)
-                {
-                    if(Mathf.Abs(EnemyDirection(from, nearbyEnemies[i].gameObject)) <= window)
-                    {
-                        closest = nearbyEnemies[i].gameObject;
-                        //Debug.Log("found on: "+window);
-                    }
-                    window += 1;
-                    //Debug.Log(window);
-                }
-            }
-            return closest;
-        }
+        else {  return GetEnemyClosestToCenter(from); }
     }
 
 
@@ -67,7 +49,7 @@ public class TargetSwitch : MonoBehaviour
         if (nearbyEnemies.Count == 0) return null;
         else if (nearbyEnemies.Count == 1)
         {
-            Debug.Log(EnemyDirection(from, nearbyEnemies[0].gameObject)); 
+            //Debug.Log(EnemyDirection(from, nearbyEnemies[0].gameObject)); 
             return nearbyEnemies[0].gameObject;
         }
         else
@@ -80,21 +62,17 @@ public class TargetSwitch : MonoBehaviour
                 if (near == 0) { near = distance; closest = nearbyEnemies[i]; }
                 else if (distance < near) { near = distance; closest = nearbyEnemies[i]; }
             }
-            Debug.Log(EnemyDirection(from, closest.gameObject));
+            //Debug.Log(EnemyDirection(from, closest.gameObject));
             return closest.gameObject;
         } 
     }
 
-    public GameObject SwitchTarget(GameObject current)
+    public GameObject SwitchTarget(GameObject from, GameObject current)
     {
         if (nearbyEnemies.Count <= 1) return null;
         else
         {
-            for (int i = 0; i < nearbyEnemies.Count; i++)
-            {
-                
-            }
-            return null;
+            return LeftEnemy(from, current);
         }
     }
 
@@ -109,6 +87,54 @@ public class TargetSwitch : MonoBehaviour
         float direction = Vector3.Dot(perp, up);
 
         return direction;
-        
+    }
+
+    private GameObject GetEnemyClosestToCenter(GameObject from)
+    {
+        GameObject closest = null;
+        float window = 0;
+        while (closest == null)
+        {
+            for (int i = 0; i < nearbyEnemies.Count; i++)
+            {
+                if (Mathf.Abs(EnemyDirection(from, nearbyEnemies[i].gameObject)) <= window)
+                {
+                    closest = nearbyEnemies[i].gameObject;
+                    //Debug.Log("found on: "+window);
+                }
+                window += 1;
+                //Debug.Log(window);
+            }
+        }
+        return closest;
+    }
+
+    private GameObject LeftEnemy(GameObject from, GameObject current)
+    {
+        int currentIndex = 0;
+        for (int i = 0; i < nearbyEnemies.Count; i++)
+        {
+            if (nearbyEnemies.Contains(current.GetComponent<Collider>())) currentIndex = i;
+        }
+
+        Collider leftMostEnemy = null;
+        float furthestLeft = 0;
+        for (int i = 0; i < nearbyEnemies.Count; i++)
+        {
+            if(i!=currentIndex){
+                if(leftMostEnemy == null || furthestLeft == 0) 
+                { 
+                    leftMostEnemy = nearbyEnemies[i];
+                    furthestLeft = EnemyDirection(from, nearbyEnemies[i].gameObject);
+                }
+                else if(EnemyDirection(from, nearbyEnemies[i].gameObject) < furthestLeft)
+                {
+                    leftMostEnemy = nearbyEnemies[i];
+                    furthestLeft = EnemyDirection(from, nearbyEnemies[i].gameObject);
+                }
+            }
+        }
+
+        return leftMostEnemy.gameObject;
     }
 }

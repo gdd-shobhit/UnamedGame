@@ -4090,6 +4090,10 @@ MonoBehaviour:
   input: {fileID: 1762682282}
   player: {fileID: 1762682283}
   targetCamHelper: {fileID: 2015571070}
+  switchSensitivity: 1
+  switchCooldown: 1
+  timeSinceLastSwitch: 0
+  justSwitched: 0
 --- !u!114 &1762682282
 MonoBehaviour:
   m_ObjectHideFlags: 0
