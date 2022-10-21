@@ -4084,13 +4084,12 @@ MonoBehaviour:
   followCam: {fileID: 884132387}
   targetCam: {fileID: 720662185}
   mainCam: {fileID: 1493445918}
-  target: {fileID: 1352812636}
-  lockSpot: {fileID: 2015571070}
-  targetNew: {fileID: 1352812627}
-  targetLock: {fileID: 1242612519}
+  target: {fileID: 0}
+  targetSwitcher: {fileID: 1371997361}
+  lockImage: {fileID: 1242612519}
   input: {fileID: 1762682282}
   player: {fileID: 1762682283}
-  lockObject: {fileID: 2015571070}
+  targetCamHelper: {fileID: 2015571070}
 --- !u!114 &1762682282
 MonoBehaviour:
   m_ObjectHideFlags: 0

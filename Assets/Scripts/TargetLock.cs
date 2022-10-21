@@ -14,11 +14,12 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private Camera mainCam;
 
     [SerializeField] private GameObject target;
+    [SerializeField] private GameObject targetSwitcher;
     [SerializeField] private Image lockImage;
     [SerializeField] private StarterAssetsInputs input;
 
     [SerializeField] private Transform player;
-    [SerializeField] private Transform lockObject;
+    [SerializeField] private Transform targetCamHelper;
 
     void Update()
     {
@@ -35,9 +36,16 @@ public class TargetLock : MonoBehaviour
     {
         if (input.lockOnEnemy)
         {
-            ToggleCamSwitch();
             input.lockOnEnemy = false;
+
+            ToggleCamSwitch();
         }
+    }
+
+    void FindEnemy()
+    {
+        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().GetClosestEnemy(this.gameObject);
+        if (tempObj != null) target = tempObj;
     }
 
     // Called when user toggles the target lock
@@ -47,12 +55,17 @@ public class TargetLock : MonoBehaviour
     {
         if (followCam.isActiveAndEnabled)
         {
+            FindEnemy();
+            if (target == null) return;
+            targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
             lockImage.gameObject.SetActive(true);
         }
         else
         {
+            target = null;
+            targetCam.LookAt = null;
             targetCam.gameObject.SetActive(false);
             lockImage.gameObject.SetActive(false);
             followCam.gameObject.SetActive(true);
@@ -62,13 +75,13 @@ public class TargetLock : MonoBehaviour
     // moves the lock on camera to look at the target while behind the player's head
     private void MoveLockOnCamera()
     {
-        lockObject.LookAt(target.transform);
+        targetCamHelper.LookAt(target.transform);
 
         // normalized vector for the distance between the player and the target
         Vector3 btwn = (player.position - target.transform.position).normalized;
 
         // offsets the current position to behind the players head
-        lockObject.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+        targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
     }
 
     // move the target lock sprite to the object being targeted

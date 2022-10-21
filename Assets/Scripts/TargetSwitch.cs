@@ -14,15 +14,7 @@ public class TargetSwitch : MonoBehaviour
 
     void Update()
     {
-        float near = 0;
-        Collider closest = null;
-        for (int i = 0; i < nearbyEnemies.Count; i++)
-        {
-            float distance = Vector3.Distance(nearbyEnemies[i].transform.position, this.transform.position);
-            if (near == 0) { near = distance; closest = nearbyEnemies[i]; }
-            else if (distance < near) { near = distance; closest = nearbyEnemies[i]; }
-        }
-        Debug.Log("closest collider : " + closest.name);
+        
     }
 
     void OnTriggerEnter(Collider c)
@@ -41,5 +33,24 @@ public class TargetSwitch : MonoBehaviour
         {
             if(nearbyEnemies.Contains(c)) { nearbyEnemies.Remove(c); }
         }
+    }
+
+
+    public GameObject GetClosestEnemy(GameObject from)
+    {
+        if (nearbyEnemies.Count == 0) return null;
+        else if (nearbyEnemies.Count == 1) return nearbyEnemies[0].gameObject;
+        else
+        {
+            float near = 0;
+            Collider closest = null;
+            for (int i = 0; i < nearbyEnemies.Count; i++)
+            {
+                float distance = Vector3.Distance(nearbyEnemies[i].transform.position, from.transform.position);
+                if (near == 0) { near = distance; closest = nearbyEnemies[i]; }
+                else if (distance < near) { near = distance; closest = nearbyEnemies[i]; }
+            }
+            return closest.gameObject;
+        } 
     }
 }
