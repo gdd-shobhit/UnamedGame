@@ -44,7 +44,7 @@ public class TargetLock : MonoBehaviour
 
     void FindEnemy()
     {
-        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().GetClosestEnemy(this.gameObject);
+        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().ClosestToCenterEnemy(this.gameObject);
         if (tempObj != null) target = tempObj;
     }
 
