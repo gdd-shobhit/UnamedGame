@@ -14,12 +14,14 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private Camera mainCam;
 
     [SerializeField] private Transform target;
+    [SerializeField] private Transform lockSpot;
+    [SerializeField] private GameObject targetNew;
     [SerializeField] private Image targetLock;
     [SerializeField] private StarterAssetsInputs input;
 
     [SerializeField] private Transform player;
     [SerializeField] private Transform lockObject;
-
+    
     void Update()
     {
         CheckCameraSwitch();
@@ -60,7 +62,9 @@ public class TargetLock : MonoBehaviour
     // moves the lock on camera to look at the target while behind the player's head
     private void MoveLockOnCamera()
     {
-        lockObject.LookAt(target);
+        float targetHeight = targetNew.GetComponent<CapsuleCollider>().height;
+        Vector3 targetPos = targetNew.transform.position;
+        lockSpot.position = new Vector3(targetPos.x, targetPos.y + targetHeight, targetPos.z);
 
         // normalized vector for the distance between the player and the target
         Vector3 btwn = (player.position - target.position).normalized;
@@ -74,10 +78,10 @@ public class TargetLock : MonoBehaviour
     {
         // temp vector3 to make it look prettier :)
         // TODO: find a way to put targetlock on any object's center
-        Vector3 tragetPos = new Vector3(target.position.x,
+        Vector3 targetPos = new Vector3(target.position.x,
             target.position.y + 1,
             target.position.z);
 
-        targetLock.gameObject.transform.position = mainCam.WorldToScreenPoint(tragetPos);
+        targetLock.gameObject.transform.position = mainCam.WorldToScreenPoint(targetPos);
     }
 }
