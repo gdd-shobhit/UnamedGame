@@ -13,19 +13,17 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera targetCam;
     [SerializeField] private Camera mainCam;
 
-    [SerializeField] private Transform target;
-    [SerializeField] private Transform lockSpot;
-    [SerializeField] private GameObject targetNew;
-    [SerializeField] private Image targetLock;
+    [SerializeField] private GameObject target;
+    [SerializeField] private Image lockImage;
     [SerializeField] private StarterAssetsInputs input;
 
     [SerializeField] private Transform player;
     [SerializeField] private Transform lockObject;
-    
+
     void Update()
     {
         CheckCameraSwitch();
-        if (targetLock.IsActive())
+        if (lockImage.IsActive())
         {
             MoveLockOnCamera();
             MoveLockOnSprite();
@@ -47,27 +45,27 @@ public class TargetLock : MonoBehaviour
     // Ex: If the freecam is active and the user turns on target lock, disable freecam and enable target cam
     private void ToggleCamSwitch()
     {
-        if (followCam.isActiveAndEnabled) {
+        if (followCam.isActiveAndEnabled)
+        {
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
-            targetLock.gameObject.SetActive(true);
+            lockImage.gameObject.SetActive(true);
         }
-        else {
+        else
+        {
             targetCam.gameObject.SetActive(false);
-            targetLock.gameObject.SetActive(false);
-            followCam.gameObject.SetActive(true);  
+            lockImage.gameObject.SetActive(false);
+            followCam.gameObject.SetActive(true);
         }
     }
 
     // moves the lock on camera to look at the target while behind the player's head
     private void MoveLockOnCamera()
     {
-        float targetHeight = targetNew.GetComponent<CapsuleCollider>().height;
-        Vector3 targetPos = targetNew.transform.position;
-        lockSpot.position = new Vector3(targetPos.x, targetPos.y + targetHeight, targetPos.z);
+        lockObject.LookAt(target.transform);
 
         // normalized vector for the distance between the player and the target
-        Vector3 btwn = (player.position - target.position).normalized;
+        Vector3 btwn = (player.position - target.transform.position).normalized;
 
         // offsets the current position to behind the players head
         lockObject.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
@@ -76,12 +74,13 @@ public class TargetLock : MonoBehaviour
     // move the target lock sprite to the object being targeted
     private void MoveLockOnSprite()
     {
-        // temp vector3 to make it look prettier :)
-        // TODO: find a way to put targetlock on any object's center
-        Vector3 targetPos = new Vector3(target.position.x,
-            target.position.y + 1,
-            target.position.z);
+        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(GetEnemyMidpoint());
+    }
 
-        targetLock.gameObject.transform.position = mainCam.WorldToScreenPoint(targetPos);
+    private Vector3 GetEnemyMidpoint()
+    {
+        float targetHeight = target.GetComponent<CapsuleCollider>().height;
+        Vector3 targetPos = target.transform.position;
+        return new Vector3(targetPos.x, targetPos.y + targetHeight/2, targetPos.z);
     }
 }
