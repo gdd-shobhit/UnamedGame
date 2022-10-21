@@ -193,8 +193,8 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             if (hit.tag == "Player")
             {
-                player.GetComponent<FrogCharacter>().maxhealth -= damage;
-                Debug.Log(player.GetComponent<FrogCharacter>().maxhealth);
+                player.GetComponent<FrogCharacter>().currentHealth -= damage;
+                Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
     }
