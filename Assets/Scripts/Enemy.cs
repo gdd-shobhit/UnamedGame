@@ -2,11 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+
+public enum EnemyState
+{
+    MoveTowards,
+    MoveAway,
+    Attack,
+    Idle
+}
 
 public class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField]
-    int health;
+    protected int health;
     public int level;
     public int attackDamage;
     const int damage = 10;
@@ -14,11 +23,13 @@ public class Enemy : MonoBehaviour, IDamageable
     public GameObject player;
     public float lastGotHit = 0;
     public float getHitCooldown = 0.55f;
+    public Slider healthSlider;
+    public GameObject weapon;
 
     // Player Tracking
     public float lookRadius = 10f;
-    Transform target;
-    NavMeshAgent agent;
+    protected Transform target;
+    protected NavMeshAgent agent;
 
     public LayerMask whatIsGround, whatIsPlayer;
     public Vector3 walkPoint;
@@ -29,10 +40,10 @@ public class Enemy : MonoBehaviour, IDamageable
     bool alreadyAttacked;
 
     // Test
-    float reviveCooldown = 2f;
+    protected float reviveCooldown = 2f;
     public float deathTime = 0;
-    bool isDead = false;
-    bool inAir = false;
+    protected bool isDead = false;
+    protected bool inAir = false;
     public ParticleSystem onHitVFX;
     
     // Start is called before the first frame update
@@ -45,11 +56,14 @@ public class Enemy : MonoBehaviour, IDamageable
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
         target = player.transform;
+        timeBetweenAttacks = 2.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        HUDUpdate();
+
             EnemyAI();
         if(anim.GetBool("Hit"))
             ResetHit();
@@ -60,6 +74,11 @@ public class Enemy : MonoBehaviour, IDamageable
             inAir = true;
             GetComponent<Rigidbody>().AddForce(Vector3.up * 500);
         }
+    }
+
+    private void HUDUpdate()
+    {
+        healthSlider.value = 100 - health;
     }
 
     public void GetHit()
@@ -75,7 +94,6 @@ public class Enemy : MonoBehaviour, IDamageable
             anim.SetInteger("Health", health);
             onHitVFX.Play();       
         }
-  
     }
 
     void ResetHit()
@@ -84,7 +102,7 @@ public class Enemy : MonoBehaviour, IDamageable
             anim.SetBool("Hit", false);
     }
 
-    void EnemyAI()
+    protected virtual void EnemyAI()
     {
         anim.SetFloat("Speed", agent.speed);
 
@@ -101,11 +119,12 @@ public class Enemy : MonoBehaviour, IDamageable
             isDead = false;
 
         }
-        //Debug.Log(playerInSightRange);
+        // Depending on the distance of the player and the enemy view distance
+        // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
         if (distance > lookRadius && !isDead) Patrolling();
         if (distance <= lookRadius && !isDead) ChasePlayer();
-        if (distance <= agent.stoppingDistance + 1) AttackPlayer();
+        if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
 
     }
 
@@ -123,13 +142,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Patrolling()
     {
+        // Goes to the walkpoint set
+        // Makes it look as though the enemy is aimlessly walking around
         agent.speed = 2;
         if (!walkPointSet) SearchWalkPoint();
+        agent.SetDestination(walkPoint);
 
-        if (walkPointSet)
-        {
-            agent.SetDestination(walkPoint);
-        }
 
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
@@ -137,48 +155,55 @@ public class Enemy : MonoBehaviour, IDamageable
         // Walkpoint reached
         if (distanceToWalkPoint.magnitude < 3f)
         {
-            //Debug.Log("made it to point");
             //gameObject.GetComponent<NavMeshAgent>().isStopped = true;
 
             walkPointSet = false;
         }
 
-        //Debug.Log("Patroling");
-
     }
 
     private void SearchWalkPoint()
     {
-        //Debug.Log("making walkpoint");
+        //Makes a random walk pont for the enemy to go to
         float randomZ = Random.Range(-1, 28);
         float randomX = Random.Range(-11, 20);
 
-        Debug.Log("z = " + randomZ + "x = " + randomX);
-        //Debug.Log("x = " + randomX);
-
         walkPoint = new Vector3(randomX, transform.position.y, randomZ);
-
+        
+        // Sets it so it is known that the enemy has a walkpoint
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
         {
             walkPointSet = true;
-            //Debug.Log("walk point set");
         }
     }
 
     private void ChasePlayer()
     {
+        // Sets the enemy to move towards the player
         agent.speed = 3;
         gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         agent.SetDestination(target.position);
+    }
 
-        //Debug.Log("chasing");
+    void CheckHit()
+    {
+        Collider[] hits = Physics.OverlapSphere(weapon.transform.position, 2f);
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.tag == "Player")
+            {
+                player.GetComponent<FrogCharacter>().currentHealth -= damage;
+                Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
+            }
+        }
     }
 
     private void AttackPlayer()
     {
-        //Debug.Log("attacking");
         agent.SetDestination(transform.position);
 
+        if(!isDead)
         transform.LookAt(target);
 
         agent.speed = 0;
@@ -186,8 +211,10 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (!alreadyAttacked)
         {
-
             // Attack code
+            anim.SetBool("Attack", true);
+
+            CheckHit();
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -197,5 +224,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private void ResetAttack()
     {
         alreadyAttacked = false;
+        anim.SetBool("Attack", false);
     }
 }

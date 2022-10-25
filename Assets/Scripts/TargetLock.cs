@@ -13,45 +13,119 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera targetCam;
     [SerializeField] private Camera mainCam;
 
-    [SerializeField] private Transform target;
-    [SerializeField] private Image targetLock;
+    [SerializeField] private GameObject target;
+    [SerializeField] private GameObject targetSwitcher;
+    [SerializeField] private Image lockImage;
     [SerializeField] private StarterAssetsInputs input;
 
+    [SerializeField] private Transform player;
+    [SerializeField] private Transform targetCamHelper;
+
+    [SerializeField] private float switchSensitivity;
+    [SerializeField] private float switchCooldown;
+    [SerializeField] private float timeSinceLastSwitch;
+    [SerializeField] private bool justSwitched;
+
+    void Start()
+    {
+        
+    }
     void Update()
     {
-        // if active, move the target lock sprite to the object being targeted
-        if (targetLock.IsActive())
+        CheckCameraSwitch();
+        if (lockImage.IsActive())
         {
-            // temp vector3 to make it look prettier :)
-            // TODO: find a way to put targetlock on any object's center
-            Vector3 tragetPos = new Vector3(target.position.x, 
-                target.position.y + 1, 
-                target.position.z);   
-
-            targetLock.gameObject.transform.position = mainCam.WorldToScreenPoint(tragetPos);
+            MoveLockOnCamera();
+            MoveLockOnSprite();
         }
 
-        if (input.lockOnEnemy) {
-            ToggleCamSwitch();
-            input.lockOnEnemy = false;
+        if (justSwitched)
+        {
+            if(timeSinceLastSwitch < switchCooldown) timeSinceLastSwitch += Time.deltaTime;
+            else 
+            {
+                justSwitched = false;
+            }
         }
     }
 
+    // if user presses the lock on toggle button, switch used camera
+    private void CheckCameraSwitch()
+    {
+        if (input.lockOnEnemy)
+        {
+            input.lockOnEnemy = false;
+
+            ToggleCamSwitch();
+        }
+    }
+
+    void FindEnemy()
+    {
+        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().ClosestToCenterEnemy(this.gameObject);
+        if (tempObj != null) target = tempObj;
+    }
 
     // Called when user toggles the target lock
     // Disables the current camera and enables the other one
     // Ex: If the freecam is active and the user turns on target lock, disable freecam and enable target cam
-    void ToggleCamSwitch()
+    private void ToggleCamSwitch()
     {
-        if (followCam.isActiveAndEnabled) {
+        if (followCam.isActiveAndEnabled)
+        {
+            FindEnemy();
+            if (target == null) return;
+            targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
-            targetLock.gameObject.SetActive(true);
+            lockImage.gameObject.SetActive(true);
         }
-        else {
+        else
+        {
+            target = null;
+            targetCam.LookAt = null;
             targetCam.gameObject.SetActive(false);
-            targetLock.gameObject.SetActive(false);
-            followCam.gameObject.SetActive(true);  
+            lockImage.gameObject.SetActive(false);
+            followCam.gameObject.SetActive(true);
         }
+    }
+
+    // moves the lock on camera to look at the target while behind the player's head
+    private void MoveLockOnCamera()
+    {
+        if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
+        {
+            //if (input.look.x < 0) {}
+            GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
+            if (tempObj != null)
+            {
+                target = tempObj;
+                input.LookInput(new Vector2(0, 0));
+                targetCam.LookAt = target.transform;
+                justSwitched = true; timeSinceLastSwitch = 0;
+            }
+        }
+
+
+        targetCamHelper.LookAt(target.transform);
+
+        // normalized vector for the distance between the player and the target
+        Vector3 btwn = (player.position - target.transform.position).normalized;
+
+        // offsets the current position to behind the players head
+        targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+    }
+
+    // move the target lock sprite to the object being targeted
+    private void MoveLockOnSprite()
+    {
+        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(GetEnemyMidpoint());
+    }
+
+    private Vector3 GetEnemyMidpoint()
+    {
+        float targetHeight = target.GetComponent<CapsuleCollider>().height;
+        Vector3 targetPos = target.transform.position;
+        return new Vector3(targetPos.x, targetPos.y + targetHeight/2, targetPos.z);
     }
 }
