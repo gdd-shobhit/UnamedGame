@@ -10,8 +10,18 @@ ScriptedImporter:
   script: {fileID: 11500000, guid: 053561912b1654d80a424bb0696a74ae, type: 3}
   sourceScripts:
   - {fileID: 6391573757903218779, guid: 253ef8b3e850bc949891b4307d82c8d2, type: 3}
+  - {fileID: 6391573757903218779, guid: a34342b93167fa64cbc9ffd04e96f0bd, type: 3}
   compileErrors: []
-  serializedDeclarations: []
+  serializedDeclarations:
+  - name: $relationship
+    typeName: Number
+    defaultValueBool: 0
+    defaultValueNumber: 0
+    defaultValueString: 
+    description: Implicitly declared in TestDialogue.yarn, node ResponsibilityLesson
+    isImplicit: 1
+    sourceYarnAsset: {fileID: 6391573757903218779, guid: 253ef8b3e850bc949891b4307d82c8d2,
+      type: 3}
   defaultLanguage: en-US
   languagesToSourceAssets: []
   useAddressableAssets: 0
