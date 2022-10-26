@@ -35,6 +35,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     // Narrative
     public bool inDialog;
 
+    //Shader/VFX
+    private float noiseScale = 50.0f;
+    private float objectHeight;
+    private Material croakMat;
+    private Material swordMat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +52,11 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         maxEnergy = 100;
         attackDamage = 20;
         speed = gameObject.GetComponent<ThirdPersonController>().MoveSpeed;
+        
+        croakMat = weapon[2].GetComponent<Renderer>().material;
+        swordMat = weapon[0].GetComponent<Renderer>().material;
+        objectHeight = weapon[2].GetComponent<Transform>().position.y + 1;
+        croakMat.SetFloat("_CutoffHeight", objectHeight);
     }
 
     private void Update()
@@ -89,6 +100,18 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             HeavyAttack();
         
             GetComponent<StarterAssetsInputs>().hAttack = false;
+        }
+
+        //update material
+        if (weapon[2].activeSelf && !weapon[0].activeSelf)
+        {
+            objectHeight = weapon[2].GetComponent<Transform>().position.y + 1;
+            croakMat.SetFloat("_CutoffHeight", objectHeight);
+        }
+        else
+        {
+            objectHeight = weapon[0].GetComponent<Transform>().position.y + 1;
+            swordMat.SetFloat("_CutoffHeight", objectHeight);
         }
     }
 

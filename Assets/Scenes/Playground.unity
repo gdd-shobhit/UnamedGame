@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 376861137}
   - component: {fileID: 376861136}
   m_Layer: 0
-  m_Name: Dissolve FX test
+  m_Name: Croak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3844,7 +3844,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1631811502
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5701,6 +5701,11 @@ PrefabInstance:
       propertyPath: weapon.Array.data[2]
       value: 
       objectReference: {fileID: 376861135}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
+      propertyPath: weapon.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7272696469984481327, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
       propertyPath: m_RootOrder
