@@ -191,7 +191,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target
+      value: Target 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -1969,7 +1969,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target
+      value: Target 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -2625,12 +2625,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03f01e7b20b3de049bb7aab7e7d02921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nearbyEnemies: []
+  nearbyTargets: []
   followCam: {fileID: 884132387}
   leftCollider: {fileID: 0}
   rightCollider: {fileID: 0}
+  centerCollider: {fileID: 0}
   upCollider: {fileID: 0}
   downCollider: {fileID: 0}
+  currentTarget: {fileID: 0}
 --- !u!1 &1390308353
 GameObject:
   m_ObjectHideFlags: 0
@@ -2806,7 +2808,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target
+      value: Target 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -3505,6 +3507,7 @@ MonoBehaviour:
   switchCooldown: 1
   timeSinceLastSwitch: 0
   justSwitched: 0
+  switcher: {fileID: 0}
 --- !u!114 &1762682282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3883,7 +3886,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target
+      value: Target 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}

@@ -63,49 +63,60 @@ public class TargetSwitch : MonoBehaviour
     {
         leftCollider = null;
         rightCollider = null;
-        float leftMost = 0;
-        float rightMost = 0;
+        centerCollider = null;
+        float leftMost = -99;
+        float rightMost = 99;
         float centerMost = 99;
 
 
         for (int i = 0; i < nearbyTargets.Count; i++)
         {
-            //if (currentTarget != null && currentTarget == nearbyTargets[i]) return;
-
-            Vector3 fwd = followCam.transform.forward;
-            Vector3 up = followCam.transform.up;
-            Vector3 targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
-            Vector3 perp = Vector3.Cross(fwd, targetDir);
-            float dir = Vector3.Dot(perp, up);
-
-            Debug.Log(nearbyTargets[i].name + ": " + dir);
-
-            if(Vector3.Dot(targetDir.normalized, fwd) > 0) {
-                Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) +")");
-            }
-            else
+            if (!(currentTarget != null && currentTarget == nearbyTargets[i]))
             {
-                Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
-            }
-
-
-
-            if(Vector3.Dot(targetDir.normalized, fwd) > 0) // if in front of player
-            {
-                if(dir < leftMost)
+                Vector3 fwd = followCam.transform.forward;
+                Vector3 up = followCam.transform.up;
+                Vector3 targetDir;
+                if (currentTarget != null)
                 {
-                    leftMost = dir;
-                    leftCollider = nearbyTargets[i];
+                    targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
                 }
-                if (dir > rightMost)
+                else
                 {
-                    rightMost = dir;
-                    rightCollider = nearbyTargets[i];
+                    targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
                 }
-                if(Mathf.Abs(dir) < centerMost)
+                Vector3 perp = Vector3.Cross(fwd, targetDir);
+                float dir = Vector3.Dot(perp, up);
+
+                Debug.Log(nearbyTargets[i].name + ": " + dir);
+
+                if (Vector3.Dot(targetDir.normalized, fwd) > 0)
                 {
-                    centerMost = Mathf.Abs(dir);
-                    centerCollider = nearbyTargets[i];
+                    Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+                }
+                else
+                {
+                    Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+                }
+
+                //if (Vector3.Dot(targetDir.normalized, fwd) > 0)
+
+                if (Vector3.Dot(targetDir.normalized, fwd) > 0.8f) // if in front of player
+                {
+                    if (dir < 0 && dir > leftMost)
+                    {
+                        leftMost = dir;
+                        leftCollider = nearbyTargets[i];
+                    }
+                    if (dir > 0 && dir < rightMost)
+                    {
+                        rightMost = dir;
+                        rightCollider = nearbyTargets[i];
+                    }
+                    if (Mathf.Abs(dir) < centerMost)
+                    {
+                        centerMost = Mathf.Abs(dir);
+                        centerCollider = nearbyTargets[i];
+                    }
                 }
             }
         }
@@ -130,5 +141,10 @@ public class TargetSwitch : MonoBehaviour
         currentTarget = rightCollider;
         //SetDirectedColliders();
         return rightCollider;
+    }
+
+    public void ClearTarget()
+    {
+        currentTarget = null;
     }
 }

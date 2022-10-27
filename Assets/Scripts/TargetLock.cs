@@ -25,10 +25,11 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private float switchCooldown;
     [SerializeField] private float timeSinceLastSwitch;
     [SerializeField] private bool justSwitched;
+    [SerializeField] private TargetSwitch switcher;
 
     void Start()
     {
-        
+        switcher = targetSwitcher.GetComponent<TargetSwitch>();
     }
     void Update()
     {
@@ -62,8 +63,7 @@ public class TargetLock : MonoBehaviour
 
     bool FindEnemy()
     {
-        TargetSwitch ts = targetSwitcher.GetComponent<TargetSwitch>();
-        target = ts.GetCenterTarget().gameObject;
+        target = switcher.GetCenterTarget().gameObject;
         if (target != null) return false;
         else
         {
@@ -87,6 +87,7 @@ public class TargetLock : MonoBehaviour
         else
         {
             target = null;
+            switcher.ClearTarget();
             targetCam.LookAt = null;
             targetCam.gameObject.SetActive(false);
             lockImage.gameObject.SetActive(false);
@@ -100,6 +101,17 @@ public class TargetLock : MonoBehaviour
         if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
         {
             //if (input.look.x < 0) {}
+            if (input.look.x < 0) // left
+            {
+                target = switcher.GetLeftTarget().gameObject;
+            }
+            else
+            {
+                target = switcher.GetRightTarget().gameObject;
+            }
+            targetCam.LookAt = target.transform;
+            justSwitched = true; timeSinceLastSwitch = 0;
+
             /*GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
             if (tempObj != null)
             {
