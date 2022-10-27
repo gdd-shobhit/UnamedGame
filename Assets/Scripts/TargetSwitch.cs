@@ -20,7 +20,8 @@ public class TargetSwitch : MonoBehaviour
 
     void OnTriggerEnter(Collider c)
     {
-        if (c.name.ToLower().Contains("enemy"))
+        //Debug.Log("hello " + c.name);
+        if (c.name.ToLower().Contains("target"))
         {
             if (!nearbyEnemies.Contains(c)) { 
                 nearbyEnemies.Add(c);
@@ -30,7 +31,8 @@ public class TargetSwitch : MonoBehaviour
 
     private void OnTriggerExit(Collider c)
     {
-        if (c.name.ToLower().Contains("enemy"))
+        //Debug.Log("goodbye " + c.name);
+        if (c.name.ToLower().Contains("target"))
         {
             if(nearbyEnemies.Contains(c)) { nearbyEnemies.Remove(c); }
         }
