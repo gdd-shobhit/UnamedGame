@@ -63,8 +63,7 @@ public class Enemy : MonoBehaviour, IDamageable
     void Update()
     {
         HUDUpdate();
-
-            EnemyAI();
+        EnemyAI();
         if(anim.GetBool("Hit"))
             ResetHit();
 
@@ -165,12 +164,13 @@ public class Enemy : MonoBehaviour, IDamageable
     private void SearchWalkPoint()
     {
         //Makes a random walk pont for the enemy to go to
-        float randomZ = Random.Range(-1, 28);
-        float randomX = Random.Range(-11, 20);
+        float randomZ = Random.Range(-10, 10);
+        float randomX = Random.Range(-10, 10);
 
-        walkPoint = new Vector3(randomX, transform.position.y, randomZ);
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
         
-        // Sets it so it is known that the enemy has a walkpoint
+        // Checks if the waypoint is still on the ground
+        // if so then the waypoint is set
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
         {
             walkPointSet = true;
