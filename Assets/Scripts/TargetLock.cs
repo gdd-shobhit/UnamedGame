@@ -60,10 +60,15 @@ public class TargetLock : MonoBehaviour
         }
     }
 
-    void FindEnemy()
+    bool FindEnemy()
     {
-        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().ClosestToCenterEnemy(this.gameObject);
-        if (tempObj != null) target = tempObj;
+        TargetSwitch ts = targetSwitcher.GetComponent<TargetSwitch>();
+        target = ts.GetCenterTarget().gameObject;
+        if (target != null) return false;
+        else
+        {
+            return true;
+        }
     }
 
     // Called when user toggles the target lock
@@ -74,7 +79,6 @@ public class TargetLock : MonoBehaviour
         if (followCam.isActiveAndEnabled)
         {
             FindEnemy();
-            if (target == null) return;
             targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
@@ -96,14 +100,14 @@ public class TargetLock : MonoBehaviour
         if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
         {
             //if (input.look.x < 0) {}
-            GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
+            /*GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
             if (tempObj != null)
             {
                 target = tempObj;
                 input.LookInput(new Vector2(0, 0));
                 targetCam.LookAt = target.transform;
                 justSwitched = true; timeSinceLastSwitch = 0;
-            }
+            }*/
         }
 
 
@@ -119,13 +123,13 @@ public class TargetLock : MonoBehaviour
     // move the target lock sprite to the object being targeted
     private void MoveLockOnSprite()
     {
-        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(GetEnemyMidpoint());
+        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(target.transform.position);
     }
 
-    private Vector3 GetEnemyMidpoint()
+    /*private Vector3 GetEnemyMidpoint()
     {
         float targetHeight = target.GetComponent<CapsuleCollider>().height;
         Vector3 targetPos = target.transform.position;
         return new Vector3(targetPos.x, targetPos.y + targetHeight/2, targetPos.z);
-    }
+    }*/
 }

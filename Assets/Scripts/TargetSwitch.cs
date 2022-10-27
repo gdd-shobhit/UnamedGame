@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,16 +7,33 @@ using UnityEngine;
 
 public class TargetSwitch : MonoBehaviour
 {
-    [SerializeField] List<Collider> nearbyEnemies;
+    [SerializeField] List<Collider> nearbyTargets;
+    [SerializeField] private CinemachineVirtualCamera followCam;
+
+    [SerializeField] private Collider leftCollider;
+    [SerializeField] private Collider rightCollider;
+    [SerializeField] private Collider centerCollider;
+    [SerializeField] private Collider upCollider;
+    [SerializeField] private Collider downCollider;
+
+    [SerializeField] private Collider currentTarget;
+
+
     void Start()
     {
-        nearbyEnemies = new List<Collider>();
+        nearbyTargets = new List<Collider>();
     }
 
 
     void Update()
     {
-        
+        foreach (Collider c in nearbyTargets)
+        {
+            Vector3 to = c.transform.position;
+            Vector3 from = this.gameObject.transform.position;
+            Debug.DrawRay(from, to-from, Color.cyan);
+        }
+        SetDirectedColliders();
     }
 
     void OnTriggerEnter(Collider c)
@@ -23,120 +41,94 @@ public class TargetSwitch : MonoBehaviour
         //Debug.Log("hello " + c.name);
         if (c.name.ToLower().Contains("target"))
         {
-            if (!nearbyEnemies.Contains(c)) { 
-                nearbyEnemies.Add(c);
+            if (!nearbyTargets.Contains(c)) { 
+                nearbyTargets.Add(c);
             }
         }
     }
-
     private void OnTriggerExit(Collider c)
     {
         //Debug.Log("goodbye " + c.name);
         if (c.name.ToLower().Contains("target"))
         {
-            if(nearbyEnemies.Contains(c)) { nearbyEnemies.Remove(c); }
+            if(nearbyTargets.Contains(c)) { nearbyTargets.Remove(c); }
         }
     }
 
-    public GameObject ClosestToCenterEnemy(GameObject from)
-    {
-        if (nearbyEnemies.Count == 0) return null;
-        else if (nearbyEnemies.Count == 1) return nearbyEnemies[0].gameObject;
-        else {  return GetEnemyClosestToCenter(from); }
-    }
-
-
-    public GameObject GetClosestEnemy(GameObject from)
-    {
-        if (nearbyEnemies.Count == 0) return null;
-        else if (nearbyEnemies.Count == 1)
-        {
-            //Debug.Log(EnemyDirection(from, nearbyEnemies[0].gameObject)); 
-            return nearbyEnemies[0].gameObject;
-        }
-        else
-        {
-            float near = 0;
-            Collider closest = null;
-            for (int i = 0; i < nearbyEnemies.Count; i++)
-            {
-                float distance = Vector3.Distance(nearbyEnemies[i].transform.position, from.transform.position);
-                if (near == 0) { near = distance; closest = nearbyEnemies[i]; }
-                else if (distance < near) { near = distance; closest = nearbyEnemies[i]; }
-            }
-            //Debug.Log(EnemyDirection(from, closest.gameObject));
-            return closest.gameObject;
-        } 
-    }
-
-    public GameObject SwitchTarget(GameObject from, GameObject current)
-    {
-        if (nearbyEnemies.Count <= 1) return null;
-        else
-        {
-            return LeftEnemy(from, current);
-        }
-    }
 
     // positive is to the right
     // negative is to the left
     // 0 is forward or backward
-    private float EnemyDirection(GameObject from, GameObject to)
+    private void SetDirectedColliders()
     {
-        Vector3 fwd = from.transform.forward;
-        Vector3 up = from.transform.up;
-        Vector3 perp = Vector3.Cross(fwd, to.transform.position);
-        float direction = Vector3.Dot(perp, up);
+        leftCollider = null;
+        rightCollider = null;
+        float leftMost = 0;
+        float rightMost = 0;
+        float centerMost = 99;
 
-        return direction;
-    }
 
-    private GameObject GetEnemyClosestToCenter(GameObject from)
-    {
-        GameObject closest = null;
-        float window = 0;
-        while (closest == null)
+        for (int i = 0; i < nearbyTargets.Count; i++)
         {
-            for (int i = 0; i < nearbyEnemies.Count; i++)
+            //if (currentTarget != null && currentTarget == nearbyTargets[i]) return;
+
+            Vector3 fwd = followCam.transform.forward;
+            Vector3 up = followCam.transform.up;
+            Vector3 targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
+            Vector3 perp = Vector3.Cross(fwd, targetDir);
+            float dir = Vector3.Dot(perp, up);
+
+            Debug.Log(nearbyTargets[i].name + ": " + dir);
+
+            if(Vector3.Dot(targetDir.normalized, fwd) > 0) {
+                Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) +")");
+            }
+            else
             {
-                if (Mathf.Abs(EnemyDirection(from, nearbyEnemies[i].gameObject)) <= window)
+                Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+            }
+
+
+
+            if(Vector3.Dot(targetDir.normalized, fwd) > 0) // if in front of player
+            {
+                if(dir < leftMost)
                 {
-                    closest = nearbyEnemies[i].gameObject;
-                    //Debug.Log("found on: "+window);
+                    leftMost = dir;
+                    leftCollider = nearbyTargets[i];
                 }
-                window += 1;
-                //Debug.Log(window);
+                if (dir > rightMost)
+                {
+                    rightMost = dir;
+                    rightCollider = nearbyTargets[i];
+                }
+                if(Mathf.Abs(dir) < centerMost)
+                {
+                    centerMost = Mathf.Abs(dir);
+                    centerCollider = nearbyTargets[i];
+                }
             }
         }
-        return closest;
     }
 
-    private GameObject LeftEnemy(GameObject from, GameObject current)
+    public Collider GetCenterTarget()
     {
-        int currentIndex = 0;
-        for (int i = 0; i < nearbyEnemies.Count; i++)
-        {
-            if (nearbyEnemies.Contains(current.GetComponent<Collider>())) currentIndex = i;
-        }
+        currentTarget = centerCollider;
+        //SetDirectedColliders();
+        return centerCollider;
+    }
 
-        Collider leftMostEnemy = null;
-        float furthestLeft = 0;
-        for (int i = 0; i < nearbyEnemies.Count; i++)
-        {
-            if(i!=currentIndex){
-                if(leftMostEnemy == null || furthestLeft == 0) 
-                { 
-                    leftMostEnemy = nearbyEnemies[i];
-                    furthestLeft = EnemyDirection(from, nearbyEnemies[i].gameObject);
-                }
-                else if(EnemyDirection(from, nearbyEnemies[i].gameObject) < furthestLeft)
-                {
-                    leftMostEnemy = nearbyEnemies[i];
-                    furthestLeft = EnemyDirection(from, nearbyEnemies[i].gameObject);
-                }
-            }
-        }
+    public Collider GetLeftTarget()
+    {
+        currentTarget = leftCollider;
+        //SetDirectedColliders();
+        return leftCollider;
+    }
 
-        return leftMostEnemy.gameObject;
+    public Collider GetRightTarget()
+    {
+        currentTarget = rightCollider;
+        //SetDirectedColliders();
+        return rightCollider;
     }
 }
