@@ -10,11 +10,11 @@ public class TargetSwitch : MonoBehaviour
     [SerializeField] List<Collider> nearbyTargets;
     [SerializeField] private CinemachineVirtualCamera followCam;
 
-    [SerializeField] private Collider leftCollider;
-    [SerializeField] private Collider rightCollider;
-    [SerializeField] private Collider centerCollider;
-    [SerializeField] private Collider upCollider;
-    [SerializeField] private Collider downCollider;
+    public Collider leftCollider;
+    public Collider rightCollider;
+    public Collider centerCollider;
+    public Collider upCollider;
+    public Collider downCollider;
 
     [SerializeField] private Collider currentTarget;
 
@@ -87,20 +87,20 @@ public class TargetSwitch : MonoBehaviour
                 Vector3 perp = Vector3.Cross(fwd, targetDir);
                 float dir = Vector3.Dot(perp, up);
 
-                Debug.Log(nearbyTargets[i].name + ": " + dir);
+                //Debug.Log(nearbyTargets[i].name + ": " + dir);
 
                 if (Vector3.Dot(targetDir.normalized, fwd) > 0)
                 {
-                    Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+                    //Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
                 }
                 else
                 {
-                    Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+                    //Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
                 }
 
                 //if (Vector3.Dot(targetDir.normalized, fwd) > 0)
 
-                if (Vector3.Dot(targetDir.normalized, fwd) > 0.8f) // if in front of player
+                if (Vector3.Dot(targetDir.normalized, fwd) > 0.7f) // if in front of player
                 {
                     if (dir < 0 && dir > leftMost)
                     {
@@ -124,6 +124,7 @@ public class TargetSwitch : MonoBehaviour
 
     public Collider GetCenterTarget()
     {
+        if (centerCollider == null) return null;
         currentTarget = centerCollider;
         //SetDirectedColliders();
         return centerCollider;
@@ -131,6 +132,7 @@ public class TargetSwitch : MonoBehaviour
 
     public Collider GetLeftTarget()
     {
+        if (leftCollider == null) return null;
         currentTarget = leftCollider;
         //SetDirectedColliders();
         return leftCollider;
@@ -138,6 +140,7 @@ public class TargetSwitch : MonoBehaviour
 
     public Collider GetRightTarget()
     {
+        if (rightCollider == null) return null;
         currentTarget = rightCollider;
         //SetDirectedColliders();
         return rightCollider;

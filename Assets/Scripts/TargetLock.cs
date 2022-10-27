@@ -63,12 +63,9 @@ public class TargetLock : MonoBehaviour
 
     bool FindEnemy()
     {
-        target = switcher.GetCenterTarget().gameObject;
-        if (target != null) return false;
-        else
-        {
-            return true;
-        }
+        try{ target = switcher.GetCenterTarget().gameObject; }
+        catch { return false; }
+        return true;
     }
 
     // Called when user toggles the target lock
@@ -78,7 +75,7 @@ public class TargetLock : MonoBehaviour
     {
         if (followCam.isActiveAndEnabled)
         {
-            FindEnemy();
+            if (!FindEnemy()) return;
             targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
@@ -100,12 +97,11 @@ public class TargetLock : MonoBehaviour
     {
         if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
         {
-            //if (input.look.x < 0) {}
-            if (input.look.x < 0) // left
+            if (input.look.x < 0 && switcher.leftCollider != null) // left
             {
                 target = switcher.GetLeftTarget().gameObject;
             }
-            else
+            else if (input.look.x > 0 && switcher.rightCollider != null)
             {
                 target = switcher.GetRightTarget().gameObject;
             }
@@ -123,6 +119,9 @@ public class TargetLock : MonoBehaviour
         }
 
 
+        //TODO: Make Target Transition smoother
+
+
         targetCamHelper.LookAt(target.transform);
 
         // normalized vector for the distance between the player and the target
@@ -130,6 +129,7 @@ public class TargetLock : MonoBehaviour
 
         // offsets the current position to behind the players head
         targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+
     }
 
     // move the target lock sprite to the object being targeted
