@@ -25,10 +25,11 @@ public class TargetLock : MonoBehaviour
     [SerializeField] private float switchCooldown;
     [SerializeField] private float timeSinceLastSwitch;
     [SerializeField] private bool justSwitched;
+    [SerializeField] private TargetSwitch switcher;
 
     void Start()
     {
-        
+        switcher = targetSwitcher.GetComponent<TargetSwitch>();
     }
     void Update()
     {
@@ -60,10 +61,11 @@ public class TargetLock : MonoBehaviour
         }
     }
 
-    void FindEnemy()
+    bool FindEnemy()
     {
-        GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().ClosestToCenterEnemy(this.gameObject);
-        if (tempObj != null) target = tempObj;
+        try{ target = switcher.GetCenterTarget().gameObject; }
+        catch { return false; }
+        return true;
     }
 
     // Called when user toggles the target lock
@@ -73,8 +75,7 @@ public class TargetLock : MonoBehaviour
     {
         if (followCam.isActiveAndEnabled)
         {
-            FindEnemy();
-            if (target == null) return;
+            if (!FindEnemy()) return;
             targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
@@ -83,6 +84,7 @@ public class TargetLock : MonoBehaviour
         else
         {
             target = null;
+            switcher.ClearTarget();
             targetCam.LookAt = null;
             targetCam.gameObject.SetActive(false);
             lockImage.gameObject.SetActive(false);
@@ -95,16 +97,29 @@ public class TargetLock : MonoBehaviour
     {
         if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
         {
-            //if (input.look.x < 0) {}
-            GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
+            if (input.look.x < 0 && switcher.leftCollider != null) // left
+            {
+                target = switcher.GetLeftTarget().gameObject;
+            }
+            else if (input.look.x > 0 && switcher.rightCollider != null)
+            {
+                target = switcher.GetRightTarget().gameObject;
+            }
+            targetCam.LookAt = target.transform;
+            justSwitched = true; timeSinceLastSwitch = 0;
+
+            /*GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
             if (tempObj != null)
             {
                 target = tempObj;
                 input.LookInput(new Vector2(0, 0));
                 targetCam.LookAt = target.transform;
                 justSwitched = true; timeSinceLastSwitch = 0;
-            }
+            }*/
         }
+
+
+        //TODO: Make Target Transition smoother
 
 
         targetCamHelper.LookAt(target.transform);
@@ -114,18 +129,19 @@ public class TargetLock : MonoBehaviour
 
         // offsets the current position to behind the players head
         targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+
     }
 
     // move the target lock sprite to the object being targeted
     private void MoveLockOnSprite()
     {
-        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(GetEnemyMidpoint());
+        lockImage.gameObject.transform.position = mainCam.WorldToScreenPoint(target.transform.position);
     }
 
-    private Vector3 GetEnemyMidpoint()
+    /*private Vector3 GetEnemyMidpoint()
     {
         float targetHeight = target.GetComponent<CapsuleCollider>().height;
         Vector3 targetPos = target.transform.position;
         return new Vector3(targetPos.x, targetPos.y + targetHeight/2, targetPos.z);
-    }
+    }*/
 }

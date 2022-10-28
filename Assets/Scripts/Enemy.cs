@@ -35,6 +35,12 @@ public class Enemy : MonoBehaviour, IDamageable
     public Vector3 walkPoint;
     bool walkPointSet;
 
+    private float startWaitTime;
+    private float waitTime;
+
+    private bool lostPlayer;
+    private Vector3 lastPlayerDestination;
+
     // Attacking
     public float timeBetweenAttacks;
     bool alreadyAttacked;
@@ -57,14 +63,16 @@ public class Enemy : MonoBehaviour, IDamageable
         agent = GetComponent<NavMeshAgent>();
         target = player.transform;
         timeBetweenAttacks = 2.0f;
+        startWaitTime = 3;
+        waitTime = startWaitTime;
+        lostPlayer = true;
     }
 
     // Update is called once per frame
     void Update()
     {
         HUDUpdate();
-
-            EnemyAI();
+        EnemyAI();
         if(anim.GetBool("Hit"))
             ResetHit();
 
@@ -122,7 +130,29 @@ public class Enemy : MonoBehaviour, IDamageable
         // Depending on the distance of the player and the enemy view distance
         // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
-        if (distance > lookRadius && !isDead) Patrolling();
+        if (distance > lookRadius && !isDead) 
+        {
+            // Checks if the player was lost while chasing them
+            if (!lostPlayer)
+            {
+                // If they were then the enemy goes to the last location the player was seen
+                agent.SetDestination(lastPlayerDestination);
+                Vector3 distanceToWalkPoint = transform.position - lastPlayerDestination;
+
+                // Once the player has gotten close enough to where the player last was
+                // Then the walkpoint is set to false and the lost player is set to true
+                // So that the enemy will continue to patrol again
+                if (distanceToWalkPoint.magnitude < 3f)
+                {
+                    walkPointSet = false;
+                    lostPlayer = true;
+                }
+            }
+            else
+            {
+                Patrolling();
+            }
+        }
         if (distance <= lookRadius && !isDead) ChasePlayer();
         if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
 
@@ -144,33 +174,55 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         // Goes to the walkpoint set
         // Makes it look as though the enemy is aimlessly walking around
-        agent.speed = 2;
-        if (!walkPointSet) SearchWalkPoint();
-        agent.SetDestination(walkPoint);
-
-
+        if (!walkPointSet)
+        {
+            SearchWalkPoint();
+            agent.SetDestination(walkPoint);
+            StartEnemy(2);
+        }
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
-        //Debug.Log(distanceToWalkPoint.magnitude);
         // Walkpoint reached
         if (distanceToWalkPoint.magnitude < 3f)
         {
-            //gameObject.GetComponent<NavMeshAgent>().isStopped = true;
-
-            walkPointSet = false;
+            StopEnemy();
+            if (waitTime <= 0)
+            {
+                walkPointSet = false;
+                waitTime = startWaitTime;
+            }
+            else
+            {
+                waitTime -= Time.deltaTime;
+            }
         }
 
+    }
+
+    private void StopEnemy()
+    {
+        agent.isStopped = true;
+        agent.speed = 0;
+        anim.SetFloat("Speed", 0);
+    }
+
+    private void StartEnemy(int speed)
+    {
+        agent.isStopped = false;
+        agent.speed = speed;
+        anim.SetFloat("Speed", speed);
     }
 
     private void SearchWalkPoint()
     {
         //Makes a random walk pont for the enemy to go to
-        float randomZ = Random.Range(-1, 28);
-        float randomX = Random.Range(-11, 20);
+        float randomZ = Random.Range(-10, 10);
+        float randomX = Random.Range(-10, 10);
 
-        walkPoint = new Vector3(randomX, transform.position.y, randomZ);
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
         
-        // Sets it so it is known that the enemy has a walkpoint
+        // Checks if the waypoint is still on the ground
+        // if so then the waypoint is set
         if (Physics.Raycast(walkPoint, -transform.up, 2f, whatIsGround))
         {
             walkPointSet = true;
@@ -182,7 +234,9 @@ public class Enemy : MonoBehaviour, IDamageable
         // Sets the enemy to move towards the player
         agent.speed = 3;
         gameObject.GetComponent<NavMeshAgent>().isStopped = false;
+        lastPlayerDestination = target.position;
         agent.SetDestination(target.position);
+        lostPlayer = false;
     }
 
     void CheckHit()
@@ -194,7 +248,7 @@ public class Enemy : MonoBehaviour, IDamageable
             if (hit.tag == "Player")
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
-                Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
+                //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
     }
