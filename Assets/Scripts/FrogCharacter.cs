@@ -37,9 +37,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
     //Shader/VFX
     private float noiseScale = 50.0f;
-    private float objectHeight;
     private Material croakMat;
     private Material swordMat;
+    private int dissolvePercent = 0;
+    private int materializePercent = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -55,8 +56,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         
         croakMat = weapon[2].GetComponent<Renderer>().material;
         swordMat = weapon[0].GetComponent<Renderer>().material;
-        objectHeight = weapon[2].GetComponent<Transform>().position.y + 1;
-        croakMat.SetFloat("_CutoffHeight", objectHeight);
     }
 
     private void Update()
@@ -103,15 +102,23 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         }
 
         //update material
-        if (weapon[2].activeSelf && !weapon[0].activeSelf)
+
+        if(weapon[2].activeSelf && weapon[0].activeSelf)
         {
-            objectHeight = weapon[2].GetComponent<Transform>().position.y + 1;
-            croakMat.SetFloat("_CutoffHeight", objectHeight);
+            swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
+            croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         }
         else
         {
-            objectHeight = weapon[0].GetComponent<Transform>().position.y + 1;
-            swordMat.SetFloat("_CutoffHeight", objectHeight);
+            if (weapon[2].activeSelf)
+            {
+                croakMat.SetFloat("_CutoffHeight", weapon[2].GetComponent<Transform>().position.y + 1);
+            }
+        
+            if(weapon[0].activeSelf)
+            {
+                swordMat.SetFloat("_CutoffHeight", weapon[0].GetComponent<Transform>().position.y + 1);
+            }
         }
     }
 
@@ -237,7 +244,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     {
         if(Time.time - lastAttackTime > sheathTime)
         {
-            weapon[0].SetActive(false);
+            if(Time.time - lastAttackTime >= sheathTime + 0.5)
+            {
+                weapon[0].SetActive(false);
+            }
             weapon[2].SetActive(true);
         }
     }

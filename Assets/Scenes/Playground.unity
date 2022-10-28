@@ -3990,8 +3990,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   walkPoint: {x: 0, y: 0, z: 0}
-  startWaitTime: 0
-  waitTime: 0
   timeBetweenAttacks: 0
   deathTime: 0
   onHitVFX: {fileID: 1212022383}
@@ -4987,6 +4985,16 @@ PrefabInstance:
       propertyPath: targetCamHelper
       value: 
       objectReference: {fileID: 2015571070}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
+      propertyPath: sheathTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
+      propertyPath: isAttacking
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7272696469984481327, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
       propertyPath: m_RootOrder
