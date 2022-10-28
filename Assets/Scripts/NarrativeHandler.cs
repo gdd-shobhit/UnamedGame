@@ -27,15 +27,18 @@ public class NarrativeHandler : MonoBehaviour
         dialogPrompt.gameObject.SetActive(inTrigger && !inDialog); // If the player can start a dialog sequence and is not already in one show the prompt
 
         // Starts a Dialog Sequence if the player is in a trigger for one
-        if (inTrigger && !inDialog && input.interact)
+        if (inTrigger && !inDialog )
         {
-            ActivateControls(false);
+            if (input.interact || currentTrigger.automatic)
+            {
+                ActivateControls(false);
 
-            dialogSystem.StartDialogue(currentTrigger.node);
-        }
-        else
-        {
-            input.interact = false;
+                dialogSystem.StartDialogue(currentTrigger.node);
+            }
+            else
+            {
+                input.interact = false;
+            }
         }
     }
 

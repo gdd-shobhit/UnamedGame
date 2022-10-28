@@ -10,6 +10,7 @@ public class NarrativeTrigger : MonoBehaviour
     public NarrativeHandler narrativeHandler;
 
     public string node;
+    public bool automatic;
     public bool triggerComplete;
 
     // Checks if the Player is inside the Narrative Trigger
