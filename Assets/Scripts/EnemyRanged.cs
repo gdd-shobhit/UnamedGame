@@ -14,7 +14,8 @@ public class EnemyRanged : Enemy
 
     protected override void EnemyAI()
     {
-        
+        anim.SetFloat("Speed", agent.speed);
+
         float distance = Vector3.Distance(target.position, transform.position);
 
         if (distance > lookRadius || isDead)
