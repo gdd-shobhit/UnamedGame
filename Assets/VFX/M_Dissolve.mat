@@ -86,18 +86,18 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
-    - _CutoffHeight: 2.5
+    - _CutoffHeight: 1.94
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EdgeWidth: 0.05
+    - _EdgeWidth: 0.1
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NoiseScale: 50
-    - _NoiseStrength: 1
+    - _NoiseScale: 25
+    - _NoiseStrength: 0.19
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0

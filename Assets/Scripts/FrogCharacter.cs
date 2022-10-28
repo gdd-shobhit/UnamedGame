@@ -36,7 +36,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     public bool inDialog;
 
     //Shader/VFX
-    private float noiseScale = 50.0f;
+    private float noiseScale = 0.1f;
     private Material croakMat;
     private Material swordMat;
     private int dissolvePercent = 0;
@@ -106,8 +106,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         if(weapon[2].activeSelf && weapon[0].activeSelf)
         {
             swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
-            croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         }
+            //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         else
         {
             if (weapon[2].activeSelf)
