@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TargetSwitch : MonoBehaviour
@@ -18,12 +19,10 @@ public class TargetSwitch : MonoBehaviour
 
     [SerializeField] private Collider currentTarget;
 
-
     void Start()
     {
         nearbyTargets = new List<Collider>();
     }
-
 
     void Update()
     {
@@ -64,86 +63,120 @@ public class TargetSwitch : MonoBehaviour
         leftCollider = null;
         rightCollider = null;
         centerCollider = null;
-        float leftMost = -99;
-        float rightMost = 99;
-        float centerMost = 99;
+        upCollider = null;
+        downCollider = null;
+        float closestLeft = -99;
+        float closestRight = 99;
+        float closestCenter = 99;
+        float closestUp = 99;
+        float closestDown = 99;
 
+        float dir;
+        Vector3 targetDir, fwd, up, perp;
 
         for (int i = 0; i < nearbyTargets.Count; i++)
         {
-            if (!(currentTarget != null && currentTarget == nearbyTargets[i]))
+            // if nearbyTargets[i] is the current target, don't do calculations for it
+            if (currentTarget != null && currentTarget == nearbyTargets[i]) continue;
+
+            SetDirectionVariables(i);
+
+            //if (!InFrontOfPlayer()) continue;
+
+            
+            if (dir < 0 && dir > closestLeft) // closest object on left side
             {
-                Vector3 fwd = followCam.transform.forward;
-                Vector3 up = followCam.transform.up;
-                Vector3 targetDir;
-                if (currentTarget != null)
-                {
-                    targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
-                }
-                else
-                {
-                    targetDir = nearbyTargets[i].transform.position - followCam.transform.position;
-                }
-                Vector3 perp = Vector3.Cross(fwd, targetDir);
-                float dir = Vector3.Dot(perp, up);
+                closestLeft = dir;
+                SetTarget("left", nearbyTargets[i]);
+            }
+            if (dir > 0 && dir < closestRight) // closest object on right side
+            {
+                closestRight = dir;
+                SetTarget("right", nearbyTargets[i]);
+            }
+            if (Mathf.Abs(dir) < closestCenter) // closest object to center
+            {
+                closestCenter = Mathf.Abs(dir);
+                SetTarget("center", nearbyTargets[i]);
+            }
+            //Debug.Log(nearbyTargets[i].name + ": " + dir);
 
-                //Debug.Log(nearbyTargets[i].name + ": " + dir);
+            // if there is not a current target, return...
+            // we don't need to do calculations for the other colliders right now
+            /*
+            if (!currentTarget || dir > 2) continue;
 
-                if (Vector3.Dot(targetDir.normalized, fwd) > 0)
-                {
-                    //Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
-                }
-                else
-                {
-                    //Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
-                }
+            if (nearbyTargets[i] == leftCollider || nearbyTargets[i] == rightCollider) break;
 
-                //if (Vector3.Dot(targetDir.normalized, fwd) > 0)
-
-                if (Vector3.Dot(targetDir.normalized, fwd) > 0.7f) // if in front of player
+            if (nearbyTargets[i].transform.position.y > currentTarget.transform.position.y)
+            {
+                if (nearbyTargets[i].transform.position.y < closestUp)
                 {
-                    if (dir < 0 && dir > leftMost)
-                    {
-                        leftMost = dir;
-                        leftCollider = nearbyTargets[i];
-                    }
-                    if (dir > 0 && dir < rightMost)
-                    {
-                        rightMost = dir;
-                        rightCollider = nearbyTargets[i];
-                    }
-                    if (Mathf.Abs(dir) < centerMost)
-                    {
-                        centerMost = Mathf.Abs(dir);
-                        centerCollider = nearbyTargets[i];
-                    }
+                    closestUp = nearbyTargets[i].transform.position.y;
+                    SetTarget("up", nearbyTargets[i]);
                 }
             }
+            else if (nearbyTargets[i].transform.position.y < currentTarget.transform.position.y)
+            {
+                if (nearbyTargets[i].transform.position.y < closestDown)
+                {
+                    closestDown = nearbyTargets[i].transform.position.y;
+                    SetTarget("down", nearbyTargets[i]);
+                }
+            }*/
+
+        }
+        
+        
+
+        bool InFrontOfPlayer()
+        {
+            if (Vector3.Dot(targetDir.normalized, fwd) > 0.7f) return true;
+            else return false;
+        }
+
+        void SetDirectionVariables(int i)
+        {
+            targetDir = nearbyTargets[i].transform.position - followCam.transform.position; // direction from nearbyTargets[i] and the player follow camera
+            fwd = followCam.transform.forward; // forward direction vector based on the player follow camera
+            up = followCam.transform.up; // up direction vector based on the player follow camera
+            perp = Vector3.Cross(fwd, targetDir);
+            dir = Vector3.Dot(perp, up);
+
+            if (Vector3.Dot(targetDir.normalized, fwd) > 0)
+            {
+                //Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+            }
+            else {/*Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");*/ }
         }
     }
 
-    public Collider GetCenterTarget()
+    private void SetTarget(string target, Collider c)
     {
-        if (centerCollider == null) return null;
-        currentTarget = centerCollider;
-        //SetDirectedColliders();
-        return centerCollider;
+        switch (target)
+        {
+            case "center": centerCollider = c; break;
+            case "left": leftCollider = c; break;
+            case "right": rightCollider = c; break;
+            case "up": upCollider = c; break;
+            case "down": downCollider = c; break;
+        }
     }
 
-    public Collider GetLeftTarget()
+    public Collider GetTarget(string target)
     {
-        if (leftCollider == null) return null;
-        currentTarget = leftCollider;
-        //SetDirectedColliders();
-        return leftCollider;
-    }
-
-    public Collider GetRightTarget()
-    {
-        if (rightCollider == null) return null;
-        currentTarget = rightCollider;
-        //SetDirectedColliders();
-        return rightCollider;
+        Collider gotTarget = null;
+        switch (target)
+        {
+            case "center": gotTarget = centerCollider; break;
+            case "left": gotTarget = leftCollider; break;
+            case "right": gotTarget = rightCollider; break;
+            case "up": gotTarget = upCollider; break;
+            case "down": gotTarget = downCollider; break;
+        }
+        if (gotTarget == null) return null;
+        currentTarget = gotTarget;
+        return gotTarget;
     }
 
     public void ClearTarget()
