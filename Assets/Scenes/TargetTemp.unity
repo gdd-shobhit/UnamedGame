@@ -1641,7 +1641,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target 4
+      value: Target 4 (middle)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -2788,7 +2788,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target 2
+      value: Target 2 (bottom)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -3578,7 +3578,7 @@ PrefabInstance:
     - target: {fileID: 4752438601795823723, guid: 60b2d053f0edb694aaa12047c1fb22b2,
         type: 3}
       propertyPath: m_Name
-      value: Target 5
+      value: Target 5 (top)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60b2d053f0edb694aaa12047c1fb22b2, type: 3}
@@ -4238,6 +4238,10 @@ PrefabInstance:
       propertyPath: targetCam
       value: 
       objectReference: {fileID: 720662185}
+    - target: {fileID: 1762682276, guid: a25ea92174e0297488f442429e2958e1, type: 3}
+      propertyPath: switchCooldown
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 1762682276, guid: a25ea92174e0297488f442429e2958e1, type: 3}
       propertyPath: targetCamHelper
       value: 

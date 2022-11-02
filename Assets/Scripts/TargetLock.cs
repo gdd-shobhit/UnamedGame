@@ -99,7 +99,6 @@ public class TargetLock : MonoBehaviour
 
         if (MathF.Abs(input.look.x) > switchSensitivity)
         {
-            Debug.Log("left or right");
             if (input.look.x < 0 && switcher.leftCollider != null) // left
             {
                 target = switcher.GetTarget("left").gameObject;
@@ -114,12 +113,11 @@ public class TargetLock : MonoBehaviour
         }
         else if(MathF.Abs(input.look.y) > switchSensitivity)
         {
-            Debug.Log("up or down");
-            if (input.look.y > 0 && switcher.upCollider != null) // up
+            if (input.look.y < 0 && switcher.upCollider != null) // up
             {
                 target = switcher.GetTarget("up").gameObject;
             }
-            else if (input.look.y < 0 && switcher.downCollider != null) // down
+            else if (input.look.y > 0 && switcher.downCollider != null) // down
             {
                 target = switcher.GetTarget("down").gameObject;
             }

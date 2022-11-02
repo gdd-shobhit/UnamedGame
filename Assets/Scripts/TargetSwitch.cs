@@ -69,7 +69,7 @@ public class TargetSwitch : MonoBehaviour
         float closestRight = 99;
         float closestCenter = 99;
         float closestUp = 99;
-        float closestDown = 99;
+        float closestDown = -99;
 
         float dir;
         Vector3 targetDir, fwd, up, perp;
@@ -83,7 +83,7 @@ public class TargetSwitch : MonoBehaviour
 
             //if (!InFrontOfPlayer()) continue;
 
-            
+
             if (dir < 0 && dir > closestLeft) // closest object on left side
             {
                 closestLeft = dir;
@@ -100,6 +100,32 @@ public class TargetSwitch : MonoBehaviour
                 SetTarget("center", nearbyTargets[i]);
             }
             //Debug.Log(nearbyTargets[i].name + ": " + dir);
+
+            if (!(nearbyTargets[i].name.Contains("top")
+                || nearbyTargets[i].name.Contains("middle")
+                || nearbyTargets[i].name.Contains("bottom")))
+            { continue; }
+
+
+            //Debug.Log(nearbyTargets[i].name +": "+targetDir.y);
+
+            if (currentTarget == null) continue;
+
+            float nbY = nearbyTargets[i].transform.position.y;
+            float cY = currentTarget.transform.position.y;
+            float heightDif = nbY - cY;
+            //Debug.Log(nearbyTargets[i].name +": "+ heightDif);
+
+            if (heightDif > 0 && heightDif < closestUp)
+            {
+                closestUp = heightDif;
+                SetTarget("up", nearbyTargets[i]);
+            }
+            else if (heightDif < 0 && heightDif > closestDown)
+            {
+                closestDown = heightDif;
+                SetTarget("down", nearbyTargets[i]);
+            }
 
             // if there is not a current target, return...
             // we don't need to do calculations for the other colliders right now
