@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -21,11 +22,24 @@ public class TargetSwitch : MonoBehaviour
 
     // a value a float will (hopefully) NEVER be set to...
     // doing this bc u cant null a float lmao
-    const float FNULL = 12941.154f; 
+    const float FNULL = 0;
+
+    float closestLeft, closestRight, closestCenter, closestUp, closestDown;
+    float dir, heightDif;
+    Vector3 targetDir, fwd, up, perp;
+
+    [SerializeField] List<Collider> leftTargets;
+    [SerializeField] List<Collider> rightTargets;
+    [SerializeField] List<Collider> upTargets;
+    [SerializeField] List<Collider> downTargets;
 
     void Start()
     {
         nearbyTargets = new List<Collider>();
+        leftTargets = new List<Collider>();
+        rightTargets = new List<Collider>();
+        upTargets = new List<Collider>();
+        downTargets = new List<Collider>();
     }
 
     void Update()
@@ -64,37 +78,79 @@ public class TargetSwitch : MonoBehaviour
     // 0 is forward or backward
     private void SetDirectedColliders()
     {
-        leftCollider = null;
-        rightCollider = null;
-        centerCollider = null;
-        upCollider = null;
-        downCollider = null;
-        float closestLeft = -99;
-        float closestRight = 99;
-        float closestCenter = 99;
-        float closestUp = 99;
-        float closestDown = -99;
-
-        float dir;
-        Vector3 targetDir, fwd, up, perp;
-        float heightDif;
+        leftTargets.Clear(); rightTargets.Clear();
+        upTargets.Clear(); downTargets.Clear();
 
         for (int i = 0; i < nearbyTargets.Count; i++)
         {
-            heightDif = FNULL; 
+            ResetVariables(i);
+            SetDirectionVariables(i);
 
+            if (i == 0)
+            {
+                Debug.Log("dir: " + dir + ", heightDif: "+heightDif);
+            }
             // if nearbyTargets[i] is the current target, don't do calculations for it
             if (currentTarget != null && currentTarget == nearbyTargets[i]) continue;
 
-            SetDirectionVariables(i);
-
-            //if (!InFrontOfPlayer()) continue;
-            if (currentTarget != null) { HeightDifferenceCalculation(i); }
-
-            LeftRightColliderCalculations(i);
-            UpDownColliderCalculations(i);
+            SortTarget(i);
         }
-        
+        PickBestColliders();
+
+        void PickBestColliders()
+        {
+
+        }
+
+        void SortTarget(int i)
+        {
+            bool left = false, right = false, up = false, down = false;
+            if (dir < 0) { left = true; }
+            else if (dir > 0) { right = true; }
+
+            if (heightDif > 0) { up = true; }
+            else if (heightDif < 0) { down = true; }
+            if (left) { leftTargets.Add(nearbyTargets[i]); }
+            if (right) { rightTargets.Add(nearbyTargets[i]); }
+            /*
+            if(left && up)
+            {
+                if (heightDif > Mathf.Abs(dir)) upTargets.Add(nearbyTargets[i]);
+                else leftTargets.Add(nearbyTargets[i]);
+            }
+            else if(left && down)
+            {
+                if (Mathf.Abs(heightDif) > Mathf.Abs(dir)) downTargets.Add(nearbyTargets[i]);
+                else leftTargets.Add(nearbyTargets[i]);
+            }
+            else if(right && up)
+            {
+                if (heightDif > dir) upTargets.Add(nearbyTargets[i]);
+                else rightTargets.Add(nearbyTargets[i]);
+            }
+            else if(right && down)
+            {
+                if (Mathf.Abs(heightDif) > dir) downTargets.Add(nearbyTargets[i]);
+                else rightTargets.Add(nearbyTargets[i]);
+            }*/
+        }
+
+        void ResetVariables(int i)
+        {
+            leftCollider = null;
+            rightCollider = null;
+            centerCollider = null;
+            upCollider = null;
+            downCollider = null;
+            closestLeft = -99;
+            closestRight = 99;
+            closestCenter = 99;
+            closestUp = 99;
+            closestDown = -99;
+
+            heightDif = FNULL;
+        }
+
         void LeftRightColliderCalculations(int i)
         {
             if (dir < 0 && dir > closestLeft) // closest object on left side
