@@ -24,6 +24,8 @@ public class TargetSwitch : MonoBehaviour
     // doing this bc u cant null a float lmao
     const float FNULL = 0;
 
+    const float HEIGHT_WEIGHT = 1.2f;
+
     float closestLeft, closestRight, closestCenter, closestUp, closestDown;
     float closestLeftH;
     float dir, heightDif;
@@ -53,7 +55,7 @@ public class TargetSwitch : MonoBehaviour
             Vector3 from = this.gameObject.transform.position;
             Debug.DrawRay(from, to-from, Color.cyan);
         }
-        SetDirectedColliders();
+        if(currentTarget != null) SetDirectedColliders();
     }
 
     void OnTriggerEnter(Collider c)
@@ -95,32 +97,54 @@ public class TargetSwitch : MonoBehaviour
         }
 
         // 2nd pass for picking the best collider
-        PickBestCollider("left",leftTargets);
-        PickBestCollider("right",rightTargets);
-        PickBestCollider("up",upTargets);
-        PickBestCollider("down",downTargets);
+        PickBestCollider("left",leftTargets,"x");
+        PickBestCollider("right",rightTargets,"x");
+        PickBestCollider("up",upTargets,"y");
+        PickBestCollider("down",downTargets,"y");
 
 
-        void PickBestCollider(string tName, List<Collider> list)
+        void PickBestCollider(string tName, List<Collider> list, string pref)
         {
-            float closest = 999;
+            float closestDir = 999;
+            float closestHeight = 999;
+            Collider closestDirC = null;
+            Collider closestHeightC = null;
 
             if (list.Count != 0)
             {
                 if (list.Count == 1) { SetTarget(tName, list[0]); }
                 else
                 {
+                    
                     for (int i = 0; i < list.Count; i++)
                     {
                         SetDirectionVariables(list[i]);
                         HeightDifferenceCalculation(list[i]);
 
-                        if (MathF.Abs(heightDif) + MathF.Abs(dir) < closest) // closest object on left side
-                        {
-                            //if(heightDif != FNULL && heightDif < Mathf.Abs(dir))
-                            closest = MathF.Abs(heightDif) + MathF.Abs(dir);
-                            SetTarget(tName, list[i]);
+                        if (tName == "left") {
+                            Debug.Log(list[i].name + ", heightDif:" + heightDif + ", dir:" + dir);
                         }
+
+                        if(Mathf.Abs(dir) < closestDir)
+                        {
+                            closestDir = MathF.Abs(dir);
+                            closestDirC = list[i];
+                        }
+                        if(Mathf.Abs(heightDif) < closestHeight)
+                        {
+                            closestHeight = Mathf.Abs(heightDif);
+                            closestHeightC = list[i];
+                        }
+                    }
+                    switch (pref)
+                    {
+                        case "x":
+                            SetTarget(tName, closestDirC);
+                            break;
+                        case "y":
+                            SetTarget(tName, closestHeightC);
+                            
+                            break;
                     }
                 }
             }
@@ -138,25 +162,25 @@ public class TargetSwitch : MonoBehaviour
             else if (heightDif < 0) { down = true; }
 
             //Debug.Log(i + ", left: "+left+ ", right: " + right + ", up: " + up + ", down: " + down);
-            if (nearbyTargets[i].name.Contains("3")) Debug.Log(nearbyTargets[i].name + ", heightDif: " + heightDif + ", dir: " + dir);
+            //if (nearbyTargets[i].name.Contains("4")) Debug.Log(nearbyTargets[i].name + ", heightDif: " + heightDif + ", dir: " + dir);
             if(left && up)
             {
-                if (heightDif > Mathf.Abs(dir)) upTargets.Add(nearbyTargets[i]);
+                if (heightDif* HEIGHT_WEIGHT > Mathf.Abs(dir)) upTargets.Add(nearbyTargets[i]);
                 else leftTargets.Add(nearbyTargets[i]);
             }
             else if(left && down)
             {
-                if (Mathf.Abs(heightDif) > Mathf.Abs(dir)) downTargets.Add(nearbyTargets[i]);
+                if (Mathf.Abs(heightDif) * HEIGHT_WEIGHT > Mathf.Abs(dir)) downTargets.Add(nearbyTargets[i]);
                 else leftTargets.Add(nearbyTargets[i]);
             }
             else if(right && up)
             {
-                if (heightDif > dir) upTargets.Add(nearbyTargets[i]);
+                if (heightDif * HEIGHT_WEIGHT > dir) upTargets.Add(nearbyTargets[i]);
                 else rightTargets.Add(nearbyTargets[i]);
             }
             else if(right && down)
             {
-                if (Mathf.Abs(heightDif) > dir) downTargets.Add(nearbyTargets[i]);
+                if (Mathf.Abs(heightDif)* HEIGHT_WEIGHT > dir) downTargets.Add(nearbyTargets[i]);
                 else rightTargets.Add(nearbyTargets[i]);
             }
         }
@@ -168,15 +192,6 @@ public class TargetSwitch : MonoBehaviour
             //centerCollider = null;
             upCollider = null;
             downCollider = null;
-            closestLeft = 99;
-            closestRight = 99;
-            closestCenter = 99;
-            closestUp = 99;
-            closestDown = -99;
-
-            closestLeftH = FNULL;
-
-            heightDif = FNULL;
         }
 
         /*if (Mathf.Abs(dir) < closestCenter) // closest object to center
@@ -194,7 +209,7 @@ public class TargetSwitch : MonoBehaviour
             float nbY = i.transform.position.y;
             float cY = currentTarget.transform.position.y;
             heightDif = nbY - cY;
-            if(i.name.Contains("3")) Debug.Log(i.name + ", nbY: " + nbY + ", cY: " + cY+"... hd: "+heightDif);
+            //if(i.name.Contains("4")) Debug.Log(i.name + ", nbY: " + nbY + ", cY: " + cY+"... hd: "+heightDif);
 
         }
 
