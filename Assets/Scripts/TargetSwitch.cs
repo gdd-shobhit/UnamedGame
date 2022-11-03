@@ -85,6 +85,7 @@ public class TargetSwitch : MonoBehaviour
         {
             ResetVariables(i);
             SetDirectionVariables(i);
+            HeightDifferenceCalculation(i);
 
             if (i == 0)
             {
@@ -99,6 +100,25 @@ public class TargetSwitch : MonoBehaviour
 
         void PickBestColliders()
         {
+            if (leftTargets.Count != 0)
+            {
+                if (leftTargets.Count == 1) { leftCollider = leftTargets[0]; }
+            }
+
+            if (rightTargets.Count != 0)
+            {
+                if (rightTargets.Count == 1) { rightCollider = rightTargets[0]; }
+            }
+
+            if (upTargets.Count != 0)
+            {
+                if (upTargets.Count == 1) { upCollider = upTargets[0]; }
+            }
+
+            if (downTargets.Count != 0)
+            {
+                if (downTargets.Count == 1) { downCollider = downTargets[0]; }
+            }
 
         }
 
@@ -110,9 +130,11 @@ public class TargetSwitch : MonoBehaviour
 
             if (heightDif > 0) { up = true; }
             else if (heightDif < 0) { down = true; }
-            if (left) { leftTargets.Add(nearbyTargets[i]); }
-            if (right) { rightTargets.Add(nearbyTargets[i]); }
-            /*
+            //if (left) { leftTargets.Add(nearbyTargets[i]); }
+            //if (right) { rightTargets.Add(nearbyTargets[i]); }
+
+            Debug.Log(i + ", left: "+left+ ", up: " + up);
+
             if(left && up)
             {
                 if (heightDif > Mathf.Abs(dir)) upTargets.Add(nearbyTargets[i]);
@@ -132,14 +154,14 @@ public class TargetSwitch : MonoBehaviour
             {
                 if (Mathf.Abs(heightDif) > dir) downTargets.Add(nearbyTargets[i]);
                 else rightTargets.Add(nearbyTargets[i]);
-            }*/
+            }
         }
 
         void ResetVariables(int i)
         {
             leftCollider = null;
             rightCollider = null;
-            centerCollider = null;
+            //centerCollider = null;
             upCollider = null;
             downCollider = null;
             closestLeft = -99;
