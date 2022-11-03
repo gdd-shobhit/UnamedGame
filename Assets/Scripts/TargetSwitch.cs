@@ -19,6 +19,10 @@ public class TargetSwitch : MonoBehaviour
 
     [SerializeField] private Collider currentTarget;
 
+    // a value a float will (hopefully) NEVER be set to...
+    // doing this bc u cant null a float lmao
+    const float FNULL = 12941.154f; 
+
     void Start()
     {
         nearbyTargets = new List<Collider>();
@@ -73,24 +77,35 @@ public class TargetSwitch : MonoBehaviour
 
         float dir;
         Vector3 targetDir, fwd, up, perp;
+        float heightDif;
 
         for (int i = 0; i < nearbyTargets.Count; i++)
         {
+            heightDif = FNULL; 
+
             // if nearbyTargets[i] is the current target, don't do calculations for it
             if (currentTarget != null && currentTarget == nearbyTargets[i]) continue;
 
             SetDirectionVariables(i);
 
             //if (!InFrontOfPlayer()) continue;
+            if (currentTarget != null) { HeightDifferenceCalculation(i); }
 
-
+            LeftRightColliderCalculations(i);
+            UpDownColliderCalculations(i);
+        }
+        
+        void LeftRightColliderCalculations(int i)
+        {
             if (dir < 0 && dir > closestLeft) // closest object on left side
             {
+                //if(heightDif != FNULL && heightDif < Mathf.Abs(dir))
                 closestLeft = dir;
                 SetTarget("left", nearbyTargets[i]);
             }
             if (dir > 0 && dir < closestRight) // closest object on right side
             {
+                //if (heightDif != FNULL && heightDif < dir)
                 closestRight = dir;
                 SetTarget("right", nearbyTargets[i]);
             }
@@ -99,61 +114,35 @@ public class TargetSwitch : MonoBehaviour
                 closestCenter = Mathf.Abs(dir);
                 SetTarget("center", nearbyTargets[i]);
             }
-            //Debug.Log(nearbyTargets[i].name + ": " + dir);
+        }
 
-            if (!(nearbyTargets[i].name.Contains("top")
-                || nearbyTargets[i].name.Contains("middle")
-                || nearbyTargets[i].name.Contains("bottom")))
-            { continue; }
-
-
-            //Debug.Log(nearbyTargets[i].name +": "+targetDir.y);
-
-            if (currentTarget == null) continue;
-
-            float nbY = nearbyTargets[i].transform.position.y;
-            float cY = currentTarget.transform.position.y;
-            float heightDif = nbY - cY;
-            //Debug.Log(nearbyTargets[i].name +": "+ heightDif);
-
+        void UpDownColliderCalculations(int i)
+        {
             if (heightDif > 0 && heightDif < closestUp)
             {
-                closestUp = heightDif;
-                SetTarget("up", nearbyTargets[i]);
+                if (heightDif < Mathf.Abs(dir))
+                {
+                    closestUp = heightDif;
+                    SetTarget("up", nearbyTargets[i]);
+                }
+
             }
             else if (heightDif < 0 && heightDif > closestDown)
             {
-                closestDown = heightDif;
-                SetTarget("down", nearbyTargets[i]);
-            }
-
-            // if there is not a current target, return...
-            // we don't need to do calculations for the other colliders right now
-            /*
-            if (!currentTarget || dir > 2) continue;
-
-            if (nearbyTargets[i] == leftCollider || nearbyTargets[i] == rightCollider) break;
-
-            if (nearbyTargets[i].transform.position.y > currentTarget.transform.position.y)
-            {
-                if (nearbyTargets[i].transform.position.y < closestUp)
+                if (heightDif < Mathf.Abs(dir))
                 {
-                    closestUp = nearbyTargets[i].transform.position.y;
-                    SetTarget("up", nearbyTargets[i]);
-                }
-            }
-            else if (nearbyTargets[i].transform.position.y < currentTarget.transform.position.y)
-            {
-                if (nearbyTargets[i].transform.position.y < closestDown)
-                {
-                    closestDown = nearbyTargets[i].transform.position.y;
+                    closestDown = heightDif;
                     SetTarget("down", nearbyTargets[i]);
                 }
-            }*/
-
+            }
         }
-        
-        
+
+        void HeightDifferenceCalculation(int i)
+        {
+            float nbY = nearbyTargets[i].transform.position.y;
+            float cY = currentTarget.transform.position.y;
+            heightDif = nbY - cY;
+        }
 
         bool InFrontOfPlayer()
         {
