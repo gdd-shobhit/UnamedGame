@@ -3993,6 +3993,12 @@ MonoBehaviour:
   timeBetweenAttacks: 0
   deathTime: 0
   onHitVFX: {fileID: 1212022383}
+  radius: 0
+  angle: 0
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 0
+  canSeePlayer: 0
   idealRange: 7
   rangeTolerance: 2
   projectile: {fileID: 3873377811334291190, guid: 0a58224e41a4bfa4da21f7ce12dcf1f2,
@@ -4619,6 +4625,16 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
+      propertyPath: angle
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
+      propertyPath: radius
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
       propertyPath: weapon
       value: 
       objectReference: {fileID: 1922611655}
@@ -4640,12 +4656,17 @@ PrefabInstance:
     - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
       propertyPath: whatIsGround.m_Bits
-      value: 1
+      value: 513
       objectReference: {fileID: 0}
     - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
       propertyPath: whatIsPlayer.m_Bits
       value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: -4017548773641211185, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
+      propertyPath: obstructionMask.m_Bits
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 170564722547330534, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
@@ -4670,7 +4691,7 @@ PrefabInstance:
     - target: {fileID: 7347139291273641388, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.54
+      value: -8.65
       objectReference: {fileID: 0}
     - target: {fileID: 7347139291273641388, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
@@ -4680,7 +4701,7 @@ PrefabInstance:
     - target: {fileID: 7347139291273641388, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 20.36
+      value: 3.79
       objectReference: {fileID: 0}
     - target: {fileID: 7347139291273641388, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
@@ -5167,6 +5188,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Box_350x250x300_Prefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 5043663941078610840, guid: 09aade0ecefd01e4b8f7661acf64f5c2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6056394991271758435, guid: 09aade0ecefd01e4b8f7661acf64f5c2,
         type: 3}

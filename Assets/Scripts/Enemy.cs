@@ -51,7 +51,17 @@ public class Enemy : MonoBehaviour, IDamageable
     protected bool isDead = false;
     protected bool inAir = false;
     public ParticleSystem onHitVFX;
-    
+
+    // Test field of view
+    public float radius;
+    [Range(0, 360)]
+
+    public float angle;
+
+    public LayerMask obstructionMask;
+
+    public bool canSeePlayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +76,9 @@ public class Enemy : MonoBehaviour, IDamageable
         startWaitTime = 3;
         waitTime = startWaitTime;
         lostPlayer = true;
+
+        // Test field of view
+        StartCoroutine(FOVRoutine());
     }
 
     // Update is called once per frame
@@ -166,8 +179,8 @@ public class Enemy : MonoBehaviour, IDamageable
     // Display's Enemy's View Distance
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, lookRadius);
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawWireSphere(transform.position, lookRadius);
     }
 
     private void Patrolling()
@@ -279,5 +292,43 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         alreadyAttacked = false;
         anim.SetBool("Attack", false);
+    }
+
+    // Test field of view
+
+    private IEnumerator FOVRoutine()
+    {
+        WaitForSeconds wait = new WaitForSeconds(0.2f);
+
+        while (true)
+        {
+            yield return wait;
+            FieldOfViewCheck();
+        }
+    }
+
+    private void FieldOfViewCheck()
+    {
+        Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, whatIsPlayer);
+
+        if (rangeChecks.Length != 0)
+        {
+            Transform currentTarget = rangeChecks[0].transform;
+            Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
+
+            if (Vector3.Angle(transform.forward, directionToTarget) < angle / 2)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+
+                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
+                    canSeePlayer = true;
+                else
+                    canSeePlayer = false;
+            }
+            else
+                canSeePlayer = false;
+        }
+        else if (canSeePlayer)
+            canSeePlayer = false;
     }
 }
