@@ -5007,6 +5007,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 720662185}
     - target: {fileID: 1762682276, guid: a25ea92174e0297488f442429e2958e1, type: 3}
+      propertyPath: switchCooldown
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1762682276, guid: a25ea92174e0297488f442429e2958e1, type: 3}
       propertyPath: targetCamHelper
       value: 
       objectReference: {fileID: 2015571070}
