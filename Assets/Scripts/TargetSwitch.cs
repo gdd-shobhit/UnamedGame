@@ -55,7 +55,31 @@ public class TargetSwitch : MonoBehaviour
             Vector3 from = this.gameObject.transform.position;
             Debug.DrawRay(from, to-from, Color.cyan);
         }
-        if(currentTarget != null) SetDirectedColliders();
+        
+        ClearColliders();
+        PickBestCollider("center", nearbyTargets, "x");
+
+
+        if (currentTarget != null) SetDirectedColliders();
+
+        void ClearColliders()
+        {
+            leftTargets.Clear(); rightTargets.Clear();
+            upTargets.Clear(); downTargets.Clear();
+            leftCollider = null;
+            rightCollider = null;
+            //centerCollider = null;
+            upCollider = null;
+            downCollider = null;
+        }
+        void FindCenterTarget()
+        {
+            /*if (Mathf.Abs(dir) < closestCenter) // closest object to center
+        {
+            closestCenter = Mathf.Abs(dir);
+            SetTarget("center", nearbyTargets[i]);
+        }*/
+        }
     }
 
     void OnTriggerEnter(Collider c)
@@ -80,10 +104,6 @@ public class TargetSwitch : MonoBehaviour
 
     private void SetDirectedColliders()
     {
-        leftTargets.Clear(); rightTargets.Clear();
-        upTargets.Clear(); downTargets.Clear();
-        ResetVariables();
-
         // Go through each nearby target and sort them into seperate lists
         for (int i = 0; i < nearbyTargets.Count; i++)
         {
@@ -96,59 +116,14 @@ public class TargetSwitch : MonoBehaviour
             SortTarget(i);
         }
 
-        // 2nd pass for picking the best collider
+        // Now that all colliders are sorted, pick the best collider for each direction
         PickBestCollider("left",leftTargets,"x");
         PickBestCollider("right",rightTargets,"x");
         PickBestCollider("up",upTargets,"y");
         PickBestCollider("down",downTargets,"y");
 
 
-        void PickBestCollider(string tName, List<Collider> list, string pref)
-        {
-            float closestDir = 999;
-            float closestHeight = 999;
-            Collider closestDirC = null;
-            Collider closestHeightC = null;
-
-            if (list.Count != 0)
-            {
-                if (list.Count == 1) { SetTarget(tName, list[0]); }
-                else
-                {
-                    
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        SetDirectionVariables(list[i]);
-                        HeightDifferenceCalculation(list[i]);
-
-                        if (tName == "left") {
-                            Debug.Log(list[i].name + ", heightDif:" + heightDif + ", dir:" + dir);
-                        }
-
-                        if(Mathf.Abs(dir) < closestDir)
-                        {
-                            closestDir = MathF.Abs(dir);
-                            closestDirC = list[i];
-                        }
-                        if(Mathf.Abs(heightDif) < closestHeight)
-                        {
-                            closestHeight = Mathf.Abs(heightDif);
-                            closestHeightC = list[i];
-                        }
-                    }
-                    switch (pref)
-                    {
-                        case "x":
-                            SetTarget(tName, closestDirC);
-                            break;
-                        case "y":
-                            SetTarget(tName, closestHeightC);
-                            
-                            break;
-                    }
-                }
-            }
-        }
+        
   
         void SortTarget(int i)
         {
@@ -185,54 +160,81 @@ public class TargetSwitch : MonoBehaviour
             }
         }
 
-        void ResetVariables()
-        {
-            leftCollider = null;
-            rightCollider = null;
-            //centerCollider = null;
-            upCollider = null;
-            downCollider = null;
-        }
-
-        /*if (Mathf.Abs(dir) < closestCenter) // closest object to center
-        {
-            closestCenter = Mathf.Abs(dir);
-            SetTarget("center", nearbyTargets[i]);
-        }*/
-
         
+    }
 
+    private void PickBestCollider(string tName, List<Collider> list, string pref)
+    {
+        float closestDir = 999;
+        float closestHeight = 999;
+        Collider closestDirC = null;
+        Collider closestHeightC = null;
 
-
-        void HeightDifferenceCalculation(Collider i)
+        if (list.Count != 0)
         {
-            float nbY = i.transform.position.y;
-            float cY = currentTarget.transform.position.y;
-            heightDif = nbY - cY;
-            //if(i.name.Contains("4")) Debug.Log(i.name + ", nbY: " + nbY + ", cY: " + cY+"... hd: "+heightDif);
-
-        }
-
-        bool InFrontOfPlayer()
-        {
-            if (Vector3.Dot(targetDir.normalized, fwd) > 0.7f) return true;
-            else return false;
-        }
-
-        void SetDirectionVariables(Collider i)
-        {
-            targetDir = i.transform.position - followCam.transform.position; // direction from nearbyTargets[i] and the player follow camera
-            fwd = followCam.transform.forward; // forward direction vector based on the player follow camera
-            up = followCam.transform.up; // up direction vector based on the player follow camera
-            perp = Vector3.Cross(fwd, targetDir);
-            dir = Vector3.Dot(perp, up);
-
-            if (Vector3.Dot(targetDir.normalized, fwd) > 0)
+            if (list.Count == 1) { SetTarget(tName, list[0]); }
+            else
             {
-                //Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+                for (int i = 0; i < list.Count; i++)
+                {
+                    SetDirectionVariables(list[i]);
+                    if(currentTarget!=null) HeightDifferenceCalculation(list[i]);
+
+                    //if (tName == "left") Debug.Log(list[i].name + ", heightDif:" + heightDif + ", dir:" + dir);
+
+                    if (Mathf.Abs(dir) < closestDir)
+                    {
+                        closestDir = MathF.Abs(dir);
+                        closestDirC = list[i];
+                    }
+                    if (Mathf.Abs(heightDif) < closestHeight)
+                    {
+                        closestHeight = Mathf.Abs(heightDif);
+                        closestHeightC = list[i];
+                    }
+                }
+                switch (pref)
+                {
+                    case "x":
+                        SetTarget(tName, closestDirC);
+                        break;
+                    case "y":
+                        SetTarget(tName, closestHeightC);
+
+                        break;
+                }
             }
-            else {/*Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");*/ }
         }
+    }
+
+    private void HeightDifferenceCalculation(Collider i)
+    {
+        float nbY = i.transform.position.y;
+        float cY = currentTarget.transform.position.y;
+        heightDif = nbY - cY;
+        //if(i.name.Contains("4")) Debug.Log(i.name + ", nbY: " + nbY + ", cY: " + cY+"... hd: "+heightDif);
+
+    }
+
+    private bool InFrontOfPlayer()
+    {
+        if (Vector3.Dot(targetDir.normalized, fwd) > 0.7f) return true;
+        else return false;
+    }
+
+    private void SetDirectionVariables(Collider i)
+    {
+        targetDir = i.transform.position - followCam.transform.position; // direction from nearbyTargets[i] and the player follow camera
+        fwd = followCam.transform.forward; // forward direction vector based on the player follow camera
+        up = followCam.transform.up; // up direction vector based on the player follow camera
+        perp = Vector3.Cross(fwd, targetDir);
+        dir = Vector3.Dot(perp, up);
+
+        if (Vector3.Dot(targetDir.normalized, fwd) > 0)
+        {
+            //Debug.Log(nearbyTargets[i].name + "is in front of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");
+        }
+        else {/*Debug.Log(nearbyTargets[i].name + "is in back of player (" + Vector3.Dot(targetDir.normalized, fwd) + ")");*/ }
     }
 
     private void SetTarget(string target, Collider c)

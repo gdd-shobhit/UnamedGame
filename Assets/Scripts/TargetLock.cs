@@ -107,7 +107,8 @@ public class TargetLock : MonoBehaviour
             {
                 target = switcher.GetTarget("right").gameObject;
             }
-            
+            else return;
+
             targetCam.LookAt = target.transform;
             justSwitched = true; timeSinceLastSwitch = 0;
         }
@@ -121,6 +122,7 @@ public class TargetLock : MonoBehaviour
             {
                 target = switcher.GetTarget("down").gameObject;
             }
+            else return;
 
             targetCam.LookAt = target.transform;
             justSwitched = true; timeSinceLastSwitch = 0;
