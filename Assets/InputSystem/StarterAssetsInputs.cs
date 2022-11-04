@@ -16,6 +16,7 @@ namespace StarterAssets
 		public bool pAttack;
 		public bool hAttack;
 		public bool lockOnEnemy;
+		public bool lockedOn;
 		public bool interact;
 
 		[Header("Movement Settings")]

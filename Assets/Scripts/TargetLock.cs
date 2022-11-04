@@ -76,6 +76,7 @@ public class TargetLock : MonoBehaviour
         if (followCam.isActiveAndEnabled)
         {
             if (!FindEnemy()) return;
+            input.lockedOn = true;
             targetCam.LookAt = target.transform;
             followCam.gameObject.SetActive(false);
             targetCam.gameObject.SetActive(true);
@@ -86,6 +87,7 @@ public class TargetLock : MonoBehaviour
             target = null;
             switcher.ClearTarget();
             targetCam.LookAt = null;
+            input.lockedOn = false;
             targetCam.gameObject.SetActive(false);
             lockImage.gameObject.SetActive(false);
             followCam.gameObject.SetActive(true);

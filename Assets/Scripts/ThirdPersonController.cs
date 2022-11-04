@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -82,6 +83,7 @@ namespace StarterAssets
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
+        [SerializeField] private CinemachineVirtualCamera followCam;
 
         // player
         private float _speed;
@@ -210,8 +212,13 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            if (_input.lockedOn)
+            {
+                _cinemachineTargetYaw = followCam.transform.rotation.eulerAngles.y;
+                _cinemachineTargetPitch = followCam.transform.rotation.eulerAngles.x;
+            }
             // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            else if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
