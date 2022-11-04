@@ -20,6 +20,24 @@ public class NarrativeHandler : MonoBehaviour
     public bool inTrigger; // Can the player start a dialog sequence?
     public bool inDialog; // Is the player in a dialog sequence?
 
+    public List<GameObject> dialogueCameras = new List<GameObject>();
+
+
+    private void Awake()
+    {
+        // Add Commands to Dialogue System
+        dialogSystem.AddCommandHandler<int>("ChangeCamera", ChangeCamera);
+    }
+
+    private void ChangeCamera(int cameraIndex)
+    {
+        foreach (GameObject cam in dialogueCameras)
+        {
+            cam.SetActive(false);
+        }
+
+        dialogueCameras[cameraIndex].SetActive(true);
+    }
 
     // Update is called once per frame
     void Update()
