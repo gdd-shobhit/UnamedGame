@@ -260,6 +260,10 @@ MonoBehaviour:
   upCollider: {fileID: 0}
   downCollider: {fileID: 0}
   currentTarget: {fileID: 0}
+  leftTargets: []
+  rightTargets: []
+  upTargets: []
+  downTargets: []
 --- !u!1 &1631811501
 GameObject:
   m_ObjectHideFlags: 0
