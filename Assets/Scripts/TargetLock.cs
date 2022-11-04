@@ -63,7 +63,7 @@ public class TargetLock : MonoBehaviour
 
     bool FindEnemy()
     {
-        try{ target = switcher.GetCenterTarget().gameObject; }
+        try{ target = switcher.GetTarget("center").gameObject; }
         catch { return false; }
         return true;
     }
@@ -95,32 +95,44 @@ public class TargetLock : MonoBehaviour
     // moves the lock on camera to look at the target while behind the player's head
     private void MoveLockOnCamera()
     {
-        if (!justSwitched && MathF.Abs(input.look.x) > switchSensitivity)
+        if (justSwitched) { MoveCamera(); return; }
+
+        if (MathF.Abs(input.look.x) > switchSensitivity)
         {
             if (input.look.x < 0 && switcher.leftCollider != null) // left
             {
-                target = switcher.GetLeftTarget().gameObject;
+                target = switcher.GetTarget("left").gameObject;
             }
-            else if (input.look.x > 0 && switcher.rightCollider != null)
+            else if (input.look.x > 0 && switcher.rightCollider != null) // right
             {
-                target = switcher.GetRightTarget().gameObject;
+                target = switcher.GetTarget("right").gameObject;
             }
+            else return;
+
             targetCam.LookAt = target.transform;
             justSwitched = true; timeSinceLastSwitch = 0;
-
-            /*GameObject tempObj = targetSwitcher.GetComponent<TargetSwitch>().SwitchTarget(this.gameObject, target);
-            if (tempObj != null)
+        }
+        else if(MathF.Abs(input.look.y) > switchSensitivity)
+        {
+            if (input.look.y < 0 && switcher.upCollider != null) // up
             {
-                target = tempObj;
-                input.LookInput(new Vector2(0, 0));
-                targetCam.LookAt = target.transform;
-                justSwitched = true; timeSinceLastSwitch = 0;
-            }*/
+                target = switcher.GetTarget("up").gameObject;
+            }
+            else if (input.look.y > 0 && switcher.downCollider != null) // down
+            {
+                target = switcher.GetTarget("down").gameObject;
+            }
+            else return;
+
+            targetCam.LookAt = target.transform;
+            justSwitched = true; timeSinceLastSwitch = 0;
         }
 
-
+        MoveCamera();
+    }
+    private void MoveCamera()
+    {
         //TODO: Make Target Transition smoother
-
 
         targetCamHelper.LookAt(target.transform);
 
@@ -129,7 +141,6 @@ public class TargetLock : MonoBehaviour
 
         // offsets the current position to behind the players head
         targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
-
     }
 
     // move the target lock sprite to the object being targeted
