@@ -9,7 +9,34 @@
                     "name": "Movement",
                     "type": "PassThrough",
                     "id": "3cf9dedf-212e-425d-aa99-50fd66ca0d3e",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Camera",
+                    "type": "PassThrough",
+                    "id": "efdda8fa-fc96-41c4-9e72-76692045475d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "canJump",
+                    "type": "PassThrough",
+                    "id": "51462c8f-6c80-491e-baaa-ca662eba18be",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "cantJump",
+                    "type": "PassThrough",
+                    "id": "b7c34fe5-57ee-4e43-ae25-fb06370e72ce",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -70,6 +97,50 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "2a1c6563-f3c6-4d0c-8a9d-0439899677a7",
+                    "path": "<Gamepad>/rightStick/down",
+                    "interactions": "",
+                    "processors": "AxisDeadzone",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9fd2e2d2-d3d4-45a7-8cfa-97e74be586c0",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "NormalizeVector2",
+                    "groups": "",
+                    "action": "Camera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a64295f8-d386-41a8-a036-2c4de4d4f856",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "canJump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f35ff7e7-8513-43a7-8f36-cab07aedbee8",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "cantJump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
