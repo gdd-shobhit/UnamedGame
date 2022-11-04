@@ -96,7 +96,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         anim.SetBool("Hit", false);
     }
 
-    public IEnumerator GrabbablePull(Transform t_player, float pullSpeed)
+    public IEnumerator Grab(Transform t_player, float pullSpeed)
     {
         rigidbody.isKinematic = false;
         //perform linear interpolation
@@ -112,9 +112,10 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
             transform.position = Vector3.Lerp(origin, destination, timer/pullTime);
 
             timer += Time.deltaTime;
-            Debug.Log(timer + ": " + pullTime);
             yield return null;
         }
         rigidbody.isKinematic = true;
     }
+
+    public bool GetSwingable() { return false; }
 }

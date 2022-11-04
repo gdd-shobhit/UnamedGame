@@ -4,5 +4,6 @@ using UnityEngine;
 
 public interface IGrabbable
 {
-    IEnumerator GrabbablePull(Transform t_player, float pullSpeed);
+    IEnumerator Grab(Transform t_player, float pullSpeed);
+    bool GetSwingable(); //returns true or false for if the player can use the grabbable object to swing
 }

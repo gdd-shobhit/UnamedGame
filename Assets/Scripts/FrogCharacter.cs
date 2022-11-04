@@ -206,19 +206,68 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
         Vector3 tongueDirection = camera.transform.forward;
         tongueDirection.y = 0;
-        Debug.DrawLine(tonguePosStart, tonguePosStart + tongueDirection * tongueLength, Color.red, 1.0f);
 
         RaycastHit raycast = new RaycastHit();
-        Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
-        if(raycast.collider) {
-            IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
-            if (g != null)
+
+        bool tongueHasHit = false;
+        while (!tongueHasHit && tongueDirection.y < 0.5)
+        {
+            Debug.DrawLine(tonguePosStart, tonguePosStart + tongueDirection * tongueLength, Color.red, 1.0f);
+
+            Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
+            if (raycast.collider)
             {
-                Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
-                Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
-                StartCoroutine(g.GrabbablePull(transform, pullSpeed));
+                IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
+                if (g != null)
+                {
+                    tongueHasHit = true;
+                    if (g.GetSwingable())
+                    {
+                        StartCoroutine(TongueSwing(raycast.point));
+                    }
+                    else {
+                        Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
+                        Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
+                        StartCoroutine(g.Grab(transform, pullSpeed));
+                    }
+                }
             }
+            tongueDirection.y += 0.05f;
+        }
+    }
+
+    IEnumerator TongueSwing(Vector3 anchor)
+    {
+        //define a sphere whose center is at the anchor point of the tongue and radius is the distance between the anchor point and the player
+        //snap the player to the surface of the sphere for the duration of the swing
+        //x = (r * cos(s) * sin(t)) + anchor.x
+        //z = (r * sin(s) * cos(t)) + anchor.z
+        //y = (r * cos(t))          + anchor.y
+        //where s = angle around the y axis between the player and the anchor
+        //and
+        //t = angle between y axis centered on the sphere and the player
+        //alter the trajectory of the player by changing the values of s and t
+
+        //find initial values of angles s and t
+        float r = (anchor - transform.position).magnitude;
+        float t = Mathf.Acos((transform.position.y - anchor.y) / r);
+        float s = Mathf.Acos(((transform.position.x - anchor.x) / r) / Mathf.Sin(t));
+
+        float timer = 0;
+
+        while (timer < 10.0f)
+        {
+            timer += Time.deltaTime;
+            t += 0.001f;
+            Vector3 newPos = new Vector3();
+            newPos.x = (r * Mathf.Cos(s) * Mathf.Sin(t)) + anchor.x;
+            newPos.z = (r * Mathf.Sin(s) * Mathf.Cos(t)) + anchor.z;
+            newPos.y = (r * Mathf.Cos(t)) + anchor.y;
+
+            transform.position = newPos;
+            yield return null;
         }
         
+        yield return null;
     }
 }
