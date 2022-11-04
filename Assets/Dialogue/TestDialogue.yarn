@@ -3,6 +3,7 @@ tags:
 ---
 Hello World!
 This is a test conversation for the game!
+<<ChangeCamera 1>>
 Dagger: I wonder what lesson should I teach my Croak?
 -> Responsibility
     <<jump ResponsibilityLesson>>
@@ -13,30 +14,42 @@ Dagger: I wonder what lesson should I teach my Croak?
 ===
 title: ResponsibilityLesson
 ---
+<<ChangeCamera 1>>
 Dagger: Croak do you know the what responsibility is?
+<<ChangeCamera 2>>
 Croak: Not really no?
+<<ChangeCamera 1>>
 Dagger: It is when it is your job and duty to deal with a situation.
 Dagger: Wheter that be with a problem you cause of a person you are looking out for.
+<<ChangeCamera 2>>
 Croak: Huh...
 Croak: Does that mean we are responsible for each other?
     -> Yes
+        <<ChangeCamera 1>>
         Dagger: Yes it does.
         <<set $relationship += 1>>
     -> No
+        <<ChangeCamera 1>>
         Dagger: No you are not responsible over me in the slightiest.
         <<set $relationship -= 1>>
     <<jump LessonEnding>>
 ===
 title: MannersLesson
 ---
+<<ChangeCamera 1>>
 Dagger: Do not talk with your mouth full Croak.
+<<ChangeCamera 2>>
 Croak: *Munch Munch* Ok *Munch Munch*
     -> Scold
+        <<ChangeCamera 1>>
         Dagger: Croak... what did I just say?
+        <<ChangeCamera 2>>
         Croak: Sorry...
         <<set $relationship += 1>>
     -> Punish
+        <<ChangeCamera 1>>
         Dagger: Now you are not getting any more snacks
+        <<ChangeCamera 2>>
         Croak: Awww maaan
         <<set $relationship -= 1>>
     <<jump LessonEnding>>
@@ -44,16 +57,22 @@ Croak: *Munch Munch* Ok *Munch Munch*
 
 title: CompassionLesson
 ---
+<<ChangeCamera 1>>
 Dagger: Croak how do you feel about the foes we have faced so far?
+<<ChangeCamera 2>>
 Croak: Uhhh I am not really sure...
 Croak: It was very mean of them to attack us and I am kind of scared of them.
+<<ChangeCamera 1>>
 Dagger: That is quite understandable my child.
 Dagger: However it is important to remember that they are living breathing creatures just like you and I.
+<<ChangeCamera 2>>
 Croak: Even the heron?
     -> Yes
+        <<ChangeCamera 1>>
         Dagger: Sadly yes, even the heron deserves some decency...
         <<set $relationship += 1>>
     -> No
+        <<ChangeCamera 1>>
         Dagger: No! That heron disrespected the life of my children. We shouldn't do the same.
         <<set $relationship -= 1>>
     <<jump LessonEnding>>
@@ -61,13 +80,17 @@ Croak: Even the heron?
 
 title: LessonEnding
 ---
+<<ChangeCamera 2>>
 Croak: Thank you for teaching me that!
+<<ChangeCamera 1>>
 Dagger: No problem youngling how do you feel?
+<<ChangeCamera 2>>
 <<if $relationship > 0>>
     Croak: I feel a lot more enlightened.
     Croak: Thank you father!
 <<else>>
     Croak: I feel kind of sad...
 <<endif>>
-Croak: Maybe tommorow I can teach you another lesson.
+Dagger: Maybe tommorow I can teach you another lesson.
+<<ChangeCamera 0>>
 ===
