@@ -52,7 +52,7 @@ public class Enemy : MonoBehaviour, IDamageable
     protected bool inAir = false;
     public ParticleSystem onHitVFX;
 
-    // Test field of view
+    // Enemy Field of View
     public float radius;
     [Range(0, 360)]
 
@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour, IDamageable
         waitTime = startWaitTime;
         lostPlayer = true;
 
-        // Test field of view
+        // Makes the field of view not run all the time to help with performance
         StartCoroutine(FOVRoutine());
     }
 
@@ -143,7 +143,7 @@ public class Enemy : MonoBehaviour, IDamageable
         // Depending on the distance of the player and the enemy view distance
         // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
-        if (distance > lookRadius && !isDead) 
+        if (!canSeePlayer && !isDead) 
         {
             // Checks if the player was lost while chasing them
             if (!lostPlayer)
@@ -153,12 +153,22 @@ public class Enemy : MonoBehaviour, IDamageable
                 Vector3 distanceToWalkPoint = transform.position - lastPlayerDestination;
 
                 // Once the player has gotten close enough to where the player last was
+                // The enemy will stop moving and stand at the last seen spot for a bit
                 // Then the walkpoint is set to false and the lost player is set to true
                 // So that the enemy will continue to patrol again
                 if (distanceToWalkPoint.magnitude < 3f)
                 {
-                    walkPointSet = false;
-                    lostPlayer = true;
+                    StopEnemy();
+                    if (waitTime <= 0)
+                    {
+                        walkPointSet = false;
+                        lostPlayer = true;
+                        waitTime = startWaitTime;
+                    }
+                    else
+                    {
+                        waitTime -= Time.deltaTime;
+                    }
                 }
             }
             else
@@ -166,7 +176,9 @@ public class Enemy : MonoBehaviour, IDamageable
                 Patrolling();
             }
         }
-        if (distance <= lookRadius && !isDead) ChasePlayer();
+        if (canSeePlayer && !isDead) ChasePlayer();
+        // Checks if the distance of the enemy is at the stopping distance
+        // If so then that means the enemy can start attacking the player
         if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
 
     }
@@ -174,13 +186,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnTriggerExit(Collider other)
     {
         anim.SetBool("Hit", false);
-    }
-
-    // Display's Enemy's View Distance
-    private void OnDrawGizmos()
-    {
-        //Gizmos.color = Color.red;
-        //Gizmos.DrawWireSphere(transform.position, lookRadius);
     }
 
     private void Patrolling()
@@ -212,6 +217,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     }
 
+    // Stops the Enemy completely 
+    // and sets up the idle animation
     private void StopEnemy()
     {
         agent.isStopped = true;
@@ -219,6 +226,8 @@ public class Enemy : MonoBehaviour, IDamageable
         anim.SetFloat("Speed", 0);
     }
 
+    // Starts the Enemy back up with a given speed
+    // and sets the animation according to the speed set
     private void StartEnemy(int speed)
     {
         agent.isStopped = false;
@@ -273,6 +282,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if(!isDead)
         transform.LookAt(target);
 
+        // Makes it so the player doesn't keep moving while attacking the player
         agent.speed = 0;
         gameObject.GetComponent<NavMeshAgent>().isStopped = true;
 
@@ -281,8 +291,10 @@ public class Enemy : MonoBehaviour, IDamageable
             // Attack code
             anim.SetBool("Attack", true);
 
+            // Checks if the enemy has hit the player
             CheckHit();
 
+            // If so then the enemy attack is reset
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
@@ -294,7 +306,8 @@ public class Enemy : MonoBehaviour, IDamageable
         anim.SetBool("Attack", false);
     }
 
-    // Test field of view
+    // Waits a few seconds before running the field of view check
+    // Makes the performance of the game a bit better
 
     private IEnumerator FOVRoutine()
     {
@@ -307,19 +320,24 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
+    // Checks the field of view of the enemy
     private void FieldOfViewCheck()
     {
+        // Checks for any players in the specific view radius
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, whatIsPlayer);
 
+        // If there is a player in the radius
         if (rangeChecks.Length != 0)
         {
             Transform currentTarget = rangeChecks[0].transform;
             Vector3 directionToTarget = (currentTarget.position - transform.position).normalized;
 
+            // Checks if the player is in the specific view triangle in front of the enemy
             if (Vector3.Angle(transform.forward, directionToTarget) < angle / 2)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
+                // If it is and nothing is blocking the view then the enemy can see the player
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                     canSeePlayer = true;
                 else
