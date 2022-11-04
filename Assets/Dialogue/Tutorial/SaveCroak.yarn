@@ -1,0 +1,14 @@
+﻿title: SaveCroak
+tags:
+---
+Dagger: It's an egg....
+-> Inspect
+    Dagger: It doesn't seem to be one of mine...
+-> Cradle
+    <<ChangeCamera 1>>
+    Dagger: Don't worry buddy I got you.
+<<ChangeCamera 1>>
+Dagger: As rough as today has been.
+<<ChangeCamera 0>>
+Dagger: I'm not gonna let anybody hurt you!!!
+===
