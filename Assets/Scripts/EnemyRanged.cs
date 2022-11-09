@@ -64,9 +64,12 @@ public class EnemyRanged : Enemy
                 break;
         }
 
+
         if (enemyState != EnemyState.Idle)
             transform.LookAt(player.transform.position);
 
+        anim.SetInteger("MovementState", (int)enemyState);
+        Debug.Log(((int)enemyState));
 
         if (health <= 0 && !isDead)
         {
