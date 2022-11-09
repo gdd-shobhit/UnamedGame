@@ -45,7 +45,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     // Death and Respawn
     public bool isDead = false;
     public float deathTime = 0;
-    protected float reviveCooldown = 10f;
+    protected float reviveCooldown = 5f;
+    private Vector3 respawnPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -61,6 +62,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         
         croakMat = weapon[2].GetComponent<Renderer>().material;
         swordMat = weapon[0].GetComponent<Renderer>().material;
+
+        respawnPoint = transform.position;
     }
 
     private void Update()
@@ -71,16 +74,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
         if(currentHealth <= 0 && !isDead)
         {
-            deathTime = Time.time;
-            isDead = true;
-            anim.SetBool("isDead", isDead);
+            Dead();
         }
 
         if (Time.time - deathTime > reviveCooldown && isDead)
         {
-            currentHealth = maxhealth;
-            isDead = false;
-            anim.SetBool("isDead", isDead);
+            Respawn();
         }
 
         if (Time.time - lastAttackTime > maxComboDelay)
@@ -268,6 +267,29 @@ public class FrogCharacter : MonoBehaviour, IDamageable
                 weapon[0].SetActive(false);
             }
             weapon[2].SetActive(true);
+        }
+    }
+
+    public void Dead()
+    {
+        deathTime = Time.time;
+        isDead = true;
+        anim.SetBool("isDead", isDead);
+    }
+
+    public void Respawn()
+    {
+        currentHealth = maxhealth;
+        isDead = false;
+        anim.SetBool("isDead", isDead);
+        //transform.position = respawnPoint;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Checkpoint")
+        {
+            Debug.Log("checkpoint");
         }
     }
 }
