@@ -105,6 +105,11 @@ public class Enemy : MonoBehaviour, IDamageable
     public void GetHit()
     {
         health -= player.GetComponent<FrogCharacter>().attackDamage;
+
+        // Makes it so if the player attacks while the enemy can't see
+        // they will turn back ground and fight back
+        if (!canSeePlayer)
+            canSeePlayer = true;
     }
 
     public void GetHit(int attackDamage)
