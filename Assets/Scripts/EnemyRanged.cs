@@ -14,6 +14,10 @@ public class EnemyRanged : Enemy
 
     protected override void EnemyAI()
     {
+
+        anim.SetInteger("MovementState", (int)enemyState);
+        //Debug.Log(((int)enemyState));
+
         anim.SetFloat("Speed", agent.speed);
 
         float distance = Vector3.Distance(target.position, transform.position);
@@ -68,9 +72,6 @@ public class EnemyRanged : Enemy
         if (enemyState != EnemyState.Idle)
             transform.LookAt(player.transform.position);
 
-        anim.SetInteger("MovementState", (int)enemyState);
-        Debug.Log(((int)enemyState));
-
         if (health <= 0 && !isDead)
         {
             deathTime = Time.time;
@@ -89,7 +90,7 @@ public class EnemyRanged : Enemy
     {
         GameObject spiderAttack = Instantiate(projectile, 
             transform.position
-            + new Vector3(0.0f, 1.0f, 0.0f) //move up so it doesn't originate in the floor
+            + new Vector3(0.0f, 0.5f, 0.0f) //move up so it doesn't originate in the floor
             + (target.transform.position - transform.position).normalized, // move towards target so it doesn't collide with enemy
             transform.rotation);
 

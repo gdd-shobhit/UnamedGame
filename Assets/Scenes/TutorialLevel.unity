@@ -25211,7 +25211,7 @@ MonoBehaviour:
   getHitCooldown: 0.55
   healthSlider: {fileID: 336683016}
   weapon: {fileID: 0}
-  lookRadius: 10
+  lookRadius: 15
   whatIsGround:
     serializedVersion: 2
     m_Bits: 513
@@ -25228,9 +25228,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   canSeePlayer: 0
-  idealRange: 0
-  rangeTolerance: 0
-  projectile: {fileID: 0}
+  idealRange: 7
+  rangeTolerance: 3
+  projectile: {fileID: 3873377811334291190, guid: 0a58224e41a4bfa4da21f7ce12dcf1f2,
+    type: 3}
   attackInterval: 2
   projectileSpeed: 700
 --- !u!195 &1263670265
@@ -25243,8 +25244,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 2
+  m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
