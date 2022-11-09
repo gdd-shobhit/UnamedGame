@@ -42,6 +42,11 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     private int dissolvePercent = 0;
     private int materializePercent = 0;
 
+    // Death and Respawn
+    public bool isDead = false;
+    public float deathTime = 0;
+    protected float reviveCooldown = 10f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +68,20 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
+
+        if(currentHealth <= 0 && !isDead)
+        {
+            deathTime = Time.time;
+            isDead = true;
+            anim.SetBool("isDead", isDead);
+        }
+
+        if (Time.time - deathTime > reviveCooldown && isDead)
+        {
+            currentHealth = maxhealth;
+            isDead = false;
+            anim.SetBool("isDead", isDead);
+        }
 
         if (Time.time - lastAttackTime > maxComboDelay)
         {

@@ -170,10 +170,15 @@ namespace StarterAssets
             {
                 return;
             }
-
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            
+            // Checks if the player is dead
+            // if not then the player is able to control Dagger
+            if (!GameManager.instance.myFrog.isDead)
+            {
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
+            }
         }
 
         private void LateUpdate()

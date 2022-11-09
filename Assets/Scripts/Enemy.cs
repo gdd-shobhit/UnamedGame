@@ -176,10 +176,10 @@ public class Enemy : MonoBehaviour, IDamageable
                 Patrolling();
             }
         }
-        if (canSeePlayer && !isDead) ChasePlayer();
+        if (canSeePlayer && !isDead && !player.GetComponent<FrogCharacter>().isDead) ChasePlayer();
         // Checks if the distance of the enemy is at the stopping distance
         // If so then that means the enemy can start attacking the player
-        if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
+        if (distance <= agent.stoppingDistance + 1 && !isDead && !player.GetComponent<FrogCharacter>().isDead) AttackPlayer();
 
     }
 
