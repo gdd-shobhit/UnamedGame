@@ -16,7 +16,7 @@ public class EnemyRanged : Enemy
     {
 
         anim.SetInteger("MovementState", (int)enemyState);
-        //Debug.Log(((int)enemyState));
+        Debug.Log(((int)enemyState));
 
         anim.SetFloat("Speed", agent.speed);
 
@@ -56,6 +56,7 @@ public class EnemyRanged : Enemy
                 break;
 
             case EnemyState.Attack:
+                agent.SetDestination(transform.position);
                 if (attackCooldown <= 0.0f)
                 {
                     Attack();
