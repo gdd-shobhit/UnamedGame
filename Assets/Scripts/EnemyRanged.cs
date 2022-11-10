@@ -94,7 +94,18 @@ public class EnemyRanged : Enemy
             + new Vector3(0.0f, 0.5f, 0.0f) //move up so it doesn't originate in the floor
             + (target.transform.position - transform.position).normalized, // move towards target so it doesn't collide with enemy
             transform.rotation);
+        anim.SetTrigger("Attack");
 
         spiderAttack.GetComponent<Rigidbody>().AddForce((target.transform.position - transform.position).normalized * 500.0f);
+    }
+
+    public override void GetHit(int attackDamage)
+    {
+        if (Time.time - lastGotHit == 0f)
+        {
+            health -= attackDamage;
+            anim.SetInteger("Health", health);
+            onHitVFX.Play();
+        }
     }
 }

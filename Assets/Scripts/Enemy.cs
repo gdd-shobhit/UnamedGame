@@ -112,7 +112,7 @@ public class Enemy : MonoBehaviour, IDamageable
             canSeePlayer = true;
     }
 
-    public void GetHit(int attackDamage)
+    public virtual void GetHit(int attackDamage)
     {
         if(anim.GetBool("Hit") && Time.time - lastGotHit == 0f)
         {
