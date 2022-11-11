@@ -83,7 +83,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     private void Update()
     {
-        Debug.Log(currentHealth);
+        //Debug.Log(currentHealth);
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
