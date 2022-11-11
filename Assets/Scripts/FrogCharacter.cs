@@ -91,7 +91,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         PComboDone();
         SheathWeapon();
 
-        if(currentHealth <= 0 && !isDead)
+        if (currentHealth <= 0 && !isDead)
         {
             Dead();
         }
@@ -119,12 +119,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
                 weapon[0].SetActive(true);
                 weapon[2].SetActive(false);
             }
-                
+
             noOfAttacks++;
-            PrimaryAttack();         
+            PrimaryAttack();
             GetComponent<StarterAssetsInputs>().pAttack = false;
         }
-        if(GetComponent<StarterAssetsInputs>().hAttack)
+        if (GetComponent<StarterAssetsInputs>().hAttack)
         {
             // Sheath/Unsheath
             if (!weapon[0].activeSelf)
@@ -134,31 +134,35 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             }
 
             HeavyAttack();
-        
+
             GetComponent<StarterAssetsInputs>().hAttack = false;
+        }
+
+        if (GetComponent<StarterAssetsInputs>().tongue)
+        {
+            Debug.Log("tongue pressed");
+            TongueGrab();
+            GetComponent<StarterAssetsInputs>().tongue = false;
         }
 
         //update material
 
-        if(weapon[2].activeSelf && weapon[0].activeSelf)
+        if (weapon[2].activeSelf && weapon[0].activeSelf)
         {
             swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
         }
-            //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
+        //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         else
         {
             if (weapon[2].activeSelf)
             {
                 croakMat.SetFloat("_CutoffHeight", weapon[2].GetComponent<Transform>().position.y + 1);
             }
-        
-            if(weapon[0].activeSelf)
+
+            if (weapon[0].activeSelf)
             {
                 swordMat.SetFloat("_CutoffHeight", weapon[0].GetComponent<Transform>().position.y + 1);
             }
-        if(GetComponent<StarterAssetsInputs>().tongue){
-            TongueGrab();
-            GetComponent<StarterAssetsInputs>().tongue = false;
         }
     }
 
@@ -308,12 +312,14 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Checkpoint")
+        if (other.tag == "Checkpoint")
         {
             Debug.Log("checkpoint");
 
             respawnPoint = other.transform.position;
         }
+    }
+
     void TongueGrab(){
         // a little yucky but it works
         // adding Vector3.up adjusts for the player object's anchor being on the floor, and adding the forward vector of the camera ensures we don't accidentally detect the shield or weapon objects
@@ -321,7 +327,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
         Vector3 tongueDirection = camera.transform.forward;
         tongueDirection.y = 0;
-
+        Debug.Log("tongue");
         RaycastHit raycast = new RaycastHit();
 
         bool tongueHasHit = false;

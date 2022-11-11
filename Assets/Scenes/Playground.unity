@@ -4637,6 +4637,11 @@ PrefabInstance:
       objectReference: {fileID: 2015571070}
     - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
+      propertyPath: camera
+      value: 
+      objectReference: {fileID: 1493445918}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
       propertyPath: sheathTime
       value: 1
       objectReference: {fileID: 0}
@@ -4644,6 +4649,11 @@ PrefabInstance:
         type: 3}
       propertyPath: isAttacking
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
+      propertyPath: tongueLength
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7272696469984481327, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
