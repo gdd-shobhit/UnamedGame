@@ -18,11 +18,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Narrative/ConvoTester.unity
     guid: b40cf8f605d1e8342aeea20d24b0ce4d
   - enabled: 1
-    path: Assets/Scenes/Narrative/NarrativeTrigger.unity
-    guid: 62b97a80b621a7247a957382fc7db1c6
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+    path: Assets/Scenes/Narrative/NarrativeTriggerTest.unity
+    guid: 896b026cd3c7f8543b70f946cfe65c6b
   - enabled: 1
     path: Assets/Scenes/TutorialLevel.unity
     guid: 9386df3a77c3c954b80276288f4ca574
