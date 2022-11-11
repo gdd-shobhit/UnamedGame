@@ -71,7 +71,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public void LoadData(GameData data)
     {
         this.respawnPoint = data.respawnPoint;
-        this.currentHealth = data.currentHealth;
+        //this.currentHealth = data.currentHealth;
+        this.currentHealth = 100;
         this.transform.position = respawnPoint;
     }
 
@@ -79,14 +80,14 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (!isDead)
         {
-            data.respawnPoint = this.respawnPoint;
+            data.respawnPoint = new Vector3(17, 2, -22);
             data.currentHealth = this.currentHealth;
         }
     }
 
     private void Update()
     {
-        //Debug.Log(currentHealth);
+        Debug.Log(currentHealth);
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
