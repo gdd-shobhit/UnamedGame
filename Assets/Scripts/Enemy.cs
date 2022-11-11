@@ -12,7 +12,7 @@ public enum EnemyState
     Idle
 }
 
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : MonoBehaviour, IDamageable, IGrabbable
 {
     [SerializeField]
     protected int health;
@@ -62,6 +62,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public bool canSeePlayer;
 
+    private Rigidbody rigidbody;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -79,6 +81,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         // Makes the field of view not run all the time to help with performance
         StartCoroutine(FOVRoutine());
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -105,9 +108,14 @@ public class Enemy : MonoBehaviour, IDamageable
     public void GetHit()
     {
         health -= player.GetComponent<FrogCharacter>().attackDamage;
+
+        // Makes it so if the player attacks while the enemy can't see
+        // they will turn back ground and fight back
+        if (!canSeePlayer)
+            canSeePlayer = true;
     }
 
-    public void GetHit(int attackDamage)
+    public virtual void GetHit(int attackDamage)
     {
         if(anim.GetBool("Hit") && Time.time - lastGotHit == 0f)
         {
@@ -132,7 +140,9 @@ public class Enemy : MonoBehaviour, IDamageable
             deathTime = Time.time;
             isDead = true;
         }
-            
+        
+        // Revives the enemy
+        /**
         if (Time.time - deathTime > reviveCooldown && isDead)
         {
             health = 100;
@@ -140,6 +150,8 @@ public class Enemy : MonoBehaviour, IDamageable
             isDead = false;
 
         }
+        **/
+
         // Depending on the distance of the player and the enemy view distance
         // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
@@ -176,10 +188,10 @@ public class Enemy : MonoBehaviour, IDamageable
                 Patrolling();
             }
         }
-        if (canSeePlayer && !isDead) ChasePlayer();
+        if (canSeePlayer && !isDead && !player.GetComponent<FrogCharacter>().isDead) ChasePlayer();
         // Checks if the distance of the enemy is at the stopping distance
         // If so then that means the enemy can start attacking the player
-        if (distance <= agent.stoppingDistance + 1 && !isDead) AttackPlayer();
+        if (distance <= agent.stoppingDistance + 1 && !isDead && !player.GetComponent<FrogCharacter>().isDead) AttackPlayer();
 
     }
 
@@ -270,6 +282,7 @@ public class Enemy : MonoBehaviour, IDamageable
             if (hit.tag == "Player")
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
+                GameManager.instance.hudUpdate = true;
                 //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
@@ -349,4 +362,26 @@ public class Enemy : MonoBehaviour, IDamageable
         else if (canSeePlayer)
             canSeePlayer = false;
     }
+    public IEnumerator Grab(Transform t_player, float pullSpeed)
+    {
+        rigidbody.isKinematic = false;
+        //perform linear interpolation
+        Vector3 origin = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Vector3 destination;
+        float pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
+        float timer = 0;
+        while(timer < pullTime){
+            //destination and pullTime need to be updated each frame to account for player movement during the pull
+            destination = t_player.position + ((transform.position - t_player.position).normalized);
+            pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
+
+            transform.position = Vector3.Lerp(origin, destination, timer/pullTime);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        rigidbody.isKinematic = true;
+    }
+
+    public bool GetSwingable() { return false; }
 }

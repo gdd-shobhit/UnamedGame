@@ -14,6 +14,10 @@ public class EnemyRanged : Enemy
 
     protected override void EnemyAI()
     {
+
+        anim.SetInteger("MovementState", (int)enemyState);
+
+
         anim.SetFloat("Speed", agent.speed);
 
         float distance = Vector3.Distance(target.position, transform.position);
@@ -52,6 +56,7 @@ public class EnemyRanged : Enemy
                 break;
 
             case EnemyState.Attack:
+                agent.SetDestination(transform.position);
                 if (attackCooldown <= 0.0f)
                 {
                     Attack();
@@ -64,9 +69,9 @@ public class EnemyRanged : Enemy
                 break;
         }
 
+
         if (enemyState != EnemyState.Idle)
             transform.LookAt(player.transform.position);
-
 
         if (health <= 0 && !isDead)
         {
@@ -86,10 +91,22 @@ public class EnemyRanged : Enemy
     {
         GameObject spiderAttack = Instantiate(projectile, 
             transform.position
-            + new Vector3(0.0f, 1.0f, 0.0f) //move up so it doesn't originate in the floor
+            + new Vector3(0.0f, 1.1f, 0.0f) //move up so it doesn't originate in the floor
             + (target.transform.position - transform.position).normalized, // move towards target so it doesn't collide with enemy
             transform.rotation);
+        anim.SetTrigger("Attack");
 
         spiderAttack.GetComponent<Rigidbody>().AddForce((target.transform.position - transform.position).normalized * 500.0f);
+    }
+
+    public override void GetHit(int attackDamage)
+    {
+        anim.SetTrigger("Hit");
+        if (Time.time - lastGotHit == 0f)
+        {
+            health -= attackDamage;
+            anim.SetInteger("Health", health);
+            onHitVFX.Play();
+        }
     }
 }

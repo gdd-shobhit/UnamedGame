@@ -93,6 +93,12 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        // jump stuff
+        private float holdJumpTimer = 0;
+        private bool jumpHeld;
+        private int holdJumpCount = 0;
+        const int HOLDJUMP_COUNT_MAX = 3;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -171,9 +177,14 @@ namespace StarterAssets
                 return;
             }
 
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            // Checks if the player is dead
+            // if not then the player is able to control Dagger
+            if (!GameManager.instance.myFrog.isDead)
+            {
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
+            }
         }
 
         private void LateUpdate()
@@ -330,8 +341,15 @@ namespace StarterAssets
 
         private void JumpAndGravity()
         {
+            // check if player is holding down jump key
+            jumpHeld = (_playerInput.currentActionMap.actions[2].ReadValue<float>() > 0.1f) ? true : false;
+
             if (Grounded)
             {
+                // reset hold jump timer
+                holdJumpTimer = 0;
+                holdJumpCount = 0;
+
                 // reset the fall timeout timer
                 _fallTimeoutDelta = FallTimeout;
 
@@ -352,7 +370,9 @@ namespace StarterAssets
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                    //_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                    //Debug.Log(Mathf.Sqrt(JumpHeight * -2f * Gravity));
+                    _verticalVelocity = 4.5f;
 
                     // update animator if using character
                     if (_hasAnimator)
@@ -388,7 +408,27 @@ namespace StarterAssets
 
                 // if we are not grounded, do not jump
                 _input.jump = false;
+                if (!jumpHeld) holdJumpCount = HOLDJUMP_COUNT_MAX;
+
+                if (jumpHeld && holdJumpCount < HOLDJUMP_COUNT_MAX)
+                {
+                    //Debug.Log("holding and count less than 4");
+                    if(holdJumpTimer > 0.05f)
+                    {
+                        holdJumpTimer = 0;
+                        _verticalVelocity += 2;
+                        holdJumpCount++;
+                    }
+                    else
+                    {
+                        holdJumpTimer += Time.deltaTime;
+                    }
+                    
+                    
+                    //Debug.Log("hey: "+ holdJumpTimer);
+                }
             }
+
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
             if (_verticalVelocity < _terminalVelocity)
