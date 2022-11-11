@@ -282,6 +282,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
             if (hit.tag == "Player")
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
+                GameManager.instance.hudUpdate = true;
                 //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
