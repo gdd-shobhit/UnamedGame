@@ -213,11 +213,12 @@ namespace StarterAssets
                 transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
                 QueryTriggerInteraction.Ignore);
-
+            Debug.Log("Grounded state: " + Grounded);
             // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetBool(_animIDGrounded, Grounded);
+                //_animator.SetBool("isInAir", !Grounded);
             }
         }
 
