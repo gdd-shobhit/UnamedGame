@@ -93,6 +93,10 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        // jump stuff
+        private float holdJumpTimer = 0;
+        private bool jumpHeld;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -170,7 +174,7 @@ namespace StarterAssets
             {
                 return;
             }
-            
+
             // Checks if the player is dead
             // if not then the player is able to control Dagger
             if (!GameManager.instance.myFrog.isDead)
@@ -335,8 +339,14 @@ namespace StarterAssets
 
         private void JumpAndGravity()
         {
+            // check if player is holding down jump key
+            jumpHeld = (_playerInput.currentActionMap.actions[2].ReadValue<float>() > 0.1f) ? true : false;
+
             if (Grounded)
             {
+                // reset hold jump timer
+                holdJumpTimer = 0;
+
                 // reset the fall timeout timer
                 _fallTimeoutDelta = FallTimeout;
 
@@ -393,7 +403,15 @@ namespace StarterAssets
 
                 // if we are not grounded, do not jump
                 _input.jump = false;
+
+                if (jumpHeld && holdJumpTimer < 0.3)
+                {  
+                    holdJumpTimer += Time.deltaTime;
+                    _verticalVelocity += holdJumpTimer *2;
+                    //Debug.Log("hey: "+ holdJumpTimer);
+                }
             }
+
 
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
             if (_verticalVelocity < _terminalVelocity)
