@@ -18,6 +18,7 @@ namespace StarterAssets
 		public bool lockOnEnemy;
 		public bool lockedOn;
 		public bool interact;
+		public bool tongue;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -68,6 +69,11 @@ namespace StarterAssets
 		{
 			LockOnEnemyInput(value.isPressed);
 		}
+		public void OnTongue(InputValue value)
+		{
+			TongueInput(value.isPressed);
+		}
+
 
 		public void OnInteract(InputValue value)
 		{
@@ -128,6 +134,10 @@ namespace StarterAssets
 		public void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+		}
+
+		private void TongueInput(bool newTongueState){
+			tongue = newTongueState;
 		}
 	}
 

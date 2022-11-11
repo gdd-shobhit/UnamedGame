@@ -81,6 +81,9 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "bfb07ed6-8c12-4a4b-b450-fa1ce3c17801",
+                    "name": "Tongue",
+                    "type": "Button",
+                    "id": "e6c002b9-5e0f-45cc-8369-1b061946355e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -371,6 +374,12 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Interact",
+                    "id": "b33ef3aa-a8c0-4dd8-be66-b3cbaf9a32a0",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tongue",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
