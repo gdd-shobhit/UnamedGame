@@ -96,6 +96,8 @@ namespace StarterAssets
         // jump stuff
         private float holdJumpTimer = 0;
         private bool jumpHeld;
+        private int holdJumpCount = 0;
+        const int HOLDJUMP_COUNT_MAX = 3;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -346,6 +348,7 @@ namespace StarterAssets
             {
                 // reset hold jump timer
                 holdJumpTimer = 0;
+                holdJumpCount = 0;
 
                 // reset the fall timeout timer
                 _fallTimeoutDelta = FallTimeout;
@@ -367,7 +370,9 @@ namespace StarterAssets
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                    //_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+                    //Debug.Log(Mathf.Sqrt(JumpHeight * -2f * Gravity));
+                    _verticalVelocity = 4.5f;
 
                     // update animator if using character
                     if (_hasAnimator)
@@ -403,11 +408,23 @@ namespace StarterAssets
 
                 // if we are not grounded, do not jump
                 _input.jump = false;
+                if (!jumpHeld) holdJumpCount = HOLDJUMP_COUNT_MAX;
 
-                if (jumpHeld && holdJumpTimer < 0.3)
-                {  
-                    holdJumpTimer += Time.deltaTime;
-                    _verticalVelocity += holdJumpTimer *2;
+                if (jumpHeld && holdJumpCount < HOLDJUMP_COUNT_MAX)
+                {
+                    //Debug.Log("holding and count less than 4");
+                    if(holdJumpTimer > 0.05f)
+                    {
+                        holdJumpTimer = 0;
+                        _verticalVelocity += 2;
+                        holdJumpCount++;
+                    }
+                    else
+                    {
+                        holdJumpTimer += Time.deltaTime;
+                    }
+                    
+                    
                     //Debug.Log("hey: "+ holdJumpTimer);
                 }
             }
