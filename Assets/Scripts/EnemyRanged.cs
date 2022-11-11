@@ -16,7 +16,7 @@ public class EnemyRanged : Enemy
     {
 
         anim.SetInteger("MovementState", (int)enemyState);
-        Debug.Log(((int)enemyState));
+
 
         anim.SetFloat("Speed", agent.speed);
 
@@ -91,7 +91,7 @@ public class EnemyRanged : Enemy
     {
         GameObject spiderAttack = Instantiate(projectile, 
             transform.position
-            + new Vector3(0.0f, 0.5f, 0.0f) //move up so it doesn't originate in the floor
+            + new Vector3(0.0f, 1.1f, 0.0f) //move up so it doesn't originate in the floor
             + (target.transform.position - transform.position).normalized, // move towards target so it doesn't collide with enemy
             transform.rotation);
         anim.SetTrigger("Attack");
@@ -101,6 +101,7 @@ public class EnemyRanged : Enemy
 
     public override void GetHit(int attackDamage)
     {
+        anim.SetTrigger("Hit");
         if (Time.time - lastGotHit == 0f)
         {
             health -= attackDamage;
