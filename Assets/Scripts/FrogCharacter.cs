@@ -71,9 +71,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public void LoadData(GameData data)
     {
         this.respawnPoint = data.respawnPoint;
-        //this.currentHealth = data.currentHealth;
-        this.currentHealth = 100;
-        isDead = false;
+        this.currentHealth = data.currentHealth;
         this.transform.position = respawnPoint;
     }
 
