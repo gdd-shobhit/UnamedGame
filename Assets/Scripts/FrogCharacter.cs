@@ -79,7 +79,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (!isDead)
         {
-            data.respawnPoint = this.respawnPoint;
+            data.respawnPoint = new Vector3(17, 2, -22);
             data.currentHealth = this.currentHealth;
         }
     }
