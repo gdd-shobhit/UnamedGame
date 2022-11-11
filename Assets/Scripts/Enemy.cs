@@ -34,6 +34,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
     public LayerMask whatIsGround, whatIsPlayer;
     public Vector3 walkPoint;
     bool walkPointSet;
+    protected int maxHealth;
 
     private float startWaitTime;
     private float waitTime;
@@ -78,7 +79,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         startWaitTime = 3;
         waitTime = startWaitTime;
         lostPlayer = true;
-
+        maxHealth = 100;
         // Makes the field of view not run all the time to help with performance
         StartCoroutine(FOVRoutine());
         rigidbody = GetComponent<Rigidbody>();
@@ -102,7 +103,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
 
     private void HUDUpdate()
     {
-        healthSlider.value = 100 - health;
+        healthSlider.value = maxHealth - health;
     }
 
     public void GetHit()
