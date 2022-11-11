@@ -14,6 +14,6 @@ public class GameData
     {
         this.name = "Croak";
         this.currentHealth = 100;
-        respawnPoint = Vector3.zero;
+        respawnPoint = new Vector3(17, 2, -22);
     }
 }
