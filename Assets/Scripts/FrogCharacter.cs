@@ -4,7 +4,7 @@ using UnityEngine;
 using StarterAssets;
 using System.Linq;
 
-public class FrogCharacter : MonoBehaviour, IDamageable
+public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 {
     [SerializeField]
     int sheathTime = 2;
@@ -52,7 +52,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     void Start()
     {
         anim = GetComponent<Animator>();
-        currentHealth = 100;
         level = 1;
         currentEnergy = 100;
         maxhealth = 100;
@@ -66,8 +65,25 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         respawnPoint = transform.position;
     }
 
+    public void LoadData(GameData data)
+    {
+        this.respawnPoint = data.respawnPoint;
+        this.currentHealth = data.currentHealth;
+        this.transform.position = respawnPoint;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (!isDead)
+        {
+            data.respawnPoint = this.respawnPoint;
+            data.currentHealth = this.currentHealth;
+        }
+    }
+
     private void Update()
     {
+        Debug.Log(currentHealth);
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
@@ -279,10 +295,9 @@ public class FrogCharacter : MonoBehaviour, IDamageable
 
     public void Respawn()
     {
-        currentHealth = maxhealth;
         isDead = false;
         anim.SetBool("isDead", isDead);
-        //transform.position = respawnPoint;
+        DataPersistenceManager.instance.LoadGame();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -290,6 +305,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         if(other.tag == "Checkpoint")
         {
             Debug.Log("checkpoint");
+
+            respawnPoint = other.transform.position;
         }
     }
 }

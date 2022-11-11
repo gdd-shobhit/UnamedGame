@@ -137,7 +137,9 @@ public class Enemy : MonoBehaviour, IDamageable
             deathTime = Time.time;
             isDead = true;
         }
-            
+        
+        // Revives the enemy
+        /**
         if (Time.time - deathTime > reviveCooldown && isDead)
         {
             health = 100;
@@ -145,6 +147,8 @@ public class Enemy : MonoBehaviour, IDamageable
             isDead = false;
 
         }
+        **/
+
         // Depending on the distance of the player and the enemy view distance
         // The enemy will enter a different state
         float distance = Vector3.Distance(target.position, transform.position);
