@@ -86,13 +86,19 @@ public class NarrativeHandler : MonoBehaviour
 
     public void DialogComplete()
     {
-        Debug.Log("Dialog Done!");
-
         ActivateControls(true);
-
-        currentTrigger.triggerComplete = true;
         inTrigger = false;
         inDialog = false;
         input.interact = false;
+
+        // Set Trigger to complete so it can not be reactivated
+        if (currentTrigger != null)
+        {
+            if (!currentTrigger.repeatable)
+            {
+                currentTrigger.triggerComplete = true;
+            }
+            currentTrigger = null;
+        }
     }
 }

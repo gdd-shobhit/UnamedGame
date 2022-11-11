@@ -351,6 +351,7 @@ MonoBehaviour:
   narrativeHandler: {fileID: 1762682284}
   node: Yeet
   automatic: 0
+  repeatable: 0
   triggerComplete: 0
 --- !u!65 &228244347
 BoxCollider:
@@ -3527,6 +3528,7 @@ MonoBehaviour:
   narrativeHandler: {fileID: 1762682284}
   node: Start
   automatic: 0
+  repeatable: 0
   triggerComplete: 0
 --- !u!65 &1278308571
 BoxCollider:
@@ -5809,7 +5811,7 @@ GameObject:
   - component: {fileID: 2005609748}
   - component: {fileID: 2005609747}
   m_Layer: 0
-  m_Name: arrative Trigger Test (1))
+  m_Name: Repeat Narrative
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5828,8 +5830,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   narrativeHandler: {fileID: 1762682284}
-  node: Auto
-  automatic: 1
+  node: Repeat
+  automatic: 0
+  repeatable: 1
   triggerComplete: 0
 --- !u!65 &2005609748
 BoxCollider:
