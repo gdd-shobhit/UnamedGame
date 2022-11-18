@@ -72,6 +72,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         this.respawnPoint = data.respawnPoint;
         this.currentHealth = data.currentHealth;
+        currentEnergy = 100;
         this.transform.position = respawnPoint;
     }
 

@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     {
         vignetteGoDown = true;
         vignette =(UnityEngine.Rendering.Universal.Vignette) volumeProfile.components[2];
+        UpdateHUD();
     }
 
     // Update is called once per frame
@@ -79,6 +80,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void UpdateHUD()
     {
+        Debug.Log("hud updated");
         healthSlider.value = myFrog.currentHealth;
         energySlider.value = myFrog.currentEnergy;
         hudUpdate = false;
