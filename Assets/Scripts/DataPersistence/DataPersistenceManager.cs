@@ -55,7 +55,7 @@ public class DataPersistenceManager : MonoBehaviour
             dataPersistenceObj.LoadData(gameData);
         }
 
-        //Debug.Log("Health = " + gameData.currentHealth);
+        Debug.Log("Health = " + gameData.currentHealth);
         //Debug.Log("Respawn Point = " + gameData.respawnPoint);
     }
 
