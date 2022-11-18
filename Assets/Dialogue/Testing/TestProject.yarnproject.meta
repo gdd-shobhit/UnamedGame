@@ -13,6 +13,8 @@ ScriptedImporter:
   - {fileID: 6391573757903218779, guid: a34342b93167fa64cbc9ffd04e96f0bd, type: 3}
   - {fileID: 6391573757903218779, guid: 2b32866208d9a3f4e96064ef5efc42dc, type: 3}
   - {fileID: 6391573757903218779, guid: 0bbb386c215854448a04de255218afee, type: 3}
+  - {fileID: 6391573757903218779, guid: 83fdaa2e02a7b124f808e5f90d595312, type: 3}
+  - {fileID: 6391573757903218779, guid: 8c279e41dbc85bd468815498f0ad4706, type: 3}
   compileErrors: []
   serializedDeclarations:
   - name: $relationship
@@ -30,6 +32,12 @@ ScriptedImporter:
   searchAllAssembliesForActions: 1
   assembliesToSearch: []
   ListOfFunctions:
+  - Name: GetRelationshipValue
+    ReturnType: -> Int32
+    Parameters: []
+  - Name: GetName
+    ReturnType: -> String
+    Parameters: []
   - Name: Random
     ReturnType: -> Single
     Parameters: []

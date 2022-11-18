@@ -4,39 +4,47 @@ using UnityEngine;
 using UnityEngine.Events;
 using Yarn.Unity;
 using StarterAssets;
+using TMPro;
 
-public class NarrativeHandler : MonoBehaviour
+public class NarrativeHandler : MonoBehaviour, IDataPersistence
 {
+    public int relationshipValue;
+    public string croakName;
+
     public GameObject dialogPrompt; // UI to tell the player they can start a dialog sequence
     public GameObject player; // Player Character
     public GameObject hud; // Hud
-    public DialogueRunner dialogSystem;
+    public DialogueRunner dialogSystem; // Yarnspinner
+    public GameObject NameInput;
+    public GameObject NameWarning;
 
-    public NarrativeTrigger currentTrigger;
+    public NarrativeTrigger currentTrigger; // The Current Trigger the Player is in
 
     [SerializeField] private StarterAssetsInputs input; // Inputs
-
 
     public bool inTrigger; // Can the player start a dialog sequence?
     public bool inDialog; // Is the player in a dialog sequence?
 
+    private static NarrativeHandler instance;
+
     public List<GameObject> dialogueCameras = new List<GameObject>();
 
+    public static NarrativeHandler Instance
+    {
+        get { return instance; }
+    }
 
     private void Awake()
     {
-        // Add Commands to Dialogue System
-        dialogSystem.AddCommandHandler<int>("ChangeCamera", ChangeCamera);
-    }
-
-    private void ChangeCamera(int cameraIndex)
-    {
-        foreach (GameObject cam in dialogueCameras)
+        // Make NarrativeHandler a Singleton
+        if (instance != null)
         {
-            cam.SetActive(false);
+            Debug.LogError("Found more than one NarrativeHandler in the scene");
         }
-
-        dialogueCameras[cameraIndex].SetActive(true);
+        else
+        {
+            instance = this;
+        }
     }
 
     // Update is called once per frame
@@ -99,6 +107,37 @@ public class NarrativeHandler : MonoBehaviour
                 currentTrigger.triggerComplete = true;
             }
             currentTrigger = null;
+        }
+    }
+
+    public void LoadData(GameData data)
+    {
+        this.relationshipValue = data.relationshipValue;
+        this.croakName = data.croakName;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        Debug.Log(data.croakName);
+        data.relationshipValue = this.relationshipValue;
+        data.croakName = this.croakName;
+        Debug.Log(this.croakName);
+    }
+
+    public void SetName()
+    {
+        TMP_InputField inputField = NameInput.GetComponent<TMP_InputField>();
+
+        if (inputField.text.Length > 9)
+        {
+            NameWarning.SetActive(true);
+        }
+        else
+        {
+            NameWarning.SetActive(false);
+
+            this.croakName = inputField.text;
+            NameInput.SetActive(false);
         }
     }
 }
