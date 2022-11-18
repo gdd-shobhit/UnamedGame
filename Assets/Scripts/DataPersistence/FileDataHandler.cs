@@ -31,6 +31,7 @@ public class FileDataHandler
                     using(StreamReader reader = new StreamReader(stream))
                     {
                         dataToLoad = reader.ReadToEnd();
+                        Debug.Log("Location of save file: " + fullPath);
                     }
                 }
 
