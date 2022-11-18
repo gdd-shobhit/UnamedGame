@@ -125,6 +125,9 @@ namespace StarterAssets
         // Narrative
         public bool inDialog;
 
+        //tracks when a swing motion has begun/ended to switch movement styles
+        public bool inSwing;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -177,9 +180,9 @@ namespace StarterAssets
                 return;
             }
 
-            // Checks if the player is dead
+            // Checks if the player is dead or swinging
             // if not then the player is able to control Dagger
-            if (!GameManager.instance.myFrog.isDead)
+            if (!GameManager.instance.myFrog.isDead && !inSwing)
             {
                 JumpAndGravity();
                 GroundedCheck();
@@ -213,7 +216,7 @@ namespace StarterAssets
                 transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
                 QueryTriggerInteraction.Ignore);
-            Debug.Log("Grounded state: " + Grounded);
+            //Debug.Log("Grounded state: " + Grounded);
             // update animator if using character
             if (_hasAnimator)
             {
@@ -320,6 +323,58 @@ namespace StarterAssets
             if (_input.dash)
                 StartCoroutine(DashCoroutine(0.4f));
             
+        }
+
+        //called from FrogCharacter.cs
+        public void Swing(Vector3 anchor)
+        {
+            inSwing = true;
+            StartCoroutine(SwingCoroutine(anchor));
+        }
+
+        IEnumerator SwingCoroutine(Vector3 anchor)
+        {
+            //define a sphere whose center is at the anchor point of the tongue and radius is the distance between the anchor point and the player
+            //snap the player to the surface of the sphere for the duration of the swing
+            //x = (r * cos(s) * sin(t)) + anchor.x
+            //z = (r * sin(s) * cos(t)) + anchor.z
+            //y = (r * cos(t))          + anchor.y
+            //where s = angle around the y axis between the player and the anchor
+            //and
+            //t = angle between y axis centered on the sphere and the player
+
+            Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
+            Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
+            Vector3 velocity = (transform.forward * MoveSpeed) - (Vector3.down * Gravity) * Time.deltaTime;
+
+            float swingRadius = (anchor - transform.position).magnitude;
+            float t = 0.0f;
+            float s = 0.0f;
+
+            float timer = 0;
+            while (timer < 1.5f)    //TODO: replace timed value with while(tongueButton is pressed)
+            {
+                timer += Time.deltaTime;
+
+                ghostPos = transform.position + velocity;
+                float distAnchorToGhost = (anchor - ghostPos).magnitude;
+
+                //find s and t for the position the player would be if they weren't swinging
+                t = Mathf.Acos((ghostPos.y - anchor.y) / distAnchorToGhost);
+                s = Mathf.Acos((ghostPos.x - anchor.x) / (distAnchorToGhost * Mathf.Sin(t)));
+
+                //find the closest point in the swing to ghostPos
+                spherePoint.x = (swingRadius * Mathf.Cos(s) * Mathf.Sin(t)) + anchor.x;
+                spherePoint.z = (swingRadius * Mathf.Sin(s) * Mathf.Cos(t)) + anchor.z;
+                spherePoint.y = (swingRadius * Mathf.Cos(t)) + anchor.y;
+
+                velocity = (spherePoint - transform.position).normalized * MoveSpeed * Time.deltaTime;
+
+                _controller.Move(velocity);
+
+                yield return null;
+            }
+            inSwing = false;
         }
 
         /// <summary>
