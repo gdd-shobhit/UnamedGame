@@ -351,7 +351,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
                 float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
                 // If it is and nothing is blocking the view then the enemy can see the player
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
+                if (!Physics.Raycast(transform.position, directionToTarget, 1f, obstructionMask))
                     canSeePlayer = true;
                 else
                     canSeePlayer = false;
