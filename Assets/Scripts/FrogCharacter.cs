@@ -14,6 +14,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public float speed;
     public int maxhealth;
     public int maxEnergy;
+    public int fireflies = 0;
 
     // stretch goals
     public int skillPoints;
@@ -318,6 +319,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         {
             DataPersistenceManager.instance.SaveGame();
         }
+        else if(other.tag == "Collectible")
+        {
+            AddFirefly(other.gameObject);
+        }
     }
 
     void TongueGrab(){
@@ -354,5 +359,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             }
             tongueDirection.y += 0.05f;
         }
+    }
+
+    void AddFirefly(GameObject firefly)
+    {
+        fireflies++;
+        firefly.SetActive(false);
+        GameManager.instance.hudUpdate = true;
     }
 }

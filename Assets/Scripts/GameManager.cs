@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public Slider healthSlider;
     public Slider energySlider;
+    public TextMeshProUGUI fireflycount;
     public FrogCharacter myFrog;
     public FrogSon mySon;
     public bool hudUpdate = false;
@@ -82,6 +84,7 @@ public class GameManager : MonoBehaviour
     {
         healthSlider.value = myFrog.currentHealth;
         energySlider.value = myFrog.currentEnergy;
+        fireflycount.text = myFrog.fireflies.ToString();
         hudUpdate = false;
     }
 
