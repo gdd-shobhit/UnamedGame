@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     {
         vignetteGoDown = true;
         vignette =(UnityEngine.Rendering.Universal.Vignette) volumeProfile.components[2];
+        UpdateHUD();
     }
 
     // Update is called once per frame

@@ -6,14 +6,18 @@ using UnityEngine;
 
 public class GameData
 {
-    public string name;
+    public string croakName;
+    public int relationshipValue;
     public int currentHealth;
     public Vector3 respawnPoint;
+    public SerializableDictionary<string, bool> checkpointsHit;
 
     public GameData()
     {
-        this.name = "Croak";
+        this.croakName = "Croak";
+        this.relationshipValue = 0;
         this.currentHealth = 100;
         respawnPoint = new Vector3(17, 2, -22);
+        checkpointsHit = new SerializableDictionary<string, bool>();
     }
 }

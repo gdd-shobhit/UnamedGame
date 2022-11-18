@@ -49,7 +49,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public bool isDead = false;
     public float deathTime = 0;
     protected float reviveCooldown = 5f;
-    private Vector3 respawnPoint;
+    public Vector3 respawnPoint;
 
     // Start is called before the first frame update
     void Start()
@@ -71,8 +71,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public void LoadData(GameData data)
     {
         this.respawnPoint = data.respawnPoint;
-        //this.currentHealth = data.currentHealth;
-        this.currentHealth = 100;
+        this.currentHealth = data.currentHealth;
+        currentEnergy = 100;
         this.transform.position = respawnPoint;
     }
 
@@ -80,14 +80,14 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (!isDead)
         {
-            data.respawnPoint = new Vector3(17, 2, -22);
+            //data.respawnPoint = new Vector3(17, 2, -22);
+            data.respawnPoint = this.respawnPoint;
             data.currentHealth = this.currentHealth;
         }
     }
 
     private void Update()
     {
-        Debug.Log(currentHealth);
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
@@ -308,16 +308,16 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         isDead = false;
         anim.SetBool("isDead", isDead);
+        this.GetComponent<CharacterController>().enabled = false;
         DataPersistenceManager.instance.LoadGame();
+        this.GetComponent<CharacterController>().enabled = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Checkpoint")
+        if(other.tag == "Checkpoint")
         {
-            Debug.Log("checkpoint");
-
-            respawnPoint = other.transform.position;
+            DataPersistenceManager.instance.SaveGame();
         }
     }
 

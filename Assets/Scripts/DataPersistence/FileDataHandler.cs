@@ -31,6 +31,7 @@ public class FileDataHandler
                     using(StreamReader reader = new StreamReader(stream))
                     {
                         dataToLoad = reader.ReadToEnd();
+                        Debug.Log("Location of save file: " + fullPath);
                     }
                 }
 
@@ -47,6 +48,7 @@ public class FileDataHandler
     public void Save(GameData data)
     {
         string fullPath = Path.Combine(dataDirPath, dataFileName);
+        //Debug.Log(fullPath);
         try
         {
             // Create the directory the file will be written to if it doesn't already exist
