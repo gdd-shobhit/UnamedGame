@@ -141,7 +141,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
         if (GetComponent<StarterAssetsInputs>().tongue)
         {
-            Debug.Log("tongue pressed");
             TongueGrab();
             GetComponent<StarterAssetsInputs>().tongue = false;
         }
@@ -328,7 +327,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
         Vector3 tongueDirection = camera.transform.forward;
         tongueDirection.y = 0;
-        Debug.Log("tongue");
         RaycastHit raycast = new RaycastHit();
 
         bool tongueHasHit = false;
