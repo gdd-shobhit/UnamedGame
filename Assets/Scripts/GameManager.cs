@@ -80,7 +80,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void UpdateHUD()
     {
-        Debug.Log("hud updated");
         healthSlider.value = myFrog.currentHealth;
         energySlider.value = myFrog.currentEnergy;
         hudUpdate = false;
