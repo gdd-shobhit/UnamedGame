@@ -322,7 +322,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         }
         else if(other.tag == "Collectible")
         {
-            AddFirefly(other.gameObject);
+            //AddFirefly(other.gameObject);
         }
     }
 
@@ -362,8 +362,9 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         }
     }
 
-    void AddFirefly(GameObject firefly)
+    public void AddFirefly(GameObject firefly)
     {
+        Debug.Log("Adding firefly");
         fireflies++;
         firefly.SetActive(false);
         GameManager.instance.hudUpdate = true;
