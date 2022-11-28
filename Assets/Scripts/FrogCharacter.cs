@@ -75,6 +75,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         this.currentHealth = data.currentHealth;
         currentEnergy = 100;
         this.transform.position = respawnPoint;
+        GameManager.instance.hudUpdate = true;
     }
 
     public void SaveData(ref GameData data)
