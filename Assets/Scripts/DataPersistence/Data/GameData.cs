@@ -12,6 +12,7 @@ public class GameData
     public Vector3 respawnPoint;
     public SerializableDictionary<string, bool> checkpointsHit;
     public SerializableDictionary<string, bool> fireflysHit;
+    public SerializableDictionary<string, bool> enemies;
 
     public GameData()
     {
@@ -21,5 +22,6 @@ public class GameData
         respawnPoint = new Vector3(17, 2, -22);
         checkpointsHit = new SerializableDictionary<string, bool>();
         fireflysHit = new SerializableDictionary<string, bool>();
+        enemies = new SerializableDictionary<string, bool>();
     }
 }

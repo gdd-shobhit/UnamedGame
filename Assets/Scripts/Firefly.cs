@@ -22,6 +22,10 @@ public class Firefly : MonoBehaviour, IDataPersistence
     public void LoadData(GameData data)
     {
         data.fireflysHit.TryGetValue(id, out fireflyIsHit);
+        if (fireflyIsHit)
+        {
+            this.gameObject.SetActive(false);
+        }
     }
 
     public void SaveData(ref GameData data)
