@@ -387,7 +387,7 @@
                     "name": "",
                     "id": "451a1178-e574-4940-98b4-babb37448e44",
                     "path": "<Keyboard>/#(T)",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Tongue",

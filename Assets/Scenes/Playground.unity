@@ -915,6 +915,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7979702265577367318, guid: cf1091f13d7b0334786180ec7eca0ba6,
         type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7979702265577367318, guid: cf1091f13d7b0334786180ec7eca0ba6,
+        type: 3}
       propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
@@ -2263,6 +2268,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthSlider: {fileID: 884239166}
   energySlider: {fileID: 253493252}
+  fireflycount: {fileID: 0}
   myFrog: {fileID: 1762682266}
   mySon: {fileID: 0}
   hudUpdate: 0
@@ -2831,7 +2837,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1303656433
 MonoBehaviour:
@@ -3999,6 +4005,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   canSeePlayer: 0
+  id: 
   idealRange: 7
   rangeTolerance: 2
   projectile: {fileID: 3873377811334291190, guid: 0a58224e41a4bfa4da21f7ce12dcf1f2,
@@ -4714,6 +4721,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5262008525572861567, guid: b971ffe6eb9e74e4782ae3146dfb4d78,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b971ffe6eb9e74e4782ae3146dfb4d78, type: 3}

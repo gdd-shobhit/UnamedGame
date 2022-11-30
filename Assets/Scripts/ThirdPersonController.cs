@@ -125,8 +125,9 @@ namespace StarterAssets
         // Narrative
         public bool inDialog;
 
-        //tracks when a swing motion has begun/ended to switch movement styles
+        // Swing
         public bool inSwing;
+        Coroutine _swingCoroutine;
 
         private bool IsCurrentDeviceMouse
         {
@@ -329,34 +330,31 @@ namespace StarterAssets
         public void Swing(Vector3 anchor)
         {
             inSwing = true;
-            StartCoroutine(SwingCoroutine(anchor));
+            _swingCoroutine = StartCoroutine(SwingCoroutine(anchor));
+        }
+
+        //called from FrogCharacter.cs
+        public void CancelSwing()
+        {
+            Debug.Log("cancel swing called");
+            inSwing = false;
+            StopCoroutine(_swingCoroutine);
         }
 
         IEnumerator SwingCoroutine(Vector3 anchor)
         {
-            //define a sphere whose center is at the anchor point of the tongue and radius is the distance between the anchor point and the player
-            //snap the player to the surface of the sphere for the duration of the swing
-            //x = (r * cos(s) * sin(t)) + anchor.x
-            //z = (r * sin(s) * cos(t)) + anchor.z
-            //y = (r * cos(t))          + anchor.y
-            //where s = angle around the y axis between the player and the anchor
-            //and
-            //t = angle between y axis centered on the sphere and the player
-
             Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
             Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
-            Vector3 velocity = (transform.forward * MoveSpeed) - (Vector3.down * Gravity) * Time.deltaTime;
-
+            Vector3 velocity = ((transform.forward * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
             float swingRadius = (anchor - transform.position).magnitude;
             float t = 0.0f;
             float s = 0.0f;
 
-            float timer = 0;
-            while (timer < 1.5f)    //TODO: replace timed value with while(tongueButton is pressed)
+            while (inSwing)    //TODO: replace timed value with while(tongueButton is pressed)
             {
-                timer += Time.deltaTime;
-
+                velocity = ((transform.forward * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
                 ghostPos = transform.position + velocity;
+                Debug.DrawLine(transform.position, ghostPos, Color.magenta, 10);
                 float distAnchorToGhost = (anchor - ghostPos).magnitude;
 
                 //find s and t for the position the player would be if they weren't swinging
@@ -374,7 +372,6 @@ namespace StarterAssets
 
                 yield return null;
             }
-            inSwing = false;
         }
 
         /// <summary>

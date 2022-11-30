@@ -35,6 +35,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private Camera camera;
     [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
     [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
+    private bool tonguePressed = false;
 
     // Narrative
     public bool inDialog;
@@ -142,10 +143,18 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             GetComponent<StarterAssetsInputs>().hAttack = false;
         }
 
-        if (GetComponent<StarterAssetsInputs>().tongue)
+        if (GetComponent<StarterAssetsInputs>().reportTongueChange && !tonguePressed)
         {
+            tonguePressed = true;
+            GetComponent<StarterAssetsInputs>().reportTongueChange = false;
             TongueGrab();
-            GetComponent<StarterAssetsInputs>().tongue = false;
+        }
+        else if(GetComponent<StarterAssetsInputs>().reportTongueChange && tonguePressed)
+        {
+            tonguePressed = false;
+            GetComponent<StarterAssetsInputs>().reportTongueChange = false;
+            //handle ending tongue swing
+            GetComponent<ThirdPersonController>().CancelSwing();
         }
 
         //update material

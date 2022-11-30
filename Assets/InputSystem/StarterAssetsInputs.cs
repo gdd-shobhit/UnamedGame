@@ -18,7 +18,7 @@ namespace StarterAssets
 		public bool lockOnEnemy;
 		public bool lockedOn;
 		public bool interact;
-		public bool tongue;
+		public bool reportTongueChange;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -71,7 +71,9 @@ namespace StarterAssets
 		}
 		public void OnTongue(InputValue value)
 		{
-			TongueInput(value.isPressed);
+            //this gets set back to false in FrogCharacter.cs once it's been handled (hence "report" rather than just storing the actual bool value)
+            //it's kind of cursed and I am truly sorry but this is the only way I could figure out how to detect a button being held/released???
+            reportTongueChange = true;
 		}
 
 
@@ -134,10 +136,6 @@ namespace StarterAssets
 		public void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-		}
-
-		private void TongueInput(bool newTongueState){
-			tongue = newTongueState;
 		}
 	}
 
