@@ -6,6 +6,10 @@ using System.Linq;
 
 public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 {
+    // General
+    [SerializeField] private Camera camera;
+    [SerializeField] StarterAssetsInputs inputs;
+
     [SerializeField]
     int sheathTime = 2;
     public int currentHealth;
@@ -32,7 +36,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     float maxComboDelay = 0.55f;
     // probably switch to the frog son
     public FrogSon Son;
-    [SerializeField] private Camera camera;
+
+    // Tongue
     [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
     [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
     private bool tonguePressed = false;
@@ -56,6 +61,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     // Start is called before the first frame update
     void Start()
     {
+        inputs = GetComponent<StarterAssetsInputs>();
         anim = GetComponent<Animator>();
         level = 1;
         currentEnergy = 100;
@@ -117,7 +123,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             return;
         }
 
-        if (GetComponent<StarterAssetsInputs>().pAttack)
+        if (inputs.pAttack)
         {
             if (!weapon[0].activeSelf)
             {
@@ -127,9 +133,9 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
             noOfAttacks++;
             PrimaryAttack();
-            GetComponent<StarterAssetsInputs>().pAttack = false;
+            inputs.pAttack = false;
         }
-        if (GetComponent<StarterAssetsInputs>().hAttack)
+        if (inputs.hAttack)
         {
             // Sheath/Unsheath
             if (!weapon[0].activeSelf)
@@ -140,19 +146,19 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
             HeavyAttack();
 
-            GetComponent<StarterAssetsInputs>().hAttack = false;
+            inputs.hAttack = false;
         }
 
-        if (GetComponent<StarterAssetsInputs>().reportTongueChange && !tonguePressed)
+        if (inputs.reportTongueChange && !tonguePressed)
         {
             tonguePressed = true;
-            GetComponent<StarterAssetsInputs>().reportTongueChange = false;
+            inputs.reportTongueChange = false;
             TongueGrab();
         }
-        else if(GetComponent<StarterAssetsInputs>().reportTongueChange && tonguePressed)
+        else if(inputs.reportTongueChange && tonguePressed)
         {
             tonguePressed = false;
-            GetComponent<StarterAssetsInputs>().reportTongueChange = false;
+            inputs.reportTongueChange = false;
             //handle ending tongue swing
             GetComponent<ThirdPersonController>().CancelSwing();
         }

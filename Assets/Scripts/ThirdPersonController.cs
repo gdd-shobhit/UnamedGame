@@ -336,7 +336,6 @@ namespace StarterAssets
         //called from FrogCharacter.cs
         public void CancelSwing()
         {
-            Debug.Log("cancel swing called");
             inSwing = false;
             StopCoroutine(_swingCoroutine);
         }
