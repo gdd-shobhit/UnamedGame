@@ -1579,6 +1579,15 @@ MonoBehaviour:
   jumpHeight: 5
   cameraPivot: {fileID: 477379393}
   playerSpeed: 0
+  cameraRotateX: 0
+  isGrounded: 0
+  rigidBody: {fileID: 0}
+  animator: {fileID: 0}
+  capsuleCollider: {fileID: 0}
+  capsuleHalfHeight: 0
+  movementInput: {x: 0, y: 0}
+  cameraInput: {x: 0, y: 0}
+  canJump: 0
 --- !u!114 &822960070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2418,7 +2427,7 @@ PrefabInstance:
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.20000005
+      value: -0.20000005
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
@@ -2428,7 +2437,7 @@ PrefabInstance:
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
@@ -2832,7 +2841,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303656428}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -4.65, y: 3.59, z: 9.09}
+  m_LocalPosition: {x: -16.34, y: 5.15, z: 8.04}
   m_LocalScale: {x: 1, y: 4.5451, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3123,7 +3132,7 @@ PrefabInstance:
     - target: {fileID: 2070925441746177913, guid: a1a802ecaf6775746bb2a929fb554ad8,
         type: 3}
       propertyPath: m_Lens.m_SensorSize.x
-      value: 1.8564199
+      value: 0.5455866
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}

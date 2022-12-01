@@ -344,32 +344,46 @@ namespace StarterAssets
         {
             Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
             Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
-            Vector3 velocity = ((transform.forward * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
+            Vector3 swingDir = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
+            Vector3 velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
             float swingRadius = (anchor - transform.position).magnitude;
-            float t = 0.0f;
-            float s = 0.0f;
+            float angleYAxis = 0.0f;
+            float angleXAxis = 0.0f;
 
-            while (inSwing)    //TODO: replace timed value with while(tongueButton is pressed)
+            radius = swingRadius;
+            anchorPos = anchor;
+
+            while (inSwing)
             {
-                velocity = ((transform.forward * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
                 ghostPos = transform.position + velocity;
-                Debug.DrawLine(transform.position, ghostPos, Color.magenta, 10);
-                float distAnchorToGhost = (anchor - ghostPos).magnitude;
-
-                //find s and t for the position the player would be if they weren't swinging
-                t = Mathf.Acos((ghostPos.y - anchor.y) / distAnchorToGhost);
-                s = Mathf.Acos((ghostPos.x - anchor.x) / (distAnchorToGhost * Mathf.Sin(t)));
-
-                //find the closest point in the swing to ghostPos
-                spherePoint.x = (swingRadius * Mathf.Cos(s) * Mathf.Sin(t)) + anchor.x;
-                spherePoint.z = (swingRadius * Mathf.Sin(s) * Mathf.Cos(t)) + anchor.z;
-                spherePoint.y = (swingRadius * Mathf.Cos(t)) + anchor.y;
-
-                velocity = (spherePoint - transform.position).normalized * MoveSpeed * Time.deltaTime;
-
+                Vector3 anchorToGhost = ghostPos - anchor;
+                Debug.DrawLine(transform.position, ghostPos, Color.white, int.MaxValue);
+                if(anchorToGhost.sqrMagnitude > swingRadius * swingRadius)
+                {
+                    spherePoint = anchor + (anchorToGhost.normalized * swingRadius);
+                    velocity = spherePoint - transform.position;
+                    Debug.DrawLine(transform.position, spherePoint, Color.yellow, int.MaxValue);
+                }
+                else
+                {
+                    velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
+                }
                 _controller.Move(velocity);
-
                 yield return null;
+            }
+            radius = 0;
+            anchorPos = Vector3.zero;
+        }
+
+        //temp variables for swing debugging
+        float radius = 0;
+        Vector3 anchorPos = Vector3.zero;
+        private void OnDrawGizmos()
+        {
+            if (radius != 0 && anchorPos != Vector3.zero)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(anchorPos, radius);
             }
         }
 
