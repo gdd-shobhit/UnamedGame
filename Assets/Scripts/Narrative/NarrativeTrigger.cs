@@ -5,14 +5,21 @@ using UnityEngine;
 using UnityEngine.Events;
 using Yarn.Unity;
 
+// Designates Attributes for Narrative Triggers so that they can be placed and edited throughout a level.
 public class NarrativeTrigger : MonoBehaviour
 {
-    public NarrativeHandler narrativeHandler;
+    [Header("Trigger Data")]
+    public string node; // Name of the associated Yarn Script that should run when this trigger is activated
+    public bool automatic; // Should this trigger run as soon as the player enters it?
+    public bool repeatable; // Can this trigger be ran multiple times?
+    public bool triggerComplete; // Is the trigger complete?
 
-    public string node;
-    public bool automatic;
-    public bool repeatable;
-    public bool triggerComplete;
+    private NarrativeHandler narrativeHandler;
+
+    private void Start()
+    {
+        narrativeHandler = NarrativeHandler.Instance; // Grab NarrativeHandler Singleton
+    }
 
     // Checks if the Player is inside the Narrative Trigger
     private void OnTriggerEnter(Collider col)

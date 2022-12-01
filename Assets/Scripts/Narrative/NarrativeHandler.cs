@@ -6,28 +6,34 @@ using Yarn.Unity;
 using StarterAssets;
 using TMPro;
 
+// Script that handels Narrative Sequences & Triggers for the Player and Holds Narrative Data.
 public class NarrativeHandler : MonoBehaviour, IDataPersistence
 {
-    public int relationshipValue;
-    public string croakName;
+    [Header("Command Set Up")]
+    public List<GameObject> dialogueCameras = new List<GameObject>();
 
-    public GameObject dialogPrompt; // UI to tell the player they can start a dialog sequence
-    public GameObject player; // Player Character
-    public GameObject hud; // Hud
-    public DialogueRunner dialogSystem; // Yarnspinner
-    public GameObject NameInput;
-    public GameObject NameWarning;
-
-    public NarrativeTrigger currentTrigger; // The Current Trigger the Player is in
-
-    [SerializeField] private StarterAssetsInputs input; // Inputs
-
+    [Header("Trigger Information")]
     public bool inTrigger; // Can the player start a dialog sequence?
     public bool inDialog; // Is the player in a dialog sequence?
+    public NarrativeTrigger currentTrigger; // The Current Trigger the Player is in
 
-    private static NarrativeHandler instance;
+    [Header("Narrative Data")]
+    public int relationshipValue; // Player's Relationship Value with their Child
+    public string croakName; // Name of Player's Child
 
-    public List<GameObject> dialogueCameras = new List<GameObject>();
+    [Header("Script Set Up")]
+    [SerializeField] private DialogueRunner dialogSystem; // Yarnspinner
+    [SerializeField] private GameObject dialogPrompt; // Indicator that lets the player know they can start a dialog sequence.
+    [SerializeField] private GameObject hud; // Hud
+    [SerializeField] private StarterAssetsInputs input; // Inputs
+
+    //TODO: Probably should move narrative input handeling to another script as I don't see this being used for much
+    [Header("Narrative Input")]
+    public GameObject NameInput; // Inputted Name by the Player
+    public GameObject NameWarning; // Warning for Invalid Name
+
+    private GameObject player; // Player GameObject
+    private static NarrativeHandler instance; // Singleton for the Narrative Handler
 
     public static NarrativeHandler Instance
     {
@@ -39,7 +45,7 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         // Make NarrativeHandler a Singleton
         if (instance != null)
         {
-            Debug.LogError("Found more than one NarrativeHandler in the scene");
+            Debug.LogError("Found more than one NarrativeHandler in the scene!");
         }
         else
         {
@@ -47,8 +53,13 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         }
     }
 
+    private void Start()
+    {
+        player = this.transform.gameObject; // Grab Player GameObject
+    }
+
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         dialogPrompt.gameObject.SetActive(inTrigger && !inDialog); // If the player can start a dialog sequence and is not already in one show the prompt
 
@@ -68,6 +79,7 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         }
     }
 
+    // Enables and Disables the Controls
     public void ActivateControls(bool activate)
     {
         Debug.Log($"Controls set to: {activate}");
@@ -78,7 +90,7 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         player.GetComponent<ThirdPersonController>().inDialog = !activate;
         player.GetComponent<FrogCharacter>().inDialog = !activate;
 
-        // Diable UI
+        // Disable UI
         hud.gameObject.SetActive(activate);
 
         // Cursor Settings
@@ -92,6 +104,7 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         }
     }
 
+    // Runs whenever a dialogue sequence has ended.
     public void DialogComplete()
     {
         ActivateControls(true);
@@ -110,12 +123,14 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         }
     }
 
+    // Loads Narrative Data
     public void LoadData(GameData data)
     {
         this.relationshipValue = data.relationshipValue;
         this.croakName = data.croakName;
     }
 
+    // Saves Narrative Data
     public void SaveData(ref GameData data)
     {
         Debug.Log(data.croakName);
@@ -124,6 +139,7 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         Debug.Log(this.croakName);
     }
 
+    // Sets the Player Child's Name
     public void SetName()
     {
         TMP_InputField inputField = NameInput.GetComponent<TMP_InputField>();
