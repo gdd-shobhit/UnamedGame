@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using System.Linq;
 
 public enum EnemyState
 {
@@ -18,7 +19,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
     protected int health;
     public int level;
     public int attackDamage;
-    const int damage = 10;
+    protected int damage = 10;
     public Animator anim;
     public GameObject player;
     public float lastGotHit = 0;
@@ -71,6 +72,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         health = 100;
         if (GetComponent<Animator>() != null)
             anim = GetComponent<Animator>();
+        level = 1;
         attackDamage = level * damage;
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
@@ -274,18 +276,41 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         lostPlayer = false;
     }
 
-    void CheckHit()
+    protected void CheckHit()
     {
         Collider[] hits = Physics.OverlapSphere(weapon.transform.position, 2f);
 
+        if (hits.Length <= 0)
+            return;
         foreach (Collider hit in hits)
         {
             if (hit.tag == "Player")
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
-                //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
+        GameManager.instance.hudUpdate = true;
+    }
+
+    protected void CheckHit(List<GameObject> weaponObjects)
+    {
+        List<Collider> hits = new List<Collider>();
+        foreach (GameObject weapon in weaponObjects)
+        {
+            hits.AddRange(Physics.OverlapSphere(weapon.transform.position, 0.3f).ToList()) ;
+        }
+        if(hits.Count > 0)
+        {
+            foreach (Collider hit in hits)
+            {
+                if (hit.tag == "Player")
+                {
+                    GameManager.instance.myFrog.GetComponent<FrogCharacter>().currentHealth -= damage;
+                }
+            }
+        }
+        GameManager.instance.hudUpdate = true;
+
     }
 
     private void AttackPlayer()
