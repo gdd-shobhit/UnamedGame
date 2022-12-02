@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using System.Linq;
 
 public enum EnemyState
 {
@@ -18,7 +19,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     protected int health;
     public int level;
     public int attackDamage;
-    const int damage = 10;
+    protected int damage = 10;
     public Animator anim;
     public GameObject player;
     public float lastGotHit = 0;
@@ -34,6 +35,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     public LayerMask whatIsGround, whatIsPlayer;
     public Vector3 walkPoint;
     bool walkPointSet;
+    protected int maxHealth;
 
     private float startWaitTime;
     private float waitTime;
@@ -82,6 +84,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         health = 100;
         if (GetComponent<Animator>() != null)
             anim = GetComponent<Animator>();
+        level = 1;
         attackDamage = level * damage;
         player = GameManager.instance.myFrog.gameObject;
         agent = GetComponent<NavMeshAgent>();
@@ -90,7 +93,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         startWaitTime = 3;
         waitTime = startWaitTime;
         lostPlayer = true;
-
+        maxHealth = 100;
         // Makes the field of view not run all the time to help with performance
         StartCoroutine(FOVRoutine());
         rigidbody = GetComponent<Rigidbody>();
@@ -132,7 +135,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
 
     private void HUDUpdate()
     {
-        healthSlider.value = 100 - health;
+        healthSlider.value = maxHealth - health;
     }
 
     public void GetHit()
@@ -310,10 +313,12 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         lostPlayer = false;
     }
 
-    void CheckHit()
+    protected void CheckHit()
     {
         Collider[] hits = Physics.OverlapSphere(weapon.transform.position, 2f);
 
+        if (hits.Length <= 0)
+            return;
         foreach (Collider hit in hits)
         {
             if (hit.tag == "Player")
@@ -323,6 +328,28 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
                 //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
+        GameManager.instance.hudUpdate = true;
+    }
+
+    protected void CheckHit(List<GameObject> weaponObjects)
+    {
+        List<Collider> hits = new List<Collider>();
+        foreach (GameObject weapon in weaponObjects)
+        {
+            hits.AddRange(Physics.OverlapSphere(weapon.transform.position, 0.3f).ToList()) ;
+        }
+        if(hits.Count > 0)
+        {
+            foreach (Collider hit in hits)
+            {
+                if (hit.tag == "Player")
+                {
+                    GameManager.instance.myFrog.GetComponent<FrogCharacter>().currentHealth -= damage;
+                }
+            }
+        }
+        GameManager.instance.hudUpdate = true;
+
     }
 
     private void AttackPlayer()
