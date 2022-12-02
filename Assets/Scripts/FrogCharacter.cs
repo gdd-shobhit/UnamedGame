@@ -4,8 +4,12 @@ using UnityEngine;
 using StarterAssets;
 using System.Linq;
 
-public class FrogCharacter : MonoBehaviour, IDamageable
+public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 {
+    // General
+    [SerializeField] private Camera camera;
+    [SerializeField] StarterAssetsInputs inputs;
+
     [SerializeField]
     int sheathTime = 2;
     public int currentHealth;
@@ -14,6 +18,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     public float speed;
     public int maxhealth;
     public int maxEnergy;
+    public int fireflies = 0;
 
     // stretch goals
     public int skillPoints;
@@ -32,6 +37,11 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     // probably switch to the frog son
     public FrogSon Son;
 
+    // Tongue
+    [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
+    [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
+    private bool tonguePressed = false;
+
     // Narrative
     public bool inDialog;
 
@@ -42,11 +52,17 @@ public class FrogCharacter : MonoBehaviour, IDamageable
     private int dissolvePercent = 0;
     private int materializePercent = 0;
 
+    // Death and Respawn
+    public bool isDead = false;
+    public float deathTime = 0;
+    protected float reviveCooldown = 5f;
+    public Vector3 respawnPoint;
+
     // Start is called before the first frame update
     void Start()
     {
+        inputs = GetComponent<StarterAssetsInputs>();
         anim = GetComponent<Animator>();
-        currentHealth = 100;
         level = 1;
         currentEnergy = 100;
         maxhealth = 100;
@@ -56,6 +72,28 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         
         croakMat = weapon[2].GetComponent<Renderer>().material;
         swordMat = weapon[0].GetComponent<Renderer>().material;
+
+        respawnPoint = transform.position;
+    }
+
+    public void LoadData(GameData data)
+    {
+        this.respawnPoint = data.respawnPoint;
+        //this.currentHealth = data.currentHealth;
+        this.currentHealth = 80;
+        currentEnergy = 100;
+        this.transform.position = respawnPoint;
+        GameManager.instance.hudUpdate = true;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (!isDead)
+        {
+            //data.respawnPoint = new Vector3(17, 2, -22);
+            data.respawnPoint = this.respawnPoint;
+            data.currentHealth = this.currentHealth;
+        }
     }
 
     private void Update()
@@ -63,6 +101,16 @@ public class FrogCharacter : MonoBehaviour, IDamageable
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
+
+        if (currentHealth <= 0 && !isDead)
+        {
+            Dead();
+        }
+
+        if (Time.time - deathTime > reviveCooldown && isDead)
+        {
+            Respawn();
+        }
 
         if (Time.time - lastAttackTime > maxComboDelay)
         {
@@ -75,19 +123,19 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             return;
         }
 
-        if (GetComponent<StarterAssetsInputs>().pAttack)
+        if (inputs.pAttack)
         {
             if (!weapon[0].activeSelf)
             {
                 weapon[0].SetActive(true);
                 weapon[2].SetActive(false);
             }
-                
+
             noOfAttacks++;
-            PrimaryAttack();         
-            GetComponent<StarterAssetsInputs>().pAttack = false;
+            PrimaryAttack();
+            inputs.pAttack = false;
         }
-        if(GetComponent<StarterAssetsInputs>().hAttack)
+        if (inputs.hAttack)
         {
             // Sheath/Unsheath
             if (!weapon[0].activeSelf)
@@ -97,25 +145,39 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             }
 
             HeavyAttack();
-        
-            GetComponent<StarterAssetsInputs>().hAttack = false;
+
+            inputs.hAttack = false;
+        }
+
+        if (inputs.reportTongueChange && !tonguePressed)
+        {
+            tonguePressed = true;
+            inputs.reportTongueChange = false;
+            TongueGrab();
+        }
+        else if(inputs.reportTongueChange && tonguePressed)
+        {
+            tonguePressed = false;
+            inputs.reportTongueChange = false;
+            //handle ending tongue swing
+            GetComponent<ThirdPersonController>().CancelSwing();
         }
 
         //update material
 
-        if(weapon[2].activeSelf && weapon[0].activeSelf)
+        if (weapon[2].activeSelf && weapon[0].activeSelf)
         {
             swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
         }
-            //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
+        //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         else
         {
             if (weapon[2].activeSelf)
             {
                 croakMat.SetFloat("_CutoffHeight", weapon[2].GetComponent<Transform>().position.y + 1);
             }
-        
-            if(weapon[0].activeSelf)
+
+            if (weapon[0].activeSelf)
             {
                 swordMat.SetFloat("_CutoffHeight", weapon[0].GetComponent<Transform>().position.y + 1);
             }
@@ -250,5 +312,77 @@ public class FrogCharacter : MonoBehaviour, IDamageable
             }
             weapon[2].SetActive(true);
         }
+    }
+
+    public void Dead()
+    {
+        deathTime = Time.time;
+        isDead = true;
+        anim.SetBool("isDead", isDead);
+    }
+
+    public void Respawn()
+    {
+        isDead = false;
+        anim.SetBool("isDead", isDead);
+        this.GetComponent<CharacterController>().enabled = false;
+        DataPersistenceManager.instance.LoadGame();
+        this.GetComponent<CharacterController>().enabled = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Checkpoint")
+        {
+            DataPersistenceManager.instance.SaveGame();
+        }
+        else if(other.tag == "Collectible")
+        {
+            //AddFirefly(other.gameObject);
+        }
+    }
+
+    void TongueGrab(){
+        // a little yucky but it works
+        // adding Vector3.up adjusts for the player object's anchor being on the floor, and adding the forward vector of the camera ensures we don't accidentally detect the shield or weapon objects
+            // camera forward offset could be replaced by a layermask later for a more robust implementation
+        Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
+        Vector3 tongueDirection = camera.transform.forward;
+        tongueDirection.y = 0;
+        RaycastHit raycast = new RaycastHit();
+
+        bool tongueHasHit = false;
+        while (!tongueHasHit && tongueDirection.y < 0.5)
+        {
+            Debug.DrawLine(tonguePosStart, tonguePosStart + tongueDirection * tongueLength, Color.red, 1.0f);
+
+            Physics.Raycast(tonguePosStart, tongueDirection, out raycast);
+            if (raycast.collider)
+            {
+                IGrabbable g = raycast.collider.gameObject.GetComponent<IGrabbable>();
+                if (g != null)
+                {
+                    tongueHasHit = true;
+                    if (g.GetSwingable())
+                    {
+                        GetComponent<ThirdPersonController>().Swing(raycast.point);
+                    }
+                    else {
+                        Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
+                        Debug.DrawLine(transform.position, raycast.collider.gameObject.transform.position, Color.green, 1.0f);
+                        StartCoroutine(g.Grab(transform, pullSpeed));
+                    }
+                }
+            }
+            tongueDirection.y += 0.05f;
+        }
+    }
+
+    public void AddFirefly(GameObject firefly)
+    {
+        Debug.Log("Adding firefly");
+        fireflies++;
+        firefly.SetActive(false);
+        GameManager.instance.hudUpdate = true;
     }
 }

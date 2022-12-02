@@ -7,6 +7,8 @@ TagManager:
   - CinemachineTarget
   - Enemy
   - Weapon
+  - Checkpoint
+  - Collectible
   layers:
   - Default
   - TransparentFX

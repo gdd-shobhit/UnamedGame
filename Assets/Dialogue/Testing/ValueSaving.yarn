@@ -1,0 +1,13 @@
+﻿title: ValueSaving
+tags:
+---
+{GetName()}: My name is {GetName()}.
+{GetName()}: My relationship value is at {GetRelationshipValue()}!
+-> Increase by +1
+    <<AddRelationshipValue 1>>
+-> Decrease by -1
+    <<AddRelationshipValue -1>>
+-> Do Nothing
+{GetName()}: My relationship value is now at {GetRelationshipValue()}!
+{GetName()}: Have a good day!
+===
