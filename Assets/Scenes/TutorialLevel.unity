@@ -25237,7 +25237,7 @@ GameObject:
   - component: {fileID: 1588573327}
   - component: {fileID: 1588573326}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: CollectFireflyParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25323,16 +25323,16 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588573325}
   serializedVersion: 8
-  lengthInSec: 3
+  lengthInSec: 1
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 1
-  prewarm: 1
-  playOnAwake: 1
+  looping: 0
+  prewarm: 0
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -26274,13 +26274,22 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.20246914
         - serializedVersion: 3
-          time: 0.8888855
-          value: 0
-          inSlope: -1.0381844
-          outSlope: -1.0381844
+          time: 0.14295396
+          value: 0.20960936
+          inSlope: -0.5718807
+          outSlope: -0.5718807
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.091358066
+          inWeight: 0.33333334
+          outWeight: 0.051598106
+        - serializedVersion: 3
+          time: 0.8888855
+          value: 0
+          inSlope: -1.2831333
+          outSlope: -1.2831333
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.08428296
           outWeight: 0.33333334
         m_PreInfinity: 1
         m_PostInfinity: 2
@@ -26772,7 +26781,7 @@ ParticleSystem:
     x:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -26825,7 +26834,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.3
+      scalar: 0.4
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -26984,7 +26993,7 @@ ParticleSystem:
     orbitalY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 8
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -30030,7 +30039,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588573325}
   m_LocalRotation: {x: -0, y: -0.7287974, z: -0, w: 0.68472946}
-  m_LocalPosition: {x: 0, y: 0.865, z: 0}
+  m_LocalPosition: {x: 0.669, y: 0.865, z: 0.041}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -34422,6 +34431,11 @@ PrefabInstance:
       propertyPath: isAttacking
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3202496301062109217, guid: a25ea92174e0297488f442429e2958e1,
+        type: 3}
+      propertyPath: collectFireflyParticles
+      value: 
+      objectReference: {fileID: 1588573327}
     - target: {fileID: 4460760240733099261, guid: a25ea92174e0297488f442429e2958e1,
         type: 3}
       propertyPath: m_RootOrder

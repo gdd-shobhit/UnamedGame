@@ -9,6 +9,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     // General
     [SerializeField] private Camera camera;
     [SerializeField] StarterAssetsInputs inputs;
+    [SerializeField] ParticleSystem collectFireflyParticles;
 
     [SerializeField]
     int sheathTime = 2;
@@ -384,5 +385,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         fireflies++;
         firefly.SetActive(false);
         GameManager.instance.hudUpdate = true;
+        collectFireflyParticles.Play();
     }
 }
