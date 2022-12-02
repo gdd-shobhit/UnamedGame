@@ -82,7 +82,7 @@ public class EnemyRanged : Enemy
 
         if (Time.time - deathTime > reviveCooldown && isDead)
         {
-            this.gameObject.SetActive(false);
+          this.gameObject.SetActive(false);
 
         }
 

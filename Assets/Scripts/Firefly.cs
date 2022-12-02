@@ -44,6 +44,7 @@ public class Firefly : MonoBehaviour, IDataPersistence
             Debug.Log("Firefly");
             fireflyIsHit = true;
             other.GetComponent<FrogCharacter>().AddFirefly(this.gameObject);
+            GameManager.instance.Alert("Firefly Collected!");
         }
     }
 }
