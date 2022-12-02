@@ -168,7 +168,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
         if (weapon[2].activeSelf && weapon[0].activeSelf)
         {
-            swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
+            //swordMat.SetFloat("_CutoffHeight", swordMat.GetFloat("_CutoffHeight") - 0.01f);
         }
         //croakMat.SetFloat("_CutoffHeight", croakMat.GetFloat("_CutoffHeight") - 0.01f);
         else
