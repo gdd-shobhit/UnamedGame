@@ -7,6 +7,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public TextMeshProUGUI alert;
     public Slider healthSlider;
     public Slider energySlider;
     public TextMeshProUGUI fireflycount;
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour
     public UnityEngine.Rendering.Universal.Vignette vignette;
     public VolumeProfile volumeProfile;
     bool vignetteGoDown;
+    float alertDuration;
 
     public bool lowHealth = false;
     // Basic Singleton
@@ -49,9 +51,16 @@ public class GameManager : MonoBehaviour
             LowHealth();
         else
             vignette.intensity.value = 0;
-        
 
 
+        if (alertDuration > 0.0f)
+        {
+            alertDuration -= Time.deltaTime;
+            if (alertDuration <= 0.0f)
+            {
+                alert.text = "";
+            }
+        }
     }
 
     void LowHealth()
@@ -88,4 +97,19 @@ public class GameManager : MonoBehaviour
         hudUpdate = false;
     }
 
+    /// <summary>
+    /// prints an alert to the HUD
+    /// </summary>
+    /// <param name="message"></param>
+    public void Alert(string message)
+    {
+        alert.text = message;
+        alertDuration = 1.5f;
+    }
+
+    public void Alert(string message, float duration)
+    {
+        alert.text = message;
+        alertDuration = duration;
+    }
 }
