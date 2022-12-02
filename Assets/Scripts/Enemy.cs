@@ -13,7 +13,7 @@ public enum EnemyState
     Idle
 }
 
-public class Enemy : MonoBehaviour, IDamageable, IGrabbable
+public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
 {
     [SerializeField]
     protected int health;
@@ -49,6 +49,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
 
     // Test
     protected float reviveCooldown = 2f;
+    protected float despawnCooldown = 10f;
     public float deathTime = 0;
     protected bool isDead = false;
     protected bool inAir = false;
@@ -65,7 +66,18 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
     public bool canSeePlayer;
 
     private Rigidbody rigidbody;
-    
+
+    // Save System
+
+    [SerializeField] private string id;
+
+    [ContextMenu("Generate guid for id")]
+
+    private void GenerateGuid()
+    {
+        id = System.Guid.NewGuid().ToString();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -101,6 +113,24 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
             inAir = true;
             GetComponent<Rigidbody>().AddForce(Vector3.up * 500);
         }
+    }
+
+    public void LoadData(GameData data)
+    {
+        data.enemies.TryGetValue(id, out isDead);
+        if (isDead)
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (data.enemies.ContainsKey(id))
+        {
+            data.enemies.Remove(id);
+        }
+        data.enemies.Add(id, isDead);
     }
 
     private void HUDUpdate()
@@ -142,8 +172,15 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
         {
             deathTime = Time.time;
             isDead = true;
+            //this.gameObject.SetActive(false);
         }
-        
+
+        if (Time.time - deathTime > despawnCooldown && isDead)
+        {
+            this.gameObject.SetActive(false);
+
+        }
+
         // Revives the enemy
         /**
         if (Time.time - deathTime > reviveCooldown && isDead)
@@ -287,6 +324,8 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
             if (hit.tag == "Player")
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
+                GameManager.instance.hudUpdate = true;
+                //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
         GameManager.instance.hudUpdate = true;
@@ -376,7 +415,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable
                 float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
 
                 // If it is and nothing is blocking the view then the enemy can see the player
-                if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
+                if (!Physics.Raycast(transform.position, directionToTarget, 1f, obstructionMask))
                     canSeePlayer = true;
                 else
                     canSeePlayer = false;

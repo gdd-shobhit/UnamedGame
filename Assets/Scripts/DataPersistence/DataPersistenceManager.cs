@@ -74,7 +74,7 @@ public class DataPersistenceManager : MonoBehaviour
     // Test the save game function
     private void OnApplicationQuit()
     {
-        SaveGame();
+        //SaveGame();
     }
 
     private List<IDataPersistence> FindAllDataPersistenceObjects()

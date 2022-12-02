@@ -6,6 +6,10 @@ using System.Linq;
 
 public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 {
+    // General
+    [SerializeField] private Camera camera;
+    [SerializeField] StarterAssetsInputs inputs;
+
     [SerializeField]
     int sheathTime = 2;
     public int currentHealth;
@@ -14,6 +18,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public float speed;
     public int maxhealth;
     public int maxEnergy;
+    public int fireflies = 0;
 
     // stretch goals
     public int skillPoints;
@@ -31,9 +36,11 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     float maxComboDelay = 0.55f;
     // probably switch to the frog son
     public FrogSon Son;
-    [SerializeField] private Camera camera;
+
+    // Tongue
     [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
     [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
+    private bool tonguePressed = false;
 
     // Narrative
     public bool inDialog;
@@ -49,11 +56,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public bool isDead = false;
     public float deathTime = 0;
     protected float reviveCooldown = 5f;
-    private Vector3 respawnPoint;
+    public Vector3 respawnPoint;
 
     // Start is called before the first frame update
     void Start()
     {
+        inputs = GetComponent<StarterAssetsInputs>();
         anim = GetComponent<Animator>();
         level = 1;
         currentEnergy = 100;
@@ -72,14 +80,17 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         this.respawnPoint = data.respawnPoint;
         //this.currentHealth = data.currentHealth;
-        this.currentHealth = 100;
+        this.currentHealth = 80;
+        currentEnergy = 100;
         this.transform.position = respawnPoint;
+        GameManager.instance.hudUpdate = true;
     }
 
     public void SaveData(ref GameData data)
     {
         if (!isDead)
         {
+            //data.respawnPoint = new Vector3(17, 2, -22);
             data.respawnPoint = this.respawnPoint;
             data.currentHealth = this.currentHealth;
         }
@@ -87,7 +98,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     private void Update()
     {
-        //Debug.Log(currentHealth);
         RegenerateEnergy();
         PComboDone();
         SheathWeapon();
@@ -113,7 +123,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             return;
         }
 
-        if (GetComponent<StarterAssetsInputs>().pAttack)
+        if (inputs.pAttack)
         {
             if (!weapon[0].activeSelf)
             {
@@ -123,9 +133,9 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
             noOfAttacks++;
             PrimaryAttack();
-            GetComponent<StarterAssetsInputs>().pAttack = false;
+            inputs.pAttack = false;
         }
-        if (GetComponent<StarterAssetsInputs>().hAttack)
+        if (inputs.hAttack)
         {
             // Sheath/Unsheath
             if (!weapon[0].activeSelf)
@@ -136,14 +146,21 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
             HeavyAttack();
 
-            GetComponent<StarterAssetsInputs>().hAttack = false;
+            inputs.hAttack = false;
         }
 
-        if (GetComponent<StarterAssetsInputs>().tongue)
+        if (inputs.reportTongueChange && !tonguePressed)
         {
-            Debug.Log("tongue pressed");
+            tonguePressed = true;
+            inputs.reportTongueChange = false;
             TongueGrab();
-            GetComponent<StarterAssetsInputs>().tongue = false;
+        }
+        else if(inputs.reportTongueChange && tonguePressed)
+        {
+            tonguePressed = false;
+            inputs.reportTongueChange = false;
+            //handle ending tongue swing
+            GetComponent<ThirdPersonController>().CancelSwing();
         }
 
         //update material
@@ -308,16 +325,20 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         isDead = false;
         anim.SetBool("isDead", isDead);
+        this.GetComponent<CharacterController>().enabled = false;
         DataPersistenceManager.instance.LoadGame();
+        this.GetComponent<CharacterController>().enabled = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Checkpoint")
+        if(other.tag == "Checkpoint")
         {
-            Debug.Log("checkpoint");
-
-            respawnPoint = other.transform.position;
+            DataPersistenceManager.instance.SaveGame();
+        }
+        else if(other.tag == "Collectible")
+        {
+            //AddFirefly(other.gameObject);
         }
     }
 
@@ -328,7 +349,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         Vector3 tonguePosStart = transform.position + Vector3.up + camera.transform.forward; 
         Vector3 tongueDirection = camera.transform.forward;
         tongueDirection.y = 0;
-        Debug.Log("tongue");
         RaycastHit raycast = new RaycastHit();
 
         bool tongueHasHit = false;
@@ -345,7 +365,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
                     tongueHasHit = true;
                     if (g.GetSwingable())
                     {
-                        StartCoroutine(TongueSwing(raycast.point));
+                        GetComponent<ThirdPersonController>().Swing(raycast.point);
                     }
                     else {
                         Vector3 playerToEnemy = transform.position - raycast.collider.gameObject.transform.position;
@@ -358,38 +378,11 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         }
     }
 
-    IEnumerator TongueSwing(Vector3 anchor)
+    public void AddFirefly(GameObject firefly)
     {
-        //define a sphere whose center is at the anchor point of the tongue and radius is the distance between the anchor point and the player
-        //snap the player to the surface of the sphere for the duration of the swing
-        //x = (r * cos(s) * sin(t)) + anchor.x
-        //z = (r * sin(s) * cos(t)) + anchor.z
-        //y = (r * cos(t))          + anchor.y
-        //where s = angle around the y axis between the player and the anchor
-        //and
-        //t = angle between y axis centered on the sphere and the player
-        //alter the trajectory of the player by changing the values of s and t
-
-        //find initial values of angles s and t
-        float r = (anchor - transform.position).magnitude;
-        float t = Mathf.Acos((transform.position.y - anchor.y) / r);
-        float s = Mathf.Acos(((transform.position.x - anchor.x) / r) / Mathf.Sin(t));
-
-        float timer = 0;
-
-        while (timer < 10.0f)
-        {
-            timer += Time.deltaTime;
-            t += 0.001f;
-            Vector3 newPos = new Vector3();
-            newPos.x = (r * Mathf.Cos(s) * Mathf.Sin(t)) + anchor.x;
-            newPos.z = (r * Mathf.Sin(s) * Mathf.Cos(t)) + anchor.z;
-            newPos.y = (r * Mathf.Cos(t)) + anchor.y;
-
-            transform.position = newPos;
-            yield return null;
-        }
-        
-        yield return null;
+        Debug.Log("Adding firefly");
+        fireflies++;
+        firefly.SetActive(false);
+        GameManager.instance.hudUpdate = true;
     }
 }

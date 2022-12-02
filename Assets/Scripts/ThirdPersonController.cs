@@ -125,6 +125,10 @@ namespace StarterAssets
         // Narrative
         public bool inDialog;
 
+        // Swing
+        public bool inSwing;
+        Coroutine _swingCoroutine;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -177,9 +181,9 @@ namespace StarterAssets
                 return;
             }
 
-            // Checks if the player is dead
+            // Checks if the player is dead or swinging
             // if not then the player is able to control Dagger
-            if (!GameManager.instance.myFrog.isDead)
+            if (!GameManager.instance.myFrog.isDead && !inSwing)
             {
                 JumpAndGravity();
                 GroundedCheck();
@@ -213,11 +217,12 @@ namespace StarterAssets
                 transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
                 QueryTriggerInteraction.Ignore);
-
+            //Debug.Log("Grounded state: " + Grounded);
             // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetBool(_animIDGrounded, Grounded);
+                //_animator.SetBool("isInAir", !Grounded);
             }
         }
 
@@ -319,6 +324,69 @@ namespace StarterAssets
             if (_input.dash)
                 StartCoroutine(DashCoroutine(0.4f));
             
+        }
+
+        //called from FrogCharacter.cs
+        public void Swing(Vector3 anchor)
+        {
+            inSwing = true;
+            _swingCoroutine = StartCoroutine(SwingCoroutine(anchor));
+        }
+
+        //called from FrogCharacter.cs
+        public void CancelSwing()
+        {
+            inSwing = false;
+            StopCoroutine(_swingCoroutine);
+        }
+
+        IEnumerator SwingCoroutine(Vector3 anchor)
+        {
+            Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
+            Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
+            Vector3 swingDir = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
+            
+            float swingRadius = (anchor - transform.position).magnitude;
+            float swingSpeed = 0.01f;
+            radius = swingRadius;
+            anchorPos = anchor;
+
+            Vector3 velocity = ((swingDir * MoveSpeed * swingSpeed) - (Vector3.down * Gravity * swingSpeed)) * Time.deltaTime;
+
+
+            while (inSwing)
+            {
+                velocity -= (Vector3.down * Gravity * swingSpeed) * Time.deltaTime;
+                ghostPos = transform.position + velocity;
+                Vector3 anchorToGhost = ghostPos - anchor;
+                Debug.DrawLine(transform.position, ghostPos, Color.white, int.MaxValue);
+                if(anchorToGhost.sqrMagnitude > swingRadius * swingRadius)
+                {
+                    spherePoint = anchor + (anchorToGhost.normalized * swingRadius);
+                    velocity = spherePoint - transform.position;
+                    Debug.DrawLine(transform.position, spherePoint, Color.yellow, int.MaxValue);
+                }
+                else
+                {
+                    velocity = (swingDir * MoveSpeed * swingSpeed) * Time.deltaTime;
+                }
+                _controller.Move(velocity);
+                yield return null;
+            }
+            radius = 0;
+            anchorPos = Vector3.zero;
+        }
+
+        //temp variables for swing debugging
+        float radius = 0;
+        Vector3 anchorPos = Vector3.zero;
+        private void OnDrawGizmos()
+        {
+            if (radius != 0 && anchorPos != Vector3.zero)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawWireSphere(anchorPos, radius);
+            }
         }
 
         /// <summary>

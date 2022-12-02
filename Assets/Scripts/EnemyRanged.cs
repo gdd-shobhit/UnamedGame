@@ -77,14 +77,25 @@ public class EnemyRanged : Enemy
         {
             deathTime = Time.time;
             isDead = true;
+            anim.SetTrigger("Die");
         }
 
         if (Time.time - deathTime > reviveCooldown && isDead)
         {
+          this.gameObject.SetActive(false);
+
+        }
+
+        /**
+        if (Time.time - deathTime > reviveCooldown && isDead)
+        {
+            //Destroy(gameObject);
+            
             health = 100;
             anim.SetInteger("Health", 100);
             isDead = false;
         }
+        **/
     }
 
     void Attack()
