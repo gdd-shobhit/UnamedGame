@@ -345,16 +345,18 @@ namespace StarterAssets
             Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
             Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
             Vector3 swingDir = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
-            Vector3 velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
+            
             float swingRadius = (anchor - transform.position).magnitude;
-            float angleYAxis = 0.0f;
-            float angleXAxis = 0.0f;
-
+            float swingSpeed = 0.01f;
             radius = swingRadius;
             anchorPos = anchor;
 
+            Vector3 velocity = ((swingDir * MoveSpeed * swingSpeed) - (Vector3.down * Gravity * swingSpeed)) * Time.deltaTime;
+
+
             while (inSwing)
             {
+                velocity -= (Vector3.down * Gravity * swingSpeed) * Time.deltaTime;
                 ghostPos = transform.position + velocity;
                 Vector3 anchorToGhost = ghostPos - anchor;
                 Debug.DrawLine(transform.position, ghostPos, Color.white, int.MaxValue);
@@ -366,7 +368,7 @@ namespace StarterAssets
                 }
                 else
                 {
-                    velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * Time.deltaTime;
+                    velocity = (swingDir * MoveSpeed * swingSpeed) * Time.deltaTime;
                 }
                 _controller.Move(velocity);
                 yield return null;
