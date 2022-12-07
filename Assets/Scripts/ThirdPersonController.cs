@@ -336,57 +336,82 @@ namespace StarterAssets
         //called from FrogCharacter.cs
         public void CancelSwing()
         {
-            inSwing = false;
             StopCoroutine(_swingCoroutine);
+            StartCoroutine(SwingBoostCoroutine());
         }
 
+        /// <summary>
+        /// handles the player swinging
+        /// </summary>
+        /// <param name="anchor"></param>
+        /// <returns></returns>
         IEnumerator SwingCoroutine(Vector3 anchor)
         {
-            Vector3 ghostPos = Vector3.zero; //where the player would be next frame if they weren't swinging
+            /*
+            The basic idea behind swinging is to imagine a sphere that emcompasses the volume in which the swing takes place and move the player along the surface of that sphere. 
+            
+            The sphere is centered on the anchor (the point on the swingable object which the tongue his hit) and has a radius equal to the magnitude of the the vector between the anchor and the player.
+            Moving along the surface of the sphere takes the following basic shape:
+                1. Calculate where the player would be if they stopped swinging this frame. This is called the ghost position, or ghostPos
+                2. Find the point on the surface of the sphere closest to the ghost position. This is called the sphere point
+                3. Recompute the players velocity as the vector from their current position to the sphere point
+                4. Move the Character Controller according to the new velocity, and remember that velocity for the next frame to calcualte a new ghost position
+                    a. Gravity will be added to this new velocity to give it a more physics-y feel
+            */
+            Vector3 ghostPos = Vector3.zero; //where the player would be if they weren't swinging
             Vector3 spherePoint = Vector3.zero; //the point on the sphere closest to ghostPos
             Vector3 swingDir = new Vector3(Camera.main.transform.forward.x, 0, Camera.main.transform.forward.z);
             
             float swingRadius = (anchor - transform.position).magnitude;
             float swingSpeed = 0.01f;
-            radius = swingRadius;
-            anchorPos = anchor;
 
-            Vector3 velocity = ((swingDir * MoveSpeed * swingSpeed) - (Vector3.down * Gravity * swingSpeed)) * Time.deltaTime;
-
+            Vector3 velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * swingSpeed * Time.deltaTime;
+            RaycastHit groundCheck;
 
             while (inSwing)
             {
                 velocity -= (Vector3.down * Gravity * swingSpeed) * Time.deltaTime;
                 ghostPos = transform.position + velocity;
                 Vector3 anchorToGhost = ghostPos - anchor;
-                Debug.DrawLine(transform.position, ghostPos, Color.white, int.MaxValue);
                 if(anchorToGhost.sqrMagnitude > swingRadius * swingRadius)
                 {
                     spherePoint = anchor + (anchorToGhost.normalized * swingRadius);
                     velocity = spherePoint - transform.position;
-                    Debug.DrawLine(transform.position, spherePoint, Color.yellow, int.MaxValue);
                 }
                 else
                 {
                     velocity = (swingDir * MoveSpeed * swingSpeed) * Time.deltaTime;
                 }
+
+                Physics.Raycast(transform.position, velocity.normalized, out groundCheck, velocity.magnitude * 3);
+                if (groundCheck.collider != null)
+                {
+                    CancelSwing();
+                }
+
                 _controller.Move(velocity);
                 yield return null;
             }
-            radius = 0;
-            anchorPos = Vector3.zero;
         }
 
-        //temp variables for swing debugging
-        float radius = 0;
-        Vector3 anchorPos = Vector3.zero;
-        private void OnDrawGizmos()
+        /// <summary>
+        /// called once a swing is finished, gives the player a small boost forward
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator SwingBoostCoroutine()
         {
-            if (radius != 0 && anchorPos != Vector3.zero)
+            //TODO: change this to be determined by the player's WASD/Joystick input instead of Camera.forward
+            Vector3 boostDirection = Camera.main.transform.forward;
+            float boostSpeed = 10.0f;
+            float deltaBoost = -1.0f;
+            for(float timer = 0; timer < 0.2f; timer += Time.deltaTime)
             {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawWireSphere(anchorPos, radius);
+                _controller.Move((boostDirection * boostSpeed) * Time.deltaTime);
+                boostSpeed += deltaBoost * Time.deltaTime;
+                if(boostSpeed < 0) { boostSpeed = 0; }
+                yield return null;
             }
+            inSwing = false;
         }
 
         /// <summary>
