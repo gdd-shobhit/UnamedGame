@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using StarterAssets;
 using System.Linq;
+using System;
 
 public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 {
@@ -30,11 +31,17 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public bool isAttacking = false;
     public float cooldownTime = 1f;
     public float nextAttackTime = 0f;
-    public int noOfAttacks = 0;
+    //public int noOfAttacks = 0;
     public float lastAttackTime = 0;
     public float deltaTimeBetweenCombos = 1f;
     public List<GameObject> weapon;
     float maxComboDelay = 0.55f;
+
+    // Revamped Combat
+    private int curMaceAttack = 0;
+    private float timeSinceLastAttack = 0;
+    private float attackTimeBuffer = 1;
+
     // probably switch to the frog son
     public FrogSon Son;
 
@@ -75,6 +82,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         swordMat = weapon[0].GetComponent<Renderer>().material;
 
         respawnPoint = transform.position;
+
+        // Start with weapon sheathed
+        weapon[0].SetActive(false); // weapon
+        weapon[2].SetActive(true); // croak
     }
 
     public void LoadData(GameData data)
@@ -99,53 +110,40 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     private void Update()
     {
+        timeSinceLastAttack += Time.deltaTime;
+        // if the time since the last attack is greater than the input buffer, end the combo
+        if (timeSinceLastAttack > attackTimeBuffer) EndAttackCombo();
+
         RegenerateEnergy();
-        PComboDone();
-        SheathWeapon();
+        //PComboDone();
+        //SheathWeapon();
 
-        if (currentHealth <= 0 && !isDead)
-        {
-            Dead();
+        if (currentHealth <= 0 && !isDead) Dead();
+
+
+        if (Time.time - deathTime > reviveCooldown && isDead) Respawn();
+
+
+        if (Time.time - lastAttackTime > maxComboDelay){
+            //noOfAttacks = 0;
         }
 
-        if (Time.time - deathTime > reviveCooldown && isDead)
-        {
-            Respawn();
-        }
-
-        if (Time.time - lastAttackTime > maxComboDelay)
-        {
-            noOfAttacks = 0;
-        }
 
         // If Player is in Dialog Sequence disable combat controls until finished
-        if (inDialog)
-        {
-            return;
-        }
+        if (inDialog) return;
+
 
         if (inputs.pAttack)
         {
-            if (!weapon[0].activeSelf)
-            {
-                weapon[0].SetActive(true);
-                weapon[2].SetActive(false);
-            }
+            MaceAttack();
 
-            noOfAttacks++;
-            PrimaryAttack();
+            //noOfAttacks++;
+            //PrimaryAttack();
             inputs.pAttack = false;
         }
         if (inputs.hAttack)
         {
-            // Sheath/Unsheath
-            if (!weapon[0].activeSelf)
-            {
-                weapon[0].SetActive(true);
-                weapon[2].SetActive(false);
-            }
-
-            HeavyAttack();
+            //HeavyAttack();
 
             inputs.hAttack = false;
         }
@@ -184,10 +182,43 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             }
         }
     }
+    #region COMBAT_SYSTEM_V2
+    private void MaceAttack()
+    {
+        UnSheathWeapon();
+        timeSinceLastAttack = 0;
+        if (curMaceAttack + 1 > 3) curMaceAttack = 1;
+        else curMaceAttack++;
+        anim.SetInteger("MaceAttack", curMaceAttack);
+    }
+
+    private void EndAttackCombo()
+    {
+        curMaceAttack = 0;
+        anim.SetInteger("MaceAttack", curMaceAttack);
+
+        timeSinceLastAttack = 0;
+        SheathWeapon();
+    }
+
+    private void SheathWeapon()
+    {
+        if (weapon[2].activeSelf) return; // if weapon already sheathed
+        weapon[0].SetActive(false); // weapon
+        weapon[2].SetActive(true); // croak
+    }
+    private void UnSheathWeapon()
+    {
+        if (weapon[0].activeSelf) return; // if weapon already unsheathed
+        weapon[0].SetActive(true); // weapon
+        weapon[2].SetActive(false); // croak
+    }
+
+    #endregion
 
     #region COMBAT_SYSTEM
 
-
+    /*
     void CheckHit()
     {
         Collider[] hits = Physics.OverlapSphere(weapon[0].transform.position, 0.5f);
@@ -203,7 +234,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             }
         }
     }
-
+    
     public void HeavyAttack()
     {
         if (noOfAttacks >= 2 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && GetComponent<StarterAssetsInputs>().hAttack
@@ -219,12 +250,14 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             CheckHit();
         }
     }
-
+    
     public void PrimaryAttack()
     {
+        Debug.Log("primary attack");
         lastAttackTime = Time.time;
         if (noOfAttacks == 1)
         {
+            Debug.Log("should do things");
             // play PAttack1
             anim.SetBool("PAttack1", true);
             CheckHit();
@@ -250,7 +283,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     public void PrimaryAttack3()
     {
-       
+        
         if (noOfAttacks >= 3 && anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && anim.GetCurrentAnimatorStateInfo(0).IsName("PAttack2"))
         {
             anim.SetBool("PAttack2", false);
@@ -258,7 +291,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             CheckHit();
         }
     }
-
+    
     public void PComboDone()
     {
         if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.99f)
@@ -271,6 +304,22 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             noOfAttacks = 0;
         }
     }
+
+    /// <summary>
+    /// Sheath/Unsheath depending on last time attacked
+    /// </summary>
+    public void SheathWeapon()
+    {
+        if (Time.time - lastAttackTime > sheathTime)
+        {
+            if (Time.time - lastAttackTime >= sheathTime + 0.5)
+            {
+                weapon[0].SetActive(false);
+            }
+            weapon[2].SetActive(true);
+        }
+    }
+    */
     #endregion
 
     public void OnLevelUp()
@@ -298,21 +347,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             return true;
 
         return false;
-    }
-
-    /// <summary>
-    /// Sheath/Unsheath depending on last time attacked
-    /// </summary>
-    public void SheathWeapon()
-    {
-        if(Time.time - lastAttackTime > sheathTime)
-        {
-            if(Time.time - lastAttackTime >= sheathTime + 0.5)
-            {
-                weapon[0].SetActive(false);
-            }
-            weapon[2].SetActive(true);
-        }
     }
 
     public void Dead()
