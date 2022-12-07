@@ -19,6 +19,7 @@ namespace StarterAssets
 		public bool lockedOn;
 		public bool interact;
 		public bool reportTongueChange;
+		public bool cheat;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -81,6 +82,11 @@ namespace StarterAssets
 		{
 			InteractInput(value.isPressed);
 		}
+
+		public void OnCheat(InputValue value)
+		{
+			CheatInput(value.isPressed);
+		}
 #endif
 
 
@@ -126,6 +132,10 @@ namespace StarterAssets
 		public void InteractInput(bool newInteraction)
 		{
 			interact = newInteraction;
+		}
+		public void CheatInput(bool newInteraction)
+		{
+			cheat = newInteraction;
 		}
 
 		private void OnApplicationFocus(bool hasFocus)

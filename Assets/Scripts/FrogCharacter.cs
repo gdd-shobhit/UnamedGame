@@ -353,7 +353,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         RaycastHit raycast = new RaycastHit();
 
         bool tongueHasHit = false;
-        while (!tongueHasHit && tongueDirection.y < 0.5)
+        while (!tongueHasHit && tongueDirection.y < 1)
         {
             Debug.DrawLine(tonguePosStart, tonguePosStart + tongueDirection * tongueLength, Color.red, 1.0f);
 
