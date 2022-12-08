@@ -49,6 +49,8 @@ public class TargetSwitch : MonoBehaviour
 
     void Update()
     {
+        CheckAlive();
+
         foreach (Collider c in nearbyTargets)
         {
             Vector3 to = c.transform.position;
@@ -68,7 +70,7 @@ public class TargetSwitch : MonoBehaviour
             upTargets.Clear(); downTargets.Clear();
             leftCollider = null;
             rightCollider = null;
-            //centerCollider = null;
+            centerCollider = null;
             upCollider = null;
             downCollider = null;
         }
@@ -82,14 +84,25 @@ public class TargetSwitch : MonoBehaviour
         }
     }
 
+    private void CheckAlive()
+    {
+        foreach (Collider c in nearbyTargets)
+        {
+            if(c.transform.parent.GetComponent<Enemy>().health <= 0)
+            {
+                nearbyTargets.Remove(c);
+            }
+        }
+        
+    }
+
     void OnTriggerEnter(Collider c)
     {
         //Debug.Log("hello " + c.name);
         if (c.name.ToLower().Contains("target"))
         {
-            if (!nearbyTargets.Contains(c)) { 
-                nearbyTargets.Add(c);
-            }
+            if (nearbyTargets.Contains(c)) return;
+            nearbyTargets.Add(c);
         }
     }
     private void OnTriggerExit(Collider c)
