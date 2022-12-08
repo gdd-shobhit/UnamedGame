@@ -12899,7 +12899,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: cc6d506c1a29523468c986454efa2995,
         type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cc6d506c1a29523468c986454efa2995,
         type: 3}
@@ -18327,7 +18327,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: c6763854190c5cd4188b3373c5a02704,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c6763854190c5cd4188b3373c5a02704,
         type: 3}
@@ -25402,12 +25402,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1625674362 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8045151064671505045, guid: a25ea92174e0297488f442429e2958e1,
-    type: 3}
-  m_PrefabInstance: {fileID: 5974601712752256470}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1646092648
 GameObject:
   m_ObjectHideFlags: 0
@@ -25756,7 +25750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CheatMenuUI: {fileID: 2139369411}
-  input: {fileID: 5974601712752256471}
+  input: {fileID: 1762682276}
 --- !u!114 &1762682260 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8045151064671505049, guid: a25ea92174e0297488f442429e2958e1,
@@ -25791,6 +25785,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 53725a3fec8d1e648bd934112998c9af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1762682276 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1762682282, guid: a25ea92174e0297488f442429e2958e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 5974601712752256470}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19cde1efd445635488bd4495929da86a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1764214107
