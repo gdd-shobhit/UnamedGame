@@ -41,6 +41,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     private int curMaceAttack = 0;
     private float timeSinceLastAttack = 0;
     private float attackTimeBuffer = 1;
+    private CapsuleCollider weaponCollider;
 
     // probably switch to the frog son
     public FrogSon Son;
@@ -86,6 +87,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         // Start with weapon sheathed
         weapon[0].SetActive(false); // weapon
         weapon[2].SetActive(true); // croak
+
+        weaponCollider = weapon[0].GetComponent<CapsuleCollider>();
     }
 
     public void LoadData(GameData data)
@@ -212,6 +215,37 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         if (weapon[0].activeSelf) return; // if weapon already unsheathed
         weapon[0].SetActive(true); // weapon
         weapon[2].SetActive(false); // croak
+    }
+
+    public void WeaponColliderOn()
+    {
+        //Debug.Log("weapon collider on!");
+        weaponCollider.enabled = true;
+    }
+
+    public void WeaponColliderOff()
+    {
+        //Debug.Log("weapon collider off!");
+        weaponCollider.enabled = false;
+    }
+
+    
+    void CheckHit()
+    {
+        Collider[] hits = Physics.OverlapSphere(weapon[0].transform.position, 0.5f);
+        //Physics.OverlapCapsule
+        //Collider[] hits2 = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[1].transform.position, 0.5f);
+        //hits = hits.Concat(hits2).ToArray();
+        
+        foreach (Collider hit in hits)
+        {
+            if (hit.tag == "Enemy")
+            {
+                hit.gameObject.GetComponent<Animator>().SetBool("Hit", true);
+                hit.gameObject.GetComponent<Enemy>().lastGotHit = Time.time;
+                hit.gameObject.GetComponent<Enemy>().GetHit(attackDamage);
+            }
+        }
     }
 
     #endregion
