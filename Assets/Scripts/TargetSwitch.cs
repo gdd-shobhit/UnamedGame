@@ -18,11 +18,7 @@ public class TargetSwitch : MonoBehaviour
     public Collider upCollider;
     public Collider downCollider;
 
-    [SerializeField] private Collider currentTarget;
-
-    // a value a float will (hopefully) NEVER be set to...
-    // doing this bc u cant null a float lmao
-    const float FNULL = 0;
+    public Collider currentTarget;
 
     const float HEIGHT_WEIGHT = 1.2f;
 
@@ -49,6 +45,8 @@ public class TargetSwitch : MonoBehaviour
 
     void Update()
     {
+        CheckAlive();
+
         foreach (Collider c in nearbyTargets)
         {
             Vector3 to = c.transform.position;
@@ -68,7 +66,7 @@ public class TargetSwitch : MonoBehaviour
             upTargets.Clear(); downTargets.Clear();
             leftCollider = null;
             rightCollider = null;
-            //centerCollider = null;
+            centerCollider = null;
             upCollider = null;
             downCollider = null;
         }
@@ -82,14 +80,28 @@ public class TargetSwitch : MonoBehaviour
         }
     }
 
+    private void CheckAlive()
+    {
+        foreach (Collider c in nearbyTargets)
+        {
+            if(c.transform.parent.GetComponent<Enemy>().health <= 0)
+            {
+                nearbyTargets.Remove(c);
+
+                // restart the function because the list has changed and will throw an error otherwise
+                CheckAlive();
+                return;
+            }
+        }
+    }
+
     void OnTriggerEnter(Collider c)
     {
         //Debug.Log("hello " + c.name);
         if (c.name.ToLower().Contains("target"))
         {
-            if (!nearbyTargets.Contains(c)) { 
-                nearbyTargets.Add(c);
-            }
+            if (nearbyTargets.Contains(c)) return;
+            nearbyTargets.Add(c);
         }
     }
     private void OnTriggerExit(Collider c)

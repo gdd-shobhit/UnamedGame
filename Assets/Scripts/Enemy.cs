@@ -16,7 +16,7 @@ public enum EnemyState
 public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
 {
     [SerializeField]
-    protected int health;
+    public int health;
     public int level;
     public int attackDamage;
     protected int damage = 10;

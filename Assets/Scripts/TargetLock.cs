@@ -34,6 +34,8 @@ public class TargetLock : MonoBehaviour
     void Update()
     {
         CheckCameraSwitch();
+        
+
         if (lockImage.IsActive())
         {
             MoveLockOnCamera();
@@ -50,14 +52,31 @@ public class TargetLock : MonoBehaviour
         }
     }
 
-    // if user presses the lock on toggle button, switch used camera
+    private void CheckTargetAlive()
+    {
+        if(target.transform.parent.GetComponent<Enemy>().health <= 0)
+        {
+            if (!FindEnemy()) ToggleCamSwitch();
+        }
+    }
+
+    
     private void CheckCameraSwitch()
     {
+        // if user presses the lock on toggle button, switch used camera
         if (input.lockOnEnemy)
         {
             input.lockOnEnemy = false;
 
             ToggleCamSwitch();
+        }
+
+        // if the current target is dead, either find a new target or stop locking on
+        if (target == null || !targetCam.gameObject.activeSelf) return;
+        if (target.transform.parent.GetComponent<Enemy>().health <= 0)
+        {
+            if (!FindEnemy()) ToggleCamSwitch();
+            else targetCam.LookAt = target.transform;
         }
     }
 
@@ -140,9 +159,11 @@ public class TargetLock : MonoBehaviour
 
         // normalized vector for the distance between the player and the target
         Vector3 btwn = (player.position - target.transform.position).normalized;
+        Vector3 testBtwn = btwn * 8;
 
         // offsets the current position to behind the players head
-        targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+        //targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 12), player.position.y + 2, player.position.z + (btwn.z * 12));
+        targetCamHelper.position = new Vector3(player.position.x + (testBtwn.x), player.position.y + 2, player.position.z + (testBtwn.z));
     }
 
     // move the target lock sprite to the object being targeted
