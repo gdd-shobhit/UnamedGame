@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using Yarn.Unity;
 using StarterAssets;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 // Script that handels Narrative Sequences & Triggers for the Player and Holds Narrative Data.
 public class NarrativeHandler : MonoBehaviour, IDataPersistence
@@ -111,6 +112,11 @@ public class NarrativeHandler : MonoBehaviour, IDataPersistence
         inTrigger = false;
         inDialog = false;
         input.interact = false;
+
+        if (currentTrigger.loadLevel != string.Empty)
+        {
+            SceneManager.LoadScene(currentTrigger.loadLevel);
+        }
 
         // Set Trigger to complete so it can not be reactivated
         if (currentTrigger != null)

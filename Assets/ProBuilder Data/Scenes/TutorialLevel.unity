@@ -9266,6 +9266,7 @@ MonoBehaviour:
   automatic: 1
   repeatable: 0
   triggerComplete: 0
+  loadLevel: 
 --- !u!1 &253493250
 GameObject:
   m_ObjectHideFlags: 0
@@ -13245,6 +13246,7 @@ MonoBehaviour:
   automatic: 1
   repeatable: 0
   triggerComplete: 0
+  loadLevel: 
 --- !u!1 &613443531
 GameObject:
   m_ObjectHideFlags: 0
@@ -29161,6 +29163,7 @@ MonoBehaviour:
   automatic: 0
   repeatable: 0
   triggerComplete: 0
+  loadLevel: PreCaveLevel
 --- !u!1 &2144694328
 GameObject:
   m_ObjectHideFlags: 0

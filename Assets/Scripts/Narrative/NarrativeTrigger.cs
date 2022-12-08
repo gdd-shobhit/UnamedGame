@@ -13,6 +13,8 @@ public class NarrativeTrigger : MonoBehaviour
     public bool automatic; // Should this trigger run as soon as the player enters it?
     public bool repeatable; // Can this trigger be ran multiple times?
     public bool triggerComplete; // Is the trigger complete?
+    public string loadLevel; // If inputed with the name of a level after the dialogue is complete the level will be loaded
+
 
     private NarrativeHandler narrativeHandler;
 
