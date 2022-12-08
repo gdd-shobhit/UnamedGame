@@ -42,6 +42,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     private float timeSinceLastAttack = 0;
     private float attackTimeBuffer = 1;
     private CapsuleCollider weaponCollider;
+    private List<GameObject> hitEnemies;
 
     // probably switch to the frog son
     public FrogSon Son;
@@ -89,6 +90,8 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         weapon[2].SetActive(true); // croak
 
         weaponCollider = weapon[0].GetComponent<CapsuleCollider>();
+
+        hitEnemies = new List<GameObject>();
     }
 
     public void LoadData(GameData data)
@@ -221,15 +224,27 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     {
         //Debug.Log("weapon collider on!");
         weaponCollider.enabled = true;
+
     }
 
     public void WeaponColliderOff()
     {
         //Debug.Log("weapon collider off!");
         weaponCollider.enabled = false;
+        hitEnemies.Clear();
     }
 
-    
+    public void CheckHit(GameObject enemy)
+    {
+        if (!hitEnemies.Contains(enemy))
+        {
+            enemy.GetComponent<Animator>().SetBool("Hit", true);
+            enemy.GetComponent<Enemy>().lastGotHit = Time.time;
+            enemy.GetComponent<Enemy>().GetHit(attackDamage);
+            hitEnemies.Add(enemy);
+        }
+    }
+    /*
     void CheckHit()
     {
         Collider[] hits = Physics.OverlapSphere(weapon[0].transform.position, 0.5f);
@@ -246,7 +261,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
                 hit.gameObject.GetComponent<Enemy>().GetHit(attackDamage);
             }
         }
-    }
+    }*/
 
     #endregion
 

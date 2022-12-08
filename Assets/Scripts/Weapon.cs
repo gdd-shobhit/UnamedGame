@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    //[SerializeField] private GameObject parent;
-    [SerializeField] private int attackDamage;
+    [SerializeField] private GameObject parent;
+    //[SerializeField] private int attackDamage;
     private CapsuleCollider collider;
+
 
     private void Start()
     {
@@ -21,12 +22,12 @@ public class Weapon : MonoBehaviour
             if (c.tag == "Enemy")
             {
                 Debug.Log("omg enemy");
-                c.GetComponent<Animator>().SetBool("Hit", true);
-                c.GetComponent<Enemy>().lastGotHit = Time.time;
-                c.GetComponent<Enemy>().GetHit(attackDamage);
+                parent.GetComponent<FrogCharacter>().CheckHit(c.gameObject);
             }
         }
     }
+
+
     /*
     private void OnCollisionEnter(Collision collision)
     {
