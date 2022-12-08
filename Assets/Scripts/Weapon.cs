@@ -21,7 +21,6 @@ public class Weapon : MonoBehaviour
         {
             if (c.tag == "Enemy")
             {
-                Debug.Log("omg enemy");
                 parent.GetComponent<FrogCharacter>().CheckHit(c.gameObject);
             }
         }

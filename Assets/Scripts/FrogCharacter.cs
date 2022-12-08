@@ -90,6 +90,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         // Start with weapon sheathed
         weapon[0].SetActive(false); // weapon
         weapon[2].SetActive(true); // croak
+        timeSinceLastAttack = attackTimeBuffer;
 
         weaponCollider = weapon[0].GetComponent<CapsuleCollider>();
 
@@ -192,10 +193,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     #region COMBAT_SYSTEM_V2
     private void MaceAttack()
     {
+        // causes some bugs.... dont include this for now
         if(targetSwitcher.GetComponent<TargetSwitch>().currentTarget != null)
         {
-            Debug.Log("hgey? ");
-            this.gameObject.transform.LookAt(targetSwitcher.GetComponent<TargetSwitch>().currentTarget.transform);
+            //this.gameObject.transform.LookAt(targetSwitcher.GetComponent<TargetSwitch>().currentTarget.transform);
         }
         
         hitEnemies.Clear();
