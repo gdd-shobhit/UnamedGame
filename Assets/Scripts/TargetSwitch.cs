@@ -91,9 +91,12 @@ public class TargetSwitch : MonoBehaviour
             if(c.transform.parent.GetComponent<Enemy>().health <= 0)
             {
                 nearbyTargets.Remove(c);
+
+                // restart the function because the list has changed and will throw an error otherwise
+                CheckAlive();
+                return;
             }
         }
-        
     }
 
     void OnTriggerEnter(Collider c)

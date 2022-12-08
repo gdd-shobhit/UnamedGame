@@ -34,6 +34,8 @@ public class TargetLock : MonoBehaviour
     void Update()
     {
         CheckCameraSwitch();
+        
+
         if (lockImage.IsActive())
         {
             MoveLockOnCamera();
@@ -50,14 +52,31 @@ public class TargetLock : MonoBehaviour
         }
     }
 
-    // if user presses the lock on toggle button, switch used camera
+    private void CheckTargetAlive()
+    {
+        if(target.transform.parent.GetComponent<Enemy>().health <= 0)
+        {
+            if (!FindEnemy()) ToggleCamSwitch();
+        }
+    }
+
+    
     private void CheckCameraSwitch()
     {
+        // if user presses the lock on toggle button, switch used camera
         if (input.lockOnEnemy)
         {
             input.lockOnEnemy = false;
 
             ToggleCamSwitch();
+        }
+
+        // if the current target is dead, either find a new target or stop locking on
+        if (target == null || !targetCam.gameObject.activeSelf) return;
+        if (target.transform.parent.GetComponent<Enemy>().health <= 0)
+        {
+            if (!FindEnemy()) ToggleCamSwitch();
+            else targetCam.LookAt = target.transform;
         }
     }
 
