@@ -191,6 +191,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     #region COMBAT_SYSTEM_V2
     private void MaceAttack()
     {
+        hitEnemies.Clear();
         UnSheathWeapon();
         timeSinceLastAttack = 0;
         if (curMaceAttack + 1 > 3) curMaceAttack = 1;
@@ -220,20 +221,6 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         weapon[2].SetActive(false); // croak
     }
 
-    public void WeaponColliderOn()
-    {
-        //Debug.Log("weapon collider on!");
-        weaponCollider.enabled = true;
-
-    }
-
-    public void WeaponColliderOff()
-    {
-        //Debug.Log("weapon collider off!");
-        weaponCollider.enabled = false;
-        hitEnemies.Clear();
-    }
-
     public void CheckHit(GameObject enemy)
     {
         if (!hitEnemies.Contains(enemy))
@@ -244,28 +231,10 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
             hitEnemies.Add(enemy);
         }
     }
-    /*
-    void CheckHit()
-    {
-        Collider[] hits = Physics.OverlapSphere(weapon[0].transform.position, 0.5f);
-        //Physics.OverlapCapsule
-        //Collider[] hits2 = Physics.OverlapSphere(GameManager.instance.myFrog.weapon[1].transform.position, 0.5f);
-        //hits = hits.Concat(hits2).ToArray();
-        
-        foreach (Collider hit in hits)
-        {
-            if (hit.tag == "Enemy")
-            {
-                hit.gameObject.GetComponent<Animator>().SetBool("Hit", true);
-                hit.gameObject.GetComponent<Enemy>().lastGotHit = Time.time;
-                hit.gameObject.GetComponent<Enemy>().GetHit(attackDamage);
-            }
-        }
-    }*/
 
     #endregion
 
-    #region COMBAT_SYSTEM
+    #region COMBAT_SYSTEM_V1
 
     /*
     void CheckHit()
