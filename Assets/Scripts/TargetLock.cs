@@ -161,7 +161,7 @@ public class TargetLock : MonoBehaviour
         Vector3 btwn = (player.position - target.transform.position).normalized;
 
         // offsets the current position to behind the players head
-        targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 4), player.position.y + 2, player.position.z + (btwn.z * 4));
+        targetCamHelper.position = new Vector3(player.position.x + (btwn.x * 5), player.position.y + 2, player.position.z + (btwn.z * 5));
     }
 
     // move the target lock sprite to the object being targeted
