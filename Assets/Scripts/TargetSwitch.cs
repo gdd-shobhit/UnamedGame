@@ -20,10 +20,6 @@ public class TargetSwitch : MonoBehaviour
 
     [SerializeField] private Collider currentTarget;
 
-    // a value a float will (hopefully) NEVER be set to...
-    // doing this bc u cant null a float lmao
-    const float FNULL = 0;
-
     const float HEIGHT_WEIGHT = 1.2f;
 
     float closestLeft, closestRight, closestCenter, closestUp, closestDown;
