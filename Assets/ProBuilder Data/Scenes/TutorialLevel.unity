@@ -9215,6 +9215,7 @@ GameObject:
   - component: {fileID: 227147233}
   - component: {fileID: 227147235}
   - component: {fileID: 227147234}
+  - component: {fileID: 227147236}
   m_Layer: 0
   m_Name: Home Trigger
   m_TagString: Untagged
@@ -9267,6 +9268,20 @@ MonoBehaviour:
   repeatable: 0
   triggerComplete: 0
   loadLevel: 
+--- !u!114 &227147236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227147232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb1629be47f2654c8871ec55d50ef5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stopSong: LevelOneSong
+  startSong: FireCutscene
 --- !u!1 &253493250
 GameObject:
   m_ObjectHideFlags: 0
@@ -20639,6 +20654,12 @@ MonoBehaviour:
   sounds:
   - name: LevelOneSong
     clip: {fileID: 8300000, guid: ef270d937010ad4419c90a402eebdb73, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 1
+    source: {fileID: 0}
+  - name: FireCutscene
+    clip: {fileID: 8300000, guid: 10c53c991b6eea041bfdc8d042bee1c2, type: 3}
     volume: 0.1
     pitch: 1
     loop: 1
