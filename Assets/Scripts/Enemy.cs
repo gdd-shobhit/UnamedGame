@@ -25,7 +25,8 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     public float lastGotHit = 0;
     public float getHitCooldown = 0.55f;
     public Slider healthSlider;
-    public GameObject weapon;
+    public GameObject weaponStart;
+    public GameObject weaponEnd;
 
     // Player Tracking
     public float lookRadius = 10f;
@@ -141,7 +142,6 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     public void GetHit()
     {
         health -= player.GetComponent<FrogCharacter>().attackDamage;
-
         // Makes it so if the player attacks while the enemy can't see
         // they will turn back ground and fight back
         if (!canSeePlayer)
@@ -154,7 +154,8 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         {
             health -= attackDamage;
             anim.SetInteger("Health", health);
-            onHitVFX.Play();       
+            onHitVFX.Play();
+            anim.SetTrigger("GetHit");
         }
     }
 
@@ -315,7 +316,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
 
     protected void CheckHit()
     {
-        Collider[] hits = Physics.OverlapSphere(weapon.transform.position, 2f);
+        Collider[] hits = Physics.OverlapCapsule(weaponStart.transform.position, weaponEnd.transform.position, 1f);
 
         if (hits.Length <= 0)
             return;
@@ -325,6 +326,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
             {
                 player.GetComponent<FrogCharacter>().currentHealth -= damage;
                 GameManager.instance.hudUpdate = true;
+                CancelInvoke(nameof(CheckHit));
                 //Debug.Log(player.GetComponent<FrogCharacter>().currentHealth);
             }
         }
@@ -336,7 +338,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         List<Collider> hits = new List<Collider>();
         foreach (GameObject weapon in weaponObjects)
         {
-            hits.AddRange(Physics.OverlapSphere(weapon.transform.position, 0.3f).ToList()) ;
+            hits.AddRange(Physics.OverlapSphere(weapon.transform.position, 0.3f).ToList());
         }
         if(hits.Count > 0)
         {
@@ -369,7 +371,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
             anim.SetBool("Attack", true);
 
             // Checks if the enemy has hit the player
-            CheckHit();
+            InvokeRepeating(nameof(CheckHit), 1.5f, 0.1f);
 
             // If so then the enemy attack is reset
             alreadyAttacked = true;
@@ -381,6 +383,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     {
         alreadyAttacked = false;
         anim.SetBool("Attack", false);
+        CancelInvoke(nameof(CheckHit));
     }
 
     // Waits a few seconds before running the field of view check
@@ -448,4 +451,7 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
     }
 
     public bool GetSwingable() { return false; }
+
+
+
 }

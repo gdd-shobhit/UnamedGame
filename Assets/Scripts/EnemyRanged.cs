@@ -18,7 +18,7 @@ public class EnemyRanged : Enemy
         anim.SetInteger("MovementState", (int)enemyState);
 
 
-        anim.SetFloat("Speed", agent.speed);
+        //anim.SetFloat("Speed", agent.speed);
 
         float distance = Vector3.Distance(target.position, transform.position);
 
@@ -112,11 +112,10 @@ public class EnemyRanged : Enemy
 
     public override void GetHit(int attackDamage)
     {
-        anim.SetTrigger("Hit");
         if (Time.time - lastGotHit == 0f)
         {
+            anim.SetTrigger("Hit");
             health -= attackDamage;
-            anim.SetInteger("Health", health);
             onHitVFX.Play();
         }
     }
