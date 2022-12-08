@@ -44,6 +44,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     private float comboTimeBuffer = 1;
     private CapsuleCollider weaponCollider;
     private List<GameObject> hitEnemies;
+    [SerializeField] private GameObject targetSwitcher;
 
     // probably switch to the frog son
     public FrogSon Son;
@@ -191,6 +192,12 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     #region COMBAT_SYSTEM_V2
     private void MaceAttack()
     {
+        if(targetSwitcher.GetComponent<TargetSwitch>().currentTarget != null)
+        {
+            Debug.Log("hgey? ");
+            this.gameObject.transform.LookAt(targetSwitcher.GetComponent<TargetSwitch>().currentTarget.transform);
+        }
+        
         hitEnemies.Clear();
         UnSheathWeapon();
         timeSinceLastAttack = 0;

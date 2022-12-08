@@ -18,7 +18,7 @@ public class TargetSwitch : MonoBehaviour
     public Collider upCollider;
     public Collider downCollider;
 
-    [SerializeField] private Collider currentTarget;
+    public Collider currentTarget;
 
     const float HEIGHT_WEIGHT = 1.2f;
 
