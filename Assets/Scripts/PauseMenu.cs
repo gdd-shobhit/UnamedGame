@@ -6,6 +6,8 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 
 public class PauseMenu : MonoBehaviour
 {
@@ -16,6 +18,9 @@ public class PauseMenu : MonoBehaviour
     private InputAction select;
     private float currentChoice;
 
+    [SerializeField] private GameObject resume;
+    [SerializeField] private GameObject exit;
+
     [SerializeField] private GameObject pauseUI;
     [SerializeField] private bool isPaused;
 
@@ -24,6 +29,8 @@ public class PauseMenu : MonoBehaviour
     void Awake()
     {
         menuMap = new MenuMap();
+        resume.GetComponent<Image>().color = Color.white;
+        exit.GetComponent<Image>().color = Color.white;
     }
 
     // Update is called once per frame
@@ -45,6 +52,9 @@ public class PauseMenu : MonoBehaviour
         select.Enable();
 
         currentChoice = 0;
+        resume.GetComponent<Image>().color = Color.white;
+        exit.GetComponent<Image>().color = Color.grey;
+
 
         escape.performed += Pause;
         toggleUp.performed += TogUp;
@@ -82,12 +92,16 @@ public class PauseMenu : MonoBehaviour
     void TogUp(InputAction.CallbackContext context)
     {
         currentChoice = 0;
+        resume.GetComponent<Image>().color = Color.white;
+        exit.GetComponent<Image>().color = Color.grey;
         UnityEngine.Debug.Log(currentChoice);
     }
 
     void TogDown(InputAction.CallbackContext context)
     {
         currentChoice = 1;
+        resume.GetComponent<Image>().color = Color.grey;
+        exit.GetComponent<Image>().color = Color.white;
         UnityEngine.Debug.Log(currentChoice);
     }
 
