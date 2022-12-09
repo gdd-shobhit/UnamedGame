@@ -35,6 +35,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
     public float lastAttackTime = 0;
     public float deltaTimeBetweenCombos = 1f;
     public List<GameObject> weapon;
+    public GameObject weaponTrail;
     float maxComboDelay = 0.55f;
 
     // Revamped Combat
@@ -205,6 +206,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
         if (curMaceAttack + 1 > 3) curMaceAttack = 1;
         else curMaceAttack++;
         anim.SetInteger("MaceAttack", curMaceAttack);
+        weaponTrail.active = true;
     }
 
     private void EndAttackCombo()
@@ -214,6 +216,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
         //timeSinceLastAttack = 0;
         SheathWeapon();
+        weaponTrail.active = false;
     }
 
     private void SheathWeapon()
