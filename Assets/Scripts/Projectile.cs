@@ -17,7 +17,8 @@ public class Projectile : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        //collision.gameObject.GetComponent<FrogCharacter>();
+        collision.gameObject.GetComponent<FrogCharacter>().currentHealth -= 10;
+        GameManager.instance.hudUpdate = true;
         Destroy(gameObject);
     }
 }

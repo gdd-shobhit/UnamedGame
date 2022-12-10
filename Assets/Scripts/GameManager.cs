@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     {
         vignetteGoDown = true;
         vignette =(UnityEngine.Rendering.Universal.Vignette) volumeProfile.components[2];
+        Cursor.lockState = CursorLockMode.Locked;
         UpdateHUD();
     }
 
