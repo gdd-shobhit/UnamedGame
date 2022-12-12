@@ -93,6 +93,8 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        private bool _swinging = false;
+
         // jump stuff
         private float holdJumpTimer = 0;
         private bool jumpHeld;
@@ -336,8 +338,11 @@ namespace StarterAssets
         //called from FrogCharacter.cs
         public void CancelSwing()
         {
-            StopCoroutine(_swingCoroutine);
-            StartCoroutine(SwingBoostCoroutine());
+            if(_swinging)
+            {
+                StopCoroutine(_swingCoroutine);
+                StartCoroutine(SwingBoostCoroutine());
+            }
         }
 
         /// <summary>
@@ -364,6 +369,7 @@ namespace StarterAssets
             
             float swingRadius = (anchor - transform.position).magnitude;
             float swingSpeed = 0.01f;
+            _swinging = true;
 
             Vector3 velocity = ((swingDir * MoveSpeed) - (Vector3.down * Gravity)) * swingSpeed * Time.deltaTime;
             RaycastHit groundCheck;
@@ -392,6 +398,7 @@ namespace StarterAssets
                 _controller.Move(velocity);
                 yield return null;
             }
+            _swinging = false;
         }
 
         /// <summary>

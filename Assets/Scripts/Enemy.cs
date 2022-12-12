@@ -440,10 +440,10 @@ public class Enemy : MonoBehaviour, IDamageable, IGrabbable, IDataPersistence
         while(timer < pullTime){
             //destination and pullTime need to be updated each frame to account for player movement during the pull
             destination = t_player.position + ((transform.position - t_player.position).normalized);
-            pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
+            //pullTime = (t_player.position - transform.position).sqrMagnitude / pullSpeed;
 
             transform.position = Vector3.Lerp(origin, destination, timer/pullTime);
-
+            Debug.Log(pullTime);
             timer += Time.deltaTime;
             yield return null;
         }

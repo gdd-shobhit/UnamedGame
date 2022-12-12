@@ -52,7 +52,7 @@ public class FrogCharacter : MonoBehaviour, IDamageable, IDataPersistence
 
     // Tongue
     [SerializeField] float tongueLength = 1.0f; //how far away from the player can the tongue reach to grab things
-    [SerializeField] float pullSpeed = 1.0f; //how quickly a grabbed object will be pulled to the player
+    [SerializeField] float pullSpeed = 50.0f; //how quickly a grabbed object will be pulled to the player
     private bool tonguePressed = false;
 
     // Narrative
