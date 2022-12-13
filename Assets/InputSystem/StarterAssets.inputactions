@@ -405,6 +405,17 @@
                 },
                 {
                     "name": "",
+                    "id": "112b0d04-f560-4749-8af3-2aa68710fee5",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tongue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "0036ac15-2dd7-4d92-b841-a7ea07820f66",
                     "path": "<Keyboard>/rightBracket",
                     "interactions": "",

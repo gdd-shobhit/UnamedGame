@@ -73,11 +73,16 @@ public class TargetLock : MonoBehaviour
 
         // if the current target is dead, either find a new target or stop locking on
         if (target == null || !targetCam.gameObject.activeSelf) return;
-        if (target.transform.parent.GetComponent<Enemy>().health <= 0)
+        Enemy enemy = target.transform.parent.GetComponent<Enemy>();
+        if (enemy != null)
         {
-            if (!FindEnemy()) ToggleCamSwitch();
-            else targetCam.LookAt = target.transform;
+            if (enemy.health <= 0)
+            {
+                if (!FindEnemy()) ToggleCamSwitch();
+                else targetCam.LookAt = target.transform;
+            }
         }
+
     }
 
     bool FindEnemy()

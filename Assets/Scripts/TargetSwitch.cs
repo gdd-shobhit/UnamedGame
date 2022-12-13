@@ -84,13 +84,17 @@ public class TargetSwitch : MonoBehaviour
     {
         foreach (Collider c in nearbyTargets)
         {
-            if(c.transform.parent.GetComponent<Enemy>().health <= 0)
+            Enemy enemy = c.transform.parent.GetComponent<Enemy>();
+            if (enemy != null)
             {
-                nearbyTargets.Remove(c);
+                if (enemy.health <= 0)
+                {
+                    nearbyTargets.Remove(c);
 
-                // restart the function because the list has changed and will throw an error otherwise
-                CheckAlive();
-                return;
+                    // restart the function because the list has changed and will throw an error otherwise
+                    CheckAlive();
+                    return;
+                }
             }
         }
     }
